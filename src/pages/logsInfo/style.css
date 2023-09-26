@@ -1,0 +1,12 @@
+.container_page_logs{
+    min-height: 70vh;
+    margin-inline: 2%;
+}
+.container_logs{
+    height: 65vh;
+    width: 100%;
+    border: 1px solid  rgb(64, 64, 216);
+    border-radius: 10px;
+    overflow:scroll;
+}
+

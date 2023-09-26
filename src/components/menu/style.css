@@ -1,0 +1,34 @@
+.container_menu{
+    width: 100%;
+    height: 100px;
+    background-color: rgb(64, 64, 216);
+    display: flex;
+    overflow-x: hidden;
+}
+.container_icon{
+    width: 15%;
+    height: 100%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container_nav_menu{
+    width: 90%;
+    height: 100%;
+    display: flex;
+}
+.content_nav_menu{
+    display: flex;
+    padding-right: 5%;
+    width: 100%;
+    justify-content: end;
+    align-items: center;
+}
+.links_menu{
+    font-size: 22px;
+    margin-right: 2%;
+    font-weight: 500;
+    color: aliceblue;
+    text-decoration: inherit;
+}

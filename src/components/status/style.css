@@ -1,0 +1,12 @@
+.status{
+    display: flex;
+    justify-content: flex-start;
+    margin: 3% 0% ;
+}
+.text_status{
+    margin-right: 5%;
+    font-size: 18px;
+}
+.icon_status{
+    margin-right: 5%;
+}

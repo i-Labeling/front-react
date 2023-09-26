@@ -1,0 +1,16 @@
+.input_select_dashboard{
+    width: 30%;
+    margin-inline: 3%;
+    height: 40px;
+    background-color: transparent;
+    border: 0;
+    color: black;
+    font-size: 20px;
+    display: flex;
+    text-align: center;
+    border-bottom: 1px solid black;
+}
+.select_dashboard{
+    outline: 0;
+    border: 0;
+}

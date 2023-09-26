@@ -1,0 +1,33 @@
+.container_page_endProcess{
+    min-height: 70vh;
+    height: auto;
+    width: 100%;
+    padding: 30px 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.container_page_title_endProcess{
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid  rgb(64, 64, 216);
+    font-size: 20px;
+    margin-bottom: 5%;
+}
+.container_cards_horizontal{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    justify-content: center;
+}
+.container_cards_vertical{
+    display: flex;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+}
