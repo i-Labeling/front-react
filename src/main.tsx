@@ -7,6 +7,7 @@ import LogsInfo from './pages/logsInfo/logInfo.tsx';
 import ConfSetup from './pages/confSetup/confSetup.tsx';
 import EndProcess from './pages/endProcess/endProcess.tsx';
 import Dashboard from './pages/dashboard/dashboard.tsx';
+import Test from './pages/testPage/testPage.tsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard/>
+  },
+  {
+    path: "/test",
+    element: <Test/>
   },
 ]);
 ReactDOM.createRoot(document.getElementById('root')!).render(

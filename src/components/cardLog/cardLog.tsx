@@ -1,13 +1,19 @@
-import "./cardLog.css"
+import { useState } from "react";
+import "./style.css"
 interface ConfInf{
     icon:any;
     title: string;
     val: string;
+    show: boolean;
     style?:object;
 }
 export default function CardLog(props:ConfInf){
+    const [infOpen,SetInfOpen] = useState(false)
+    
     return(
-        <div className="container_card_log">
+        <>
+         <button className="container_card_log"
+         onClick={()=>SetInfOpen(!infOpen)}>
             <div className="container_icon_log">
                 {props.icon}
             </div>
@@ -16,13 +22,39 @@ export default function CardLog(props:ConfInf){
                     <h2 className="title_card">
                         {props.title}
                     </h2>
+                    {props.show?
+                    <div className="container_content_card">
+                        <p className="val">
+                            {props.val}
+                        </p>
+                    </div>
+                    :
+                    <></>}
                 </div>
-                <div className="container_content_card" style={props.style}>
-                    <h2 className="val">
-                        {props.val}
-                    </h2>
+                
+            </div>
+        </button>
+        {infOpen ?
+        <div className="container_card_inf_log"
+        onClick={()=>SetInfOpen(!infOpen)}>
+            <div className="container_box_cord_inf_log">
+                <div className="container_title_box_card_inf_log">
+                    <h1 className="title_box_card_inf_log">
+                        {props.title}
+                    </h1>
                 </div>
+                <div className="container_val_box_card_inf_log">
+                    <p className="val_box_card_inf_log">
+                       {props.val}
+                    </p>
+                </div>
+                
             </div>
         </div>
+        :
+        <>    </>
+        }
+        </>
+       
     )
 }

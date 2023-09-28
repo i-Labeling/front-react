@@ -15,6 +15,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
 .container_form_setup{
     width: 90%;
@@ -26,7 +27,7 @@
     border: 0;
     border-bottom: 1px solid rgb(64, 64, 216);
     outline: 0;
-    margin-right: 3%;
+    margin-right: 2%;
 }
 .input_select_setup{
     width: 30%;

@@ -7,30 +7,63 @@
     flex-direction: column;
 }
 .container_menu_header_dashboard{
-    height: 70px;
-    width: 99%;
+    height: 50px;
+    width: 88%;
     display: flex;
-    margin-top: 4%;
+    margin-top: 2%;
+    margin-bottom: 2%;
 }
 .container_menu_dashboard{
     width: 70%;
     height: 100%;
     display: flex;
-   
+    color:rgb(64, 64, 216);
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+}
+.title_menu_dashboard{
+    margin: 0;
 }
 .container_date_dashboard{
     width: 29%;
     height: 100%;
     display: flex;
-    justify-content: end;
-    align-items: end;
-    font-size: 16px;
-    color: black;
-    margin-right: 2%;
+    justify-content: center;
+    align-items: start;
+    font-size: 9px;
+    color:rgb(64, 64, 216);
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+    padding: 0;
+}
+.date_dashboard{
+    margin: 0;
+    margin-top: 8px;
 }
 .container_cards_dasboard{
     width: 99%;
-    min-height:200px;
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
+}
+.container_graph{
+    display: flex;
+    margin-top: 20px;
+    width: 99%;
+    justify-content: center;
+}
+.content_graph{
+    margin-right: 5%;
+    color: rgb(64, 64, 216);
+    font-family: "Mulish",sans-serif;
+    font-size: 13px;
+}
+.title_graph{
+    margin: 0;
+    margin-bottom: 20px;
+}
+.container_input_date_dashboard{
+    border: 0;
+    color: rgb(64, 64, 216);
+    border-bottom: 1px solid rgb(64, 64, 216);
+    height: 27px;
+    
 }

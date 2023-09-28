@@ -2,11 +2,16 @@
     min-height: 70vh;
     margin-inline: 2%;
 }
+.title_page_logs{
+    color:  rgb(64, 64, 216);
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+}
 .container_logs{
     height: 65vh;
     width: 100%;
     border: 1px solid  rgb(64, 64, 216);
     border-radius: 10px;
     overflow:scroll;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
 

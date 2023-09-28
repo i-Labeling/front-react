@@ -8,8 +8,8 @@ export default function LogsInfo(){
         <>
             <Menu/>
             <main className="container_page_logs">
-                <h1 className="title_page">
-                    Informações de Logs : 
+                <h1 className="title_page_logs">
+                    Informações de Logs
                 </h1>
                 <div className="container_logs">
                     <p className="content_logs">

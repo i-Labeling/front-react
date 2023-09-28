@@ -1,7 +1,7 @@
 import Menu from "../../components/menu/menu";
 import "./style.css"
 import {AiFillInfoCircle} from "react-icons/ai"
-import { useState,useEffect } from 'react'
+import { useState,useEffect, ChangeEvent } from 'react'
 import {motion} from "framer-motion"
 import io, { Socket }from "socket.io-client"
 import Status from "../../components/status/status";
@@ -58,7 +58,7 @@ export default function Home(){
                 <div className="container_box_status">
                     <div className="container_menu_box_status">
                         <h1>
-                            IBelling 4.0
+                            iLabeling
                         </h1>
                     </div>
                     <div className="content_box_status">
@@ -72,7 +72,17 @@ export default function Home(){
                                 />  
                             ))}
                         </ul>
-                        <div className="container_status_process">
+                        <div className="container_status_process"
+                        style={{
+                            backgroundColor:
+                            statusProcess.idProcess === "processing"
+                            ? "rgb(255, 238, 178)"
+                            : statusProcess.idProcess === "error"
+                            ? "rgb(255, 178, 178)"
+                            : statusProcess.idProcess === "succefull"
+                            ? "rgb(188, 255, 178)"
+                            : "rgb(255,255,255)"
+                        }}>
                             {
                                 startProcess? 
                                 <div className="content_status_process">
@@ -80,14 +90,15 @@ export default function Home(){
                                         <p className="status_process">
                                             {statusProcess.log}
                                         </p>
-                                        {/* <AiFillInfoCircle size="25" color="rgb(228, 228, 121)"/> */}
                                     </div>
                                     <div className="container_second_informations">
                                         <Link to="/logs" className="links_process">
                                             Log do Processo
                                         </Link>
                                         {statusProcess.idProcess === "succefull" ? 
-                                        <Link to="/end" className="links_process">
+                                        <Link to="/end" 
+                                        className="links_process"
+                                        >
                                             Detalhes do Processo
                                         </Link>:
                                         <></>

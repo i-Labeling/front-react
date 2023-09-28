@@ -1,6 +1,6 @@
 import "./style.css"
 interface ConfInf{
-    functionButton?: () => any;
+    functionButton?:  any;
     text: string;
     personalizedStyle?: any;
 }

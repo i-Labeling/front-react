@@ -1,6 +1,6 @@
 .container_menu{
     width: 100%;
-    height: 100px;
+    height: 80px;
     background-color: rgb(64, 64, 216);
     display: flex;
     overflow-x: hidden;
@@ -31,4 +31,5 @@
     font-weight: 500;
     color: aliceblue;
     text-decoration: inherit;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }

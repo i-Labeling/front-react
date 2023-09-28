@@ -1,27 +1,42 @@
 .container_card_dashboard{
-    width: 15%;
-    height: 110px;
-    border:1px solid rgb(28, 128, 216);
+    width: 13%;
+    height: 80px;
+    border:1px solid rgb(64, 64, 216) ;
     border-radius: 10px;
     overflow: hidden;
-    margin-inline: 9%;
-    margin-bottom: 6%;
+    margin-inline: 1%;
+    margin-bottom: 1%;
+    font-size: 28px;
 }
 .container_card_menu_dashboard{
-    height: 30%;
+    height: 35%;
     width: 100%;
-    background-color: rgb(28, 128, 216);
+    background-color:rgb(64, 64, 216);
     color: white;
-    font-size: 13px;
+    font-size: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
 .title_card_dashboard{
     margin: 0;
     text-align: center;
 }
 .content_card_dashboard{
+    width: 100%;
     display: flex;
-    text-align: center;
+    height: 52px;
+    color: rgb(64, 64, 216);
     justify-content: center;
-    font-size: 28px;
-    color: rgb(28, 128, 216);
+    align-items: center;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+    overflow: scroll;
+    overflow-wrap: break-word; 
+    
+}
+.val_card_dashboard{
+    margin: 0;
+    max-width: 90%;
+    margin-top: 5px;
 }

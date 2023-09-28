@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
 .container_box_status{
     min-width: 30%;
@@ -27,10 +27,15 @@
 }
 .container_status_process{
     width: 100%;
-    min-height: 130px;
+    min-height: 80px;
     font-size: 23px;
-    color: rgb(138, 138, 138);
+    color: rgb(0, 0, 0);
     margin-top: 10%;
+    margin-bottom: 10%;
+    /* background-color: rgb(255, 178, 178); */
+    /* background-color: rgb(255, 238, 178); */
+    background-color: rgb(188, 255, 178);
+    border-radius: 5px;
 }
 .content_status_process{
     width: 100%;
@@ -55,7 +60,8 @@
     width: 85%;
     text-align: center;
     font-size: 18px;
-    color: rgb(138, 138, 138);
+    color: rgb(0, 0, 0);
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
 .container_second_informations{
     display: flex;

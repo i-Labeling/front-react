@@ -1,7 +1,11 @@
 .status{
     display: flex;
-    justify-content: flex-start;
-    margin: 3% 0% ;
+    justify-content: center;
+}
+.container_inf_status{
+    display: flex;
+    justify-content: center;
+    width: 35.33%;
 }
 .text_status{
     margin-right: 5%;
