@@ -8,46 +8,54 @@ import Status from "../../components/status/status";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../components/loading/loading";
 import BasicButton from "../../components/basiclButton/basicButton";
+
+interface StatusDevice{
+    connection: boolean;
+    name: string;
+    port: string;
+}
+interface StatusProcessI{
+    log: string;
+    idProcess: string;
+}
+
 export default function Home(){
-    const [status, SetStatus] = useState([
-        {
-            connection : true,
-            name : "clp",
-            port: "127.0.0.10",
-        },
-        {
-            connection : true,
-            name : "all",
-            port: "127.0.0.12",
-        },
-        {
-            connection : true,
-            name : "sr200",
-            port: "127.0.0.14",
-        },
-        {
-            connection : true,
-            name : "loader1",
-            port: "127.0.0.16",
-        },
-        {
-            connection : false,
-            name : "loader2",
-            port: "127.0.0.18",
-        }
-    ])
-    const [socket, setSocket] = useState<Socket | null>(null);
-    useEffect(() => {
-        const newSocket = io('http://192.168.1.63:12345');
-        setSocket(socket);
-        console.log(newSocket);
-    });
-    const [startProcess, SetStartProcess] = useState(true);
-    const [statusProcess, SetStatusProcess] = useState({
-        log:"Executando: 20/50 ...",
-        idProcess: "succefull",
-    });
     const navigate = useNavigate()
+    const [statusDevice, setStatusDevice] = useState<Array<StatusDevice>>([])
+    const [statusProcess, setStatusProcess] = useState<StatusProcessI>({
+        log: "",
+        idProcess: "waiting"
+    });
+    useEffect(() => {
+      const eventSource = new EventSource('http://127.0.0.1:5000/sse/statusDevice');
+      eventSource.onmessage = (event) => {
+        const parsedData = JSON.parse(event.data);
+        setStatusDevice(parsedData);
+      };
+  
+      eventSource.onerror = (error) => {
+        console.error('Erro na conexão SSE:', error);
+        eventSource.close();
+      };
+      return () => {
+        eventSource.close();
+      };
+    }, []);
+    useEffect(() => {
+        const eventSource = new EventSource('http://127.0.0.1:5000/sse/statusProcess');
+        eventSource.onmessage = (event) => {
+          const parsedData = JSON.parse(event.data);
+          setStatusProcess(parsedData);
+        };
+        eventSource.onerror = (error) => {
+          console.error('Erro na conexão SSE:', error);
+          eventSource.close();
+        };
+        return () => {
+          eventSource.close();
+        };
+      }, []);
+    
     const toNavigate = ()=> {
         navigate('/conf')
     }
@@ -63,7 +71,7 @@ export default function Home(){
                     </div>
                     <div className="content_box_status">
                         <ul className="list_status">
-                            {status.map((statusResponse, index)=>(
+                            {statusDevice.map((statusResponse, index)=>(
                                 <Status 
                                 key={index}
                                 connection = {statusResponse.connection}
@@ -84,7 +92,7 @@ export default function Home(){
                             : "rgb(255,255,255)"
                         }}>
                             {
-                                startProcess? 
+                                statusProcess.idProcess !== "waiting"? 
                                 <div className="content_status_process">
                                     <div className="container_first_informations">
                                         <p className="status_process">
@@ -95,7 +103,7 @@ export default function Home(){
                                         <Link to="/logs" className="links_process">
                                             Log do Processo
                                         </Link>
-                                        {statusProcess.idProcess === "succefull" ? 
+                                        {statusProcess.idProcess === "succefull"  || statusProcess.idProcess === "error"? 
                                         <Link to="/end" 
                                         className="links_process"
                                         >

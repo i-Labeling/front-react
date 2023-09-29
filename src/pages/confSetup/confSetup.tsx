@@ -5,7 +5,7 @@ import BoxSetup from "../../components/boxSetup/boxSetup"
 import Menu from "../../components/menu/menu"
 import axiosInstance from "../../services/instanceAxios"
 import "./style.css"
-import { useState } from "react"
+import { useState,useEffect } from "react"
 
 export default function confSetup(){
     const styleBtn = {
@@ -14,10 +14,10 @@ export default function confSetup(){
     }
     const navigate = useNavigate()
     const [setupInf, setSetupInf] = useState({
-        customer: "null",
+        customer: "1",
         serviceOrder: "null",
         amauntMemory: "null",
-        typeMemory: "null"
+        typeMemory: "UDIMM"
     })
     const createSetup = async (e:any) =>{
         e.preventDefault()
@@ -33,6 +33,7 @@ export default function confSetup(){
         })
         .catch((res)=>console.log(res))
     }
+    
     return(
         <>
             <Menu/>
@@ -43,7 +44,7 @@ export default function confSetup(){
                             ILabeling
                         </h1>
                     </div>
-                    <BoxSetup/>
+                    <BoxSetup setSetupInf={setSetupInf} setupInf={setupInf}/>
                     <form action="" className="container_form_setup">
                         <input type="text" 
                         className="input_text_setup"

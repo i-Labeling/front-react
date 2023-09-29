@@ -1,12 +1,17 @@
 import {useState} from "react"
 import "./style.css"
-export default function BoxSetup(){
+
+interface InfConf{
+    setupInf: {};
+    setSetupInf: any;
+}
+export default function BoxSetup(props:InfConf){
     const [infs,setInfs] = useState([
         {inf: "IBM - .  - IT CUSTOMER",val:"1"},
         {inf: "IBM - .  - IT CUSTOMER",val:"2"},
         {inf: "IBM - .  - IT CUSTOMER",val:"3"}
     ])
-    const [selectedOptions, setSelectedOptions] = useState<string>("");
+    
     const [selectColor,setSelectedColor] = useState({
         val:"",
         select:false
@@ -34,7 +39,7 @@ export default function BoxSetup(){
                 className="inf" 
                 key={index}
                 onClick={()=>{
-                setSelectedOptions(inf.val);
+                props.setSetupInf((e:any)=>({...props.setupInf,customer:inf.inf}));
                 setSelectedColor({
                     val: inf.val,
                     select: !selectColor.select
