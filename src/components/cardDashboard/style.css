@@ -31,7 +31,7 @@
     justify-content: center;
     align-items: center;
     font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
-    overflow: scroll;
+    overflow: auto;
     overflow-wrap: break-word; 
     
 }

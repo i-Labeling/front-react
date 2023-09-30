@@ -9,7 +9,6 @@ interface ConfInf{
 }
 export default function CardLog(props:ConfInf){
     const [infOpen,SetInfOpen] = useState(false)
-    
     return(
         <>
          <button className="container_card_log"

@@ -33,7 +33,6 @@ export default function confSetup(){
         })
         .catch((res)=>console.log(res))
     }
-    
     return(
         <>
             <Menu/>

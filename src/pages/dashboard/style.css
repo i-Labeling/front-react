@@ -29,7 +29,7 @@
     display: flex;
     justify-content: center;
     align-items: start;
-    font-size: 9px;
+    font-size: 12px;
     color:rgb(64, 64, 216);
     font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
     padding: 0;
@@ -65,5 +65,47 @@
     color: rgb(64, 64, 216);
     border-bottom: 1px solid rgb(64, 64, 216);
     height: 27px;
-    
+}
+.container_card_dashboard_erro{
+    width: 40%;
+    height: 80px;
+    border:1px solid rgb(64, 64, 216) ;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-inline: 1%;
+    margin-bottom: 1%;
+    font-size: 28px;
+    display: flex;
+}
+.container_card_menu_dashboard_erro{
+    height: 100%;
+    width: 25%;
+    background-color:rgb(64, 64, 216);
+    color: white;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+}
+.title_card_dashboard_erro{
+    margin: 0;
+    text-align: center;
+}
+.content_card_dashboard_erro{
+    width: 75%;
+    display: flex;
+    height: 100%;
+    color: rgb(64, 64, 216);
+    justify-content: center;
+    align-items: start;
+    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+    overflow: auto;
+    overflow-wrap: break-word; 
+    flex-direction: column;
+    font-size: 15px;
+    padding-left: 10px;
+}
+.val_card_dashboard_erro{
+    margin-top: 5px;
 }

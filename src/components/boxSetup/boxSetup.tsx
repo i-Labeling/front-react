@@ -1,16 +1,28 @@
-import {useState} from "react"
+import {useState,useEffect} from "react"
+import axiosInstance from "../../services/instanceAxios";
 import "./style.css"
 
 interface InfConf{
     setupInf: {};
     setSetupInf: any;
 }
+interface Costumer{
+    name: string;
+}
 export default function BoxSetup(props:InfConf){
-    const [infs,setInfs] = useState([
-        {inf: "IBM - .  - IT CUSTOMER",val:"1"},
-        {inf: "IBM - .  - IT CUSTOMER",val:"2"},
-        {inf: "IBM - .  - IT CUSTOMER",val:"3"}
-    ])
+    const [infs,setInfs] = useState<Costumer[]>([])
+
+    const getCostumers = async () =>{
+        await axiosInstance.get('costumer')
+            .then((res)=>{
+                setInfs(res.data)
+            })
+            .catch((res)=>console.log(res))
+    }
+
+    useEffect(()=>{
+        getCostumers()
+    },[])
     
     const [selectColor,setSelectedColor] = useState({
         val:"",
@@ -27,8 +39,8 @@ export default function BoxSetup(props:InfConf){
             backgroundColor: "transparent",
             color: "black"
         }
-            
     }
+
     return(
         <div className="container_inf_setup">
             <h1 className="title">
@@ -39,14 +51,14 @@ export default function BoxSetup(props:InfConf){
                 className="inf" 
                 key={index}
                 onClick={()=>{
-                props.setSetupInf((e:any)=>({...props.setupInf,customer:inf.inf}));
+                props.setSetupInf((e:any)=>({...props.setupInf,customer:inf.name}));
                 setSelectedColor({
-                    val: inf.val,
+                    val: inf.name,
                     select: !selectColor.select
                 })
                 }}
-                style={color(inf.val)}>
-                    {inf.inf}
+                style={color(inf.name)}>
+                    {inf.name}
                 </div>
             ))}
             

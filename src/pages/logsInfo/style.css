@@ -11,7 +11,7 @@
     width: 100%;
     border: 1px solid  rgb(64, 64, 216);
     border-radius: 10px;
-    overflow:scroll;
+    overflow-y:scroll;
     font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
 

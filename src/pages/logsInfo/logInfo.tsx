@@ -2,10 +2,11 @@ import {useState,useEffect} from "react"
 import Menu from "../../components/menu/menu";
 import "./style.css"
 interface Log{
-    erro1: string;
-    erro2: string;
-    erro3: string;
-    erro4: string;
+    inspection: string;
+    labeling: string;
+    validateLabel: string;
+    leaveMemomry: string;
+    errorMemory:string;
     path: string;
 }
 export default function LogsInfo(){
@@ -35,17 +36,20 @@ export default function LogsInfo(){
                 {logs.map((log, index)=>(
                     <>
                         <p className="content_logs" key={index+".1"}>
-                        {log.erro1}
+                        {log.inspection}
                         </p> 
                         <p className="content_logs" key={index+".2"}>
-                            {log.erro2}
+                            {log.labeling}
                         </p> 
                         <p className="content_logs" key={index+".3"}>
-                            {log.erro3}
+                            {log.validateLabel}
                         </p> 
                         <p className="content_logs" key={index+".4"}>
-                            {log.erro4}
+                            {log.leaveMemomry}
                         </p>
+                        <p className="content_logs" key={index+".5"}>
+                            {log.errorMemory}
+                        </p> 
                         <p className="content_logs" key={index+".5"}>
                             {log.path}
                         </p> 

@@ -3,7 +3,7 @@
     height: 80px;
     background-color: rgb(64, 64, 216);
     display: flex;
-    overflow-x: hidden;
+    
 }
 .container_icon{
     width: 15%;
