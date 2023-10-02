@@ -30,7 +30,6 @@ export default function CardLog(props:ConfInf){
                     :
                     <></>}
                 </div>
-                
             </div>
         </button>
         {infOpen ?

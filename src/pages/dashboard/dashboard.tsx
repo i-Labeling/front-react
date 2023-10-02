@@ -5,16 +5,23 @@ import {BarChart, Bar, XAxis, YAxis,Tooltip, Legend} from "recharts"
 import "./style.css"
 import { useState, useEffect } from "react"
 import axiosInstance from "../../services/instanceAxios"
+import BasicButton from "../../components/basiclButton/basicButton"
 
 interface KPIs{
+    labelled: string,
     reworks:string,
     trays: string,
-    labelled: string,
 }
 interface Erros{
     erro:string
 }
-interface Graph{
+interface Graph1{
+    hour: string,
+    sodinn: number,
+    udinn: number,
+    quantity: number
+}
+interface Graph2{
     day: string,
     sodinn: number,
     udinn: number,
@@ -23,51 +30,82 @@ interface Graph{
 interface Costumer{
     name: string;
 }
+
 export default function Dashboard(){
+    function parseParams(params:any) {
+        const keys = Object.keys(params)
+        let options = ''
+      
+        keys.forEach((key) => {
+          const isParamTypeObject = typeof params[key] === 'object'
+          const isParamTypeArray = isParamTypeObject && params[key].length >= 0
+      
+          if (!isParamTypeObject) {
+            options += `${key}=${params[key]}&`
+          }
+      
+          if (isParamTypeObject && isParamTypeArray) {
+            params[key].forEach((element:any) => {
+              options += `${key}=${element}&`
+            })
+          }
+        })
+      
+        return options ? options.slice(0, -1) : options
+      }
     const styleCardErro = {
         width : "43%",
         fontSize: "13px"
     }
     const [idsCostumers,setIdsCostumers] = useState<Costumer[]>([])
     const [filterGet,setFilterGet] = useState({
-        costumer: "ibm",
-        dateFilter: "",
-        type:"udinn",
+        costumer: ['WINTRONIC','AMD'],
+        date: "2023-09-30",
+        typeM:["udimm","sodimm"],
     })
-    const [graph1,setGraph1] = useState<Graph[]>([])
-    const [graph2,setGraph2] = useState<Graph[]>([])
+    const [graph1,setGraph1] = useState<Graph1[]>([])
+    const [graph2,setGraph2] = useState<Graph2[]>([])
     const [errors,setErrors] = useState<Erros[]>([])
     const [kpis,setKpis] = useState<KPIs>({
+        labelled: "",
         reworks:"",
         trays: "",
-        labelled: ""
     })
     const getGraph1 = async () =>{
-        await axiosInstance.get('dashboard/graph1')
+        await axiosInstance.get('dashboard/graph1', { 
+            params: filterGet,
+            paramsSerializer: (params) => parseParams(params)
+            })
             .then((res)=>{
                 setGraph1(res.data)
             })
             .catch((res)=>console.log(res))
     }
     const getGraph2 = async () =>{
-        await axiosInstance.get('dashboard/graph2',{ params: filterGet })
+        await axiosInstance.get('dashboard/graph2',{ 
+            params: filterGet,
+            paramsSerializer: (params) => parseParams(params)})
             .then((res)=>{
                 setGraph2(res.data)
-                console.log("ok")
             })
             .catch((res)=>console.log(res))
     }
     const getErros = async () =>{
-        await axiosInstance.get('dashboard/erros',{ params: filterGet })
+        await axiosInstance.get('dashboard/erros',{ 
+            params:filterGet,
+            paramsSerializer: (params) => parseParams(params) })
             .then((res)=>{
                 setErrors(res.data)
             })
             .catch((res)=>console.log(res))
     }
     const getKPIs = async () =>{
-        await axiosInstance.get('dashboard/kpis',{ params: filterGet })
+        await axiosInstance.get('dashboard/kpis',{  
+            params: filterGet,
+            paramsSerializer: (params) => parseParams(params)})
             .then((res)=>{
                 setKpis(res.data)
+                console.log(res.data)
             })
             .catch((res)=>console.log(res))
     }
@@ -78,15 +116,24 @@ export default function Dashboard(){
             })
             .catch((res)=>console.log(res))
     }
-
+    const att = ()=>{
+        getGraph1()
+        getGraph2()
+        getErros()
+        getKPIs()
+        getCostumers()
+    }
     useEffect(()=>{
         getGraph1()
         getGraph2()
         getErros()
         getKPIs()
         getCostumers()
-        console.log(errors)
     },[])
+    useEffect(()=>{
+        att()
+        console.log(filterGet)
+    },[filterGet])
     return(
         <>
             <Menu/>
@@ -105,7 +152,7 @@ export default function Dashboard(){
                         vals={[{name:"udimm"},{name:"sodimm"}]} 
                         filterGet={filterGet} 
                         setFilterGet={setFilterGet}
-                        filterField="type"
+                        filterField="typeM"
                         />
                         <input className="container_input_date_dashboard" 
                         type="date" 
@@ -113,15 +160,16 @@ export default function Dashboard(){
                         name="data"
                         onChange={(e)=>
                             {
-                                setFilterGet(inf=>({...filterGet,dateFilter:e.target.value}));
+                                setFilterGet(inf=>({...filterGet,date:e.target.value}));
                             }
                          }
                         >
                         </input>
+                        
                     </div>
                     <div className="container_date_dashboard">
                         <h1 className="date_dashboard">
-                            {filterGet.dateFilter}
+                            {filterGet.date}
                         </h1>
                     </div>
                 </div> 
@@ -134,9 +182,10 @@ export default function Dashboard(){
                             <h1 className="title_card_dashboard_erro">Erros</h1>
                         </div>
                         <div className="content_card_dashboard_erro">
-                            {errors.map((e) => (<p className="val_card_dashboard">{e.erro}</p>))}
+                        {errors.map((e) => (<p className="val_card_dashboard">{e.erro}</p>))}
                         </div>
                     </div>
+
                 </div>
                 <div className="container_graph">
                     <div className="content_graph">
@@ -154,12 +203,12 @@ export default function Dashboard(){
                                 bottom: 5
                             }}
                             >
-                            <XAxis dataKey="day" />
+                            <XAxis dataKey="hour" />
                             <YAxis />
                             <Tooltip />
                             <Legend width={100} wrapperStyle={{ top: 10, right: -66}}/>
-                            <Bar dataKey="sodinn" fill="rgb(64, 64, 216)" />
-                            <Bar dataKey="udinn" fill="#82ca9d" />
+                            <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" />
+                            <Bar dataKey="udimm" fill="#82ca9d" />
                         </BarChart>
                     </div>
                     <div className="content_graph">
@@ -178,12 +227,12 @@ export default function Dashboard(){
                             }}
                             >
                             
-                            <XAxis dataKey="name" />
+                            <XAxis dataKey="day" />
                             <YAxis />
                             <Tooltip />
                             <Legend width={100} wrapperStyle={{ top: 10, right: -66}}/>
-                            <Bar dataKey="sodinn" fill="rgb(64, 64, 216)" />
-                            <Bar dataKey="udinn" fill="#82ca9d" />
+                            <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" />
+                            <Bar dataKey="udimm" fill="#82ca9d" />
                         </BarChart>
                     </div>
                 </div>      

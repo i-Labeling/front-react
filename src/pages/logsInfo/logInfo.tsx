@@ -7,24 +7,39 @@ interface Log{
     validateLabel: string;
     leaveMemomry: string;
     errorMemory:string;
+    takeMemory: string;
     path: string;
+}
+interface Val{
+    key:[]
 }
 export default function LogsInfo(){
     const [logs, setLog] = useState<Array<Log>>([]);
+    const [val,setVal] =  useState<Val[]>([]);
     useEffect(() => {
         const eventSource = new EventSource('http://127.0.0.1:5000/sse/log');
         eventSource.onmessage = (event) => {
-          const parsedData = JSON.parse(event.data);
-          setLog(parsedData);
+            const parsedData = JSON.parse(event.data);
+            setLog(parsedData);
         };
         eventSource.onerror = (error) => {
-          console.error('Erro na conexão SSE:', error);
-          eventSource.close();
+            console.error('Erro na conexão SSE:', error);
+            eventSource.close();
         };
         return () => {
-          eventSource.close();
+            eventSource.close();
         };
-      }, []);
+    }, []);
+    const openNewTab = (e:string) => {
+        const newTab = window.open('', '_blank');
+        if (newTab) {
+            newTab.document.write(
+              `<html><body>
+              <img src="${e}" alt="Imagem Local" width= 600/>
+              </body></html>`
+            );
+        };
+    }
     return(
         <>
             <Menu/>
@@ -51,8 +66,15 @@ export default function LogsInfo(){
                             {log.errorMemory}
                         </p> 
                         <p className="content_logs" key={index+".5"}>
-                            {log.path}
+                            {log.takeMemory}
                         </p> 
+                        <a
+                          href="#" 
+                          className="content_logs" 
+                          key={index+".5"}
+                          onClick={()=>openNewTab(log.path)}>
+                            {log.path}
+                        </a> 
                     </>
                    
                 ))}

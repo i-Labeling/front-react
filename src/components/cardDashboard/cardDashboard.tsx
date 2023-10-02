@@ -1,7 +1,7 @@
 import "./style.css"
 interface ConfInf{
     tittle:string;
-    val:string;
+    val:any;
     style?:any;
 }
 export default function CardDashboard(props:ConfInf){
