@@ -71,6 +71,14 @@ export default function Dashboard(){
         reworks:"",
         trays: "",
     })
+    const verificationSodimmKey = "sodimm";
+    const allValuesNullSodimm = graph1.every((dictI:any) => {
+      return dictI[verificationSodimmKey] === null;
+    });
+    const verificationUdimmKey = "udimm";
+    const allValuesNullUdimm = graph1.every((dictI:any) => {
+      return dictI[verificationUdimmKey] === null;
+    });
     const getGraph1 = async () =>{
         await axiosInstance.get('dashboard/graph1', { 
             params: filterGet,
@@ -132,7 +140,7 @@ export default function Dashboard(){
     },[])
     useEffect(()=>{
         att()
-        console.log(filterGet)
+        
     },[filterGet])
     return(
         <>
@@ -203,12 +211,20 @@ export default function Dashboard(){
                                 bottom: 5
                             }}
                             >
-                            <XAxis dataKey="hour" />
+                            <XAxis dataKey="hour" unit='hr'/>
                             <YAxis />
                             <Tooltip />
                             <Legend width={100} wrapperStyle={{ top: 10, right: -66}}/>
-                            <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" />
-                            <Bar dataKey="udimm" fill="#82ca9d" />
+                             {allValuesNullSodimm?
+                                <></>:
+                                <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="hr" />
+                            }
+                            {allValuesNullUdimm?
+                                <></>:
+                                <Bar dataKey="udimm" fill="#82ca9d" />
+                               
+                            }
+                            
                         </BarChart>
                     </div>
                     <div className="content_graph">
@@ -231,8 +247,15 @@ export default function Dashboard(){
                             <YAxis />
                             <Tooltip />
                             <Legend width={100} wrapperStyle={{ top: 10, right: -66}}/>
-                            <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" />
-                            <Bar dataKey="udimm" fill="#82ca9d" />
+                            {allValuesNullSodimm?
+                                <></>:
+                                <Bar dataKey="sodimm" fill="rgb(64, 64, 216)"/>
+                            }
+                            {allValuesNullUdimm?
+                                <></>:
+                                <Bar dataKey="udimm" fill="#82ca9d" />
+                               
+                            }
                         </BarChart>
                     </div>
                 </div>      

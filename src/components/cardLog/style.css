@@ -1,17 +1,15 @@
 .container_card_log{
-    min-height: 95px;
-    height: auto;
+    height: 115px;
     width: 20%;
-    margin-inline: 6% ;
-    margin-bottom: 0;
+    margin-inline: 6%;
     padding: 0%;
     display: flex;
     margin-bottom: 5%;
-    border: 1px solid rgb(64, 64, 216);
     border-radius: 10px;
     overflow: hidden;
     transition: 0.2s;
     cursor: pointer;
+    border: 0;
 }
 .container_card_log:hover{
    scale: 1.1;
@@ -21,55 +19,52 @@
     height: 110vh;
     background-color: rgba(0, 0, 0, 0.578);
     position:fixed;
-    margin-top: -19%;
+    margin-top: -250px;
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 .container_box_cord_inf_log{
     font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
     width:30%;
     height: 40%;
-    background-color: rgb(255, 255, 255);
-    border-radius: 10px;
+    background-color: white;
+    border-radius: 12px;
 }
 .container_title_box_card_inf_log{
     width: 100%;
-    height: 26%;
+    height: 30%;
     background-color:  rgb(64, 64, 216);
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    
+    border-radius: 1px;
 }
 .title_box_card_inf_log{
     margin: 0;
     text-align: center;
 }
 .container_val_box_card_inf_log{
-    height: 74%;
+    position:relative;
+    height: 70%;
     width: 100%;
-    overflow: scroll;
+    display: flex;
+    overflow-x: scroll;
     overflow-wrap: break-word;
     font-size: 43px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 .val_box_card_inf_log{
     margin: 0;
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-wrap: break-word;
-    
+    flex-direction: column;
 }
 .container_icon_log{
-    width: 40%;
+    width: 30%;
     height: 100%;
     background-color: rgb(64, 64, 216);
     display: flex;
@@ -78,7 +73,7 @@
 }
 .container_inf{
     height: 100%;
-    width: 100%;
+    width: 70%;
 }
 .container_header_card{
     background-color: rgb(64, 64, 216);
@@ -96,7 +91,7 @@
     height: 40%;
     display: flex;
     justify-content: center;
-    align-items: end;
+    align-items:center;
 }
 .container_content_card{
     width: 100%;

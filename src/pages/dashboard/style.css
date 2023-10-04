@@ -10,7 +10,7 @@
     height: 50px;
     width: 88%;
     display: flex;
-    margin-top: 2%;
+    margin-top: 40px;
     margin-bottom: 2%;
 }
 .container_menu_dashboard{
@@ -43,10 +43,11 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    margin-top: 40px;
 }
 .container_graph{
     display: flex;
-    margin-top: 20px;
+    margin-top: 100px;
     width: 99%;
     justify-content: center;
 }
