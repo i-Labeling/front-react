@@ -17,7 +17,8 @@ export default function confSetup(){
         customer: "1",
         serviceOrder: "null",
         amauntMemory: "null",
-        typeMemory: "UDIMM"
+        typeMemory: "UDIMM",
+        inspectionIgnore: false
     })
     const createSetup = async (e:any) =>{
         e.preventDefault()
@@ -33,6 +34,7 @@ export default function confSetup(){
         })
         .catch((res)=>console.log(res))
     }
+    useEffect(()=>{console.log(setupInf)},[setupInf])
     return(
         <>
             <Menu/>
@@ -44,6 +46,7 @@ export default function confSetup(){
                         </h1>
                     </div>
                     <BoxSetup setSetupInf={setSetupInf} setupInf={setupInf}/>
+                   
                     <form action="" className="container_form_setup">
                         <input type="text" 
                         className="input_text_setup"
@@ -68,6 +71,13 @@ export default function confSetup(){
                             <option value="UDIMM">UDIMM</option>
                             <option value="SODIMM">SODIMM</option>
                         </select>
+                        <div className="input_checkbox_setup">
+                            <input type="checkbox" className="checkbox"
+                            checked={!setupInf.inspectionIgnore}
+                            onChange={()=>{setSetupInf({ ...setupInf, inspectionIgnore: !setupInf.inspectionIgnore })}}/> 
+                            <label className="label_box">Inspection Ignore</label>
+                        </div>
+                        
                     </form>
                     <BasicButton text="Confirmar" 
                     personalizedStyle={styleBtn}
