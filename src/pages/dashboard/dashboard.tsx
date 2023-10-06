@@ -5,7 +5,9 @@ import {BarChart, Bar, XAxis, YAxis,Tooltip, Legend} from "recharts"
 import "./style.css"
 import { useState, useEffect } from "react"
 import axiosInstance from "../../services/instanceAxios"
-import BasicButton from "../../components/basiclButton/basicButton"
+import { format } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
+
 
 interface KPIs{
     labelled: string,
@@ -60,7 +62,7 @@ export default function Dashboard(){
     const [idsCostumers,setIdsCostumers] = useState<Costumer[]>([])
     const [filterGet,setFilterGet] = useState({
         costumer: ['WINTRONIC','AMD'],
-        date: "2023-09-30",
+        date: new Date().toISOString().split('T')[0],
         typeM:["udimm","sodimm"],
     })
     const [graph1,setGraph1] = useState<Graph1[]>([])
@@ -124,6 +126,7 @@ export default function Dashboard(){
             })
             .catch((res)=>console.log(res))
     }
+    const dateFormat =()=> format(utcToZonedTime(filterGet.date, 'America/Sao_Paulo'), 'dd-MM-yyyy');
     const att = ()=>{
         getGraph1()
         getGraph2()
@@ -140,7 +143,7 @@ export default function Dashboard(){
     },[])
     useEffect(()=>{
         att()
-        
+        console.log(filterGet)
     },[filterGet])
     return(
         <>
@@ -166,6 +169,7 @@ export default function Dashboard(){
                         type="date" 
                         id="data" 
                         name="data"
+                        value={filterGet.date}
                         onChange={(e)=>
                             {
                                 setFilterGet(inf=>({...filterGet,date:e.target.value}));
@@ -177,7 +181,7 @@ export default function Dashboard(){
                     </div>
                     <div className="container_date_dashboard">
                         <h1 className="date_dashboard">
-                            {filterGet.date}
+                            {format(utcToZonedTime(filterGet.date, 'America/Sao_Paulo'), 'dd-MM-yyyy')}
                         </h1>
                     </div>
                 </div> 

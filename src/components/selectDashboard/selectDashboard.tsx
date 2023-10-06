@@ -17,8 +17,8 @@ export default function SelectDashboard(props:InfConf){
         onChange={(e)=>{props.setFilterGet((inf:any)=>({...props.filterGet,  [props.filterField]:e.target.value.split(",")}))}}>
             
             {props.filterField == "typeM"?
-            <option key={0.0} className="select_dashboard" value={myArray}>blank</option>
-            :<option key={0.0} className="select_dashboard" value={props.vals.map((e)=>e.name)}>blank</option>
+            <option key={0.0} className="select_dashboard" value={myArray}>All</option>
+            :<option key={0.0} className="select_dashboard" value={props.vals.map((e)=>e.name)}>All</option>
             }
             {props.vals.map((val:any, index:any)=>
                 <option key={index} className="select_dashboard" value={val.name}>{val.name}</option>

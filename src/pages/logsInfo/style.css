@@ -13,5 +13,13 @@
     border-radius: 10px;
     overflow-y:scroll;
     font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+   
+}
+.content_logs{
+    margin-left: 1%;
+}
+
+hr{
+    border: 0.1px solid  rgb(64, 64, 216);
 }
 

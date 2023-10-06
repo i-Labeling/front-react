@@ -50,31 +50,37 @@ export default function LogsInfo(){
                 <div className="container_logs">
                 {logs.map((log, index)=>(
                     <>
-                        <p className="content_logs" key={index+".1"}>
-                        {log.inspection}
-                        </p> 
-                        <p className="content_logs" key={index+".2"}>
-                            {log.labeling}
-                        </p> 
-                        <p className="content_logs" key={index+".3"}>
-                            {log.validateLabel}
-                        </p> 
-                        <p className="content_logs" key={index+".4"}>
-                            {log.leaveMemomry}
-                        </p>
-                        <p className="content_logs" key={index+".5"}>
-                            {log.errorMemory}
-                        </p> 
-                        <p className="content_logs" key={index+".5"}>
-                            {log.takeMemory}
-                        </p> 
-                        <a
-                          href="#" 
-                          className="content_logs" 
-                          key={index+".5"}
-                          onClick={()=>openNewTab(log.path)}>
-                            {log.path}
-                        </a> 
+                        <hr color=" rgb(64, 64, 216)">
+                        </hr>
+                        <div className="container_infs_logs">
+                            <p className="content_logs" key={index+".1"}>
+                            {log.inspection}
+                            </p> 
+                            <p className="content_logs" key={index+".2"}>
+                                {log.labeling}
+                            </p> 
+                            <p className="content_logs" key={index+".3"}>
+                                {log.validateLabel}
+                            </p> 
+                            <p className="content_logs" key={index+".4"}>
+                                {log.leaveMemomry}
+                            </p>
+                            <p className="content_logs" key={index+".5"}>
+                                {log.errorMemory}
+                            </p> 
+                            <p className="content_logs" key={index+".5"}>
+                                {log.takeMemory}
+                            </p> 
+                            <a
+                            href="#" 
+                            className="content_logs" 
+                            key={index+".5"}
+                            onClick={()=>openNewTab(log.path)}
+                            style={{marginBottom:"10%"}}>
+                                {log.path}
+                            </a> 
+                            
+                        </div>
                     </>
                    
                 ))}
