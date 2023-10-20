@@ -10,8 +10,8 @@
 # app.run()
 #############################################################################
 import sys
-sys.path.append('C:\\Users\\lucas\\apiLabeling2') 
-from count import att
+sys.path.append('C:/Users/walfr/OneDrive/Ambiente de Trabalho/iLabeling_conexao/new_front_react/front-react/apiILabeling/') 
+
 from flask import Flask, Response,request
 from flask_cors import CORS
 import time
@@ -40,7 +40,7 @@ def post_example():
         # Escreva os dados atualizados de volta para o arquivo JSON
         with open('dados.json', 'w') as arquivo_json:
             json.dump(dados_existentes, arquivo_json)
-        att(datas)
+     
         resultado = {"mensagem": "Dados recebidos com sucesso", "dados": datas}
         return resultado, 200  # 200 indica sucesso
     else:
