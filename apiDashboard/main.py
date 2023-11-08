@@ -9,18 +9,20 @@
 
 # app.run()
 #############################################################################
-import sys
-sys.path.append('C:/Users/walfr/OneDrive/Ambiente de Trabalho/iLabeling_conexão/new_front_react/front-react/apiILabeling/') 
-
-from flask import Flask, Response,request
-from flask_cors import CORS
-import time
-import json
+from flask import Flask, Response, request
 import os
+import json
+import time
+from flask_cors import CORS
+import sys
+sys.path.append(
+    "C/Users/walfr/OneDrive/Ambiente de Trabalho/iLabeling_conexao/new_front_react/front-end_20_10_23/front-react/apiDashboard/")
+
 
 app = Flask(__name__)
 
 CORS(app)
+
 
 @app.route('/post', methods=['POST'])
 def post_example():
@@ -40,26 +42,27 @@ def post_example():
         # Escreva os dados atualizados de volta para o arquivo JSON
         with open('dados.json', 'w') as arquivo_json:
             json.dump(dados_existentes, arquivo_json)
-     
+
         resultado = {"mensagem": "Dados recebidos com sucesso", "dados": datas}
         return resultado, 200  # 200 indica sucesso
     else:
-        return "Método não permitido", 405 
-    
-@app.route('/', methods = ['GET'])
+        return "Método não permitido", 405
+
+
+@app.route('/', methods=['GET'])
 def get_end_process():
     data = {
-        'tray':"0",
+        'tray': "0",
         'totalCycleTime': "0",
         'minutesPerTray': "0",
         'timePerMemory': "0",
-        'creamBelowA':"0",
+        'creamBelowA': "0",
         'inspectionErrors': "0",
         'cameraError': "0",
         'indexMemoryError': "0",
         'positionAndError': "0",
         'order': "primeira ordem"
-        }
+    }
     return data
 
 # @app.route('/sse')
@@ -67,13 +70,15 @@ def get_end_process():
 #     def event_stream():
 #         while True:
 #             with open('data.json', 'r') as file:
-#                 new_data = json.load(file) 
-            
+#                 new_data = json.load(file)
+
 #             yield f"data:{json.dumps(new_data)}\n\n"
-#             time.sleep(1)  
+#             time.sleep(1)
 #     return Response(event_stream(), content_type='text/event-stream')
 # app.run()
 ##########################################################################
+
+
 @app.route('/sse/statusDevice')
 def status_device():
     def event_stream():
@@ -83,6 +88,7 @@ def status_device():
             yield f"data:{json.dumps(new_data)}\n\n"
             time.sleep(1)
     return Response(event_stream(), content_type='text/event-stream')
+
 
 @app.route('/sse/statusProcess')
 def status_process():
@@ -94,6 +100,7 @@ def status_process():
             time.sleep(1)
     return Response(event_stream(), content_type='text/event-stream')
 
+
 @app.route('/sse/log')
 def log():
     def event_stream():
@@ -103,6 +110,7 @@ def log():
             yield f"data:{json.dumps(new_data)}\n\n"
             time.sleep(1)
     return Response(event_stream(), content_type='text/event-stream')
+
 
 app.run()
 ####################################################################################
@@ -117,16 +125,15 @@ app.run()
 # CORS(app, resources={r"/sse": {"origins": "http://localhost:5173"}})
 
 
-
 # @app.route('/sse')
 # def sse():
 #     def event_stream():
 #         while True:
 #             with open('data.json', 'r') as file:
-#                 new_data = json.load(file) 
-            
+#                 new_data = json.load(file)
+
 #             yield f"data:{json.dumps(new_data)}\n\n"
-#             time.sleep(1)  
+#             time.sleep(1)
 #     return Response(event_stream(), content_type='application/json')
 
 # app.run()

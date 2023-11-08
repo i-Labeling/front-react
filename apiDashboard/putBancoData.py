@@ -1,19 +1,20 @@
 import psycopg2
 import json
 from datetime import datetime
-global url 
-url = "C:/Users/walfr/OneDrive/Ambiente de Trabalho/iLabeling_conexao/new_front_react/front-react/apiDashboard/"
+global url
+url = "C:/Users/walfr/OneDrive/Ambiente de Trabalho/iLabeling_conexao/new_front_react/front-end_20_10_23/front-react/apiDashboard/"
 global info_arq
 info_arq = {}
 
-def read_data_js(nome_arq:str):
-        try:
-            with open(nome_arq, 'r') as arquivo_json:
-                dados_existentes = json.load(arquivo_json)
-                #print(dados_existentes)
-                return dados_existentes
-        except Exception:
-            return "No data"
+
+def read_data_js(nome_arq: str):
+    try:
+        with open(nome_arq, 'r') as arquivo_json:
+            dados_existentes = json.load(arquivo_json)
+            # print(dados_existentes)
+            return dados_existentes
+    except Exception:
+        return "No data"
 
 # Dados do dicionário info_arq
 # info_arq = {
@@ -29,6 +30,7 @@ def read_data_js(nome_arq:str):
 #     "pos_rfg": ['pos 5 - fail', 'pos 9 - fail', 'pos 1 - nada', 'pos 44 - vazio'],
 #     'data_insercao': " "
 # }
+
 
 def send_bd(info_arq: dict):
     try:

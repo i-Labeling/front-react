@@ -44,7 +44,7 @@ export default function BoxSetup(props:InfConf){
     return(
         <div className="container_inf_setup">
             <h1 className="title">
-                ILabeling Setup
+                i-Labeling Setup
             </h1>
             {infs.map((inf,index) =>(
                 <div 

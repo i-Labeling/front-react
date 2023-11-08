@@ -152,7 +152,7 @@ export default function Dashboard(){
                 <div className="container_menu_header_dashboard">
                     <div className="container_menu_dashboard">
                         <h1 className="title_menu_dashboard">
-                            iLabeling
+                            i-Labeling
                         </h1>
                         <SelectDashboard 
                         vals={idsCostumers} 
@@ -191,7 +191,7 @@ export default function Dashboard(){
                     <CardDashboard tittle="Trays Worked" val={kpis.trays}/>
                     <div className="container_card_dashboard_erro">
                         <div className="container_card_menu_dashboard_erro">
-                            <h1 className="title_card_dashboard_erro">Erros</h1>
+                            <h1 className="title_card_dashboard_erro">Error</h1>
                         </div>
                         <div className="content_card_dashboard_erro">
                         {errors.map((e) => (<p className="val_card_dashboard">{e.erro}</p>))}
@@ -202,7 +202,7 @@ export default function Dashboard(){
                 <div className="container_graph">
                     <div className="content_graph">
                         <h1 className="title_graph">
-                            ROTULAGEM POR DIA 
+                            LABELING BY DAY 
                         </h1>
                         <BarChart
                             width={500}
@@ -233,7 +233,7 @@ export default function Dashboard(){
                     </div>
                     <div className="content_graph">
                         <h1 className="title_graph">
-                            ROTULAGEM POR SEMANA
+                            LABELING BY WEEK
                         </h1>
                         <BarChart
                             width={500}

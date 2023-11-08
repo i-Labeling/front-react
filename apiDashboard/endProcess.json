@@ -1,1 +1,1 @@
-{"quantRam": 25, "typeRam": "sodimm", "customer": "AMD", "bandeja": 1, "temp_total": 206.77, "min_bdj": "9.27", "temp_memoria": "8.27", "mem_fail": 0, "memo_index": [], "inspec_fail": [], "cam_erro": 0, "pos_rfg": [], "data_insercao": " "}
+{"quantRam": "847359235 ", "typeRam": "sodimmsoeroe", "customer": " labling", "bandeja": "2", "temp_total": "622.3", "min_bdj": "4", "temp_memoria": "12.2", "mem_fail": "5", "memo_index": ["memoria 1", "memoria 2"], "inspec_fail": ["memoria 3", "memoria 5"], "cam_erro": "5", "pos_rfg": ["pos  1 -- fail"], "data_insercao": "06-11-2023"}

@@ -17,7 +17,7 @@ export default function confSetup(){
         customer: "1",
         serviceOrder: "null",
         amauntMemory: "null",
-        typeMemory: "UDIMM",
+        typeMemory: "udimm",
         inspectionIgnore: false
     })
     const createSetup = async (e:any) =>{
@@ -27,6 +27,7 @@ export default function confSetup(){
             serviceOrder:setupInf.serviceOrder,
             amauntMemory:setupInf.amauntMemory,
             typeMemory:setupInf.typeMemory,
+            inspectionMemory:setupInf.inspectionIgnore
         })
         .then((res)=>{
             console.log(res)
@@ -42,7 +43,7 @@ export default function confSetup(){
                 <div className="container_box_conf">
                     <div className="container_menu_box_status">
                         <h1>
-                            ILabeling
+                            i-Labeling
                         </h1>
                     </div>
                     <BoxSetup setSetupInf={setSetupInf} setupInf={setupInf}/>
@@ -52,34 +53,36 @@ export default function confSetup(){
                         className="input_text_setup"
                         id="order" 
                         name="order_service" 
-                        placeholder="Ordem de Serviço"
-                        onChange={(e)=>{setSetupInf(inf=>({...setupInf,serviceOrder:e.target.value}))}}
+                        placeholder="Order of Service"
+                        onChange={(e)=>{setSetupInf(()=>({...setupInf,serviceOrder:e.target.value}))}}
                         ></input>
                         <input type="text" 
                         className="input_text_setup"
                         id="quantity" 
                         name="quantity" 
-                        placeholder="Quantidade de Memorias"
+                        placeholder="Quantity of Memories"
                         onKeyDown={(e)=>{const charCode = e.charCode}}
-                        onChange={(e)=>{setSetupInf(inf=>({...setupInf,amauntMemory:e.target.value}))}}
+                        onChange={(e)=>{setSetupInf(()=>({...setupInf,amauntMemory:e.target.value}))}}
                         ></input>
                         <select  
                         className="input_select_setup" 
                         id="memory" 
                         name="memory"
-                        onChange={(e)=>{setSetupInf(inf=>({...setupInf,typeMemory:e.target.value}))}}>
-                            <option value="UDIMM">UDIMM</option>
-                            <option value="SODIMM">SODIMM</option>
+                        onChange={(e)=>{setSetupInf(()=>({...setupInf,typeMemory:e.target.value}))}}>
+                            <option value="udimm">UDIMM</option>
+                            <option value="sodimm">SODIMM</option>
                         </select>
                         <div className="input_checkbox_setup">
                             <input type="checkbox" className="checkbox"
+                            id="inspection" 
+                            name="inspection"
                             checked={!setupInf.inspectionIgnore}
-                            onChange={()=>{setSetupInf({ ...setupInf, inspectionIgnore: !setupInf.inspectionIgnore })}}/> 
+                            onChange={(e)=>{setSetupInf(()=>({...setupInf, inspectionIgnore:!setupInf.inspectionIgnore}))}}/> {/*!setupInf.inspectionIgnore*/}
                             <label className="label_box">Inspection Ignore</label>
                         </div>
                         
                     </form>
-                    <BasicButton text="Confirmar" 
+                    <BasicButton text="Confirm" 
                     personalizedStyle={styleBtn}
                     functionButton={createSetup}/>
                 </div>
