@@ -6,7 +6,7 @@ interface Log {
   inspection: string;
   labeling: string;
   validateLabel: string;
-  leaveMemomry: string;
+  leaveMemory: string;
   errorMemory: string;
   takeMemory: string;
   path: string;
@@ -77,10 +77,10 @@ export default function LogsInfo() {
                   {log.validateLabel}
                 </p>
                 <p className="content_logs" key={index + ".6"}>
-                  {log.leaveMemomry}
+                  {log.errorMemory}
                 </p>
                 <p className="content_logs" key={index + ".7"}>
-                  {log.errorMemory}
+                  {log.leaveMemory}
                 </p>
               </div>
             </>

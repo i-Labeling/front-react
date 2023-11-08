@@ -77,19 +77,19 @@ export default function EndProcess() {
           <CardLog
             icon={cycle}
             title="Total Cycle Time"
-            val={infProccess.totalCycleTime}
+            val={infProccess.totalCycleTime + " s"}
             show={true}
           />
           <CardLog
             icon={time}
             title="Time in Minutes per Tray"
-            val={infProccess.minutesPerTray}
+            val={infProccess.minutesPerTray + " min"}
             show={true}
           />
           <CardLog
             icon={memory}
-            title="Time by Memory"
-            val={infProccess.timePerMemory}
+            title="Seconds by Memory"
+            val={infProccess.timePerMemory + " s"}
             show={true}
           />
           <CardLog
