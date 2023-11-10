@@ -1,9 +1,6 @@
 import Menu from "../../components/menu/menu";
 import "./style.css";
-import { AiFillInfoCircle } from "react-icons/ai";
-import { useState, useEffect, ChangeEvent } from "react";
-import { motion } from "framer-motion";
-import io, { Socket } from "socket.io-client";
+import { useState, useEffect } from "react";
 import Status from "../../components/status/status";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../components/loading/loading";

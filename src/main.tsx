@@ -1,41 +1,46 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import {   createBrowserRouter, RouterProvider} from 'react-router-dom';
-import Home from './pages/home/home.tsx';
-import LogsInfo from './pages/logsInfo/logInfo.tsx';
-import ConfSetup from './pages/confSetup/confSetup.tsx';
-import EndProcess from './pages/endProcess/endProcess.tsx';
-import Dashboard from './pages/dashboard/dashboard.tsx';
-import Test from './pages/testPage/testPage.tsx';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Home from "./pages/home/home.tsx";
+import LogsInfo from "./pages/logsInfo/logInfo.tsx";
+import ConfSetup from "./pages/confSetup/confSetup.tsx";
+import EndProcess from "./pages/endProcess/endProcess.tsx";
+import Dashboard from "./pages/dashboard/dashboard.tsx";
+import Test from "./pages/testPage/testPage.tsx";
+import Login from "./pages/Login/login.tsx";
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <Login />,
+  },
+  {
     path: "/",
-    element: <Home/>
+    element: <Home />,
   },
   {
     path: "/logs",
-    element: <LogsInfo/>
+    element: <LogsInfo />,
   },
   {
     path: "/conf",
-    element: <ConfSetup/>
+    element: <ConfSetup />,
   },
   {
     path: "/end",
-    element: <EndProcess/>
+    element: <EndProcess />,
   },
   {
     path: "/dashboard",
-    element: <Dashboard/>
+    element: <Dashboard />,
   },
   {
     path: "/test",
-    element: <Test/>
+    element: <Test />,
   },
 ]);
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
-  </React.StrictMode>,
-)
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
