@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grid Inspection</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 100px);
+            grid-template-rows: repeat(10, 100px);
+            gap: 2px;
+            background-color: rgba(255, 255, 255, 0.6); /* Fundo transparente para os quadrados */
+            background-image: url('SODIMM.jpeg'); /* Substitua 'somdim.jpeg' pelo caminho da sua imagem de fundo */
+            background-size: 100% 100%; /* Ajusta a imagem para cobrir todo o elemento .grid */
+            background-position: center;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: transparent; /* Fundo transparente para as células */
+            border: 1px solid #0ae10a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s; /* Transição suave de cor */
+        }
+
+        .rounded-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ffff; /* Azul claro */
+            transition: background-color 0.3s; /* Transição suave de cor */
+            cursor: pointer;
+            border-radius: 10px; /* Raio para arredondar as bordas */
+        }
+
+        /* Adicione a regra para a mudança de cor ao passar o mouse */
+        .rounded-button:hover {
+            background-color: #5CACEE; /* Nova cor quando o mouse passa por cima */
+        }
+    </style>
+</head>
+<body>
+<div class="grid" id="grid"></div>
+<button id="saveButton" class="rounded-button">Save</button>
+
+<script>
+    const grid = document.getElementById('grid');
+    const saveButton = document.getElementById('saveButton');
+    const GRID_SIZE = 10;
+    const selectedSquares = [];
+
+    function changeColor(cell) {
+        cell.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Vermelho transparente (20% de opacidade)
+    }
+
+    for (let row = 0; row < GRID_SIZE; row++) {
+        for (let col = 0; col < GRID_SIZE; col++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.textContent = ''; // Removido o texto
+
+            cell.addEventListener('click', () => {
+                const number = row * GRID_SIZE + col;
+                selectedSquares.push(number);
+                console.log(`Número selecionado: ${number}`);
+                changeColor(cell);
+            });
+
+            grid.appendChild(cell);
+        }
+    }
+
+    saveButton.addEventListener('click', () => {
+        const selectedValuesList = [...selectedSquares]; // Copia os valores selecionados para uma nova lista
+        console.log('Valores selecionados:');
+        console.log(selectedValuesList);
+
+        selectedValuesList.forEach(number => {
+            const cell = document.querySelector(`[data-row="${Math.floor(number / GRID_SIZE)}"][data-col="${number % GRID_SIZE}"]`);
+            cell.style.backgroundColor = 'rgba(0, 0, 255, 0.2)'; // Azul transparente (20% de opacidade)
+        });
+
+        // Envia os valores para o servidor Flask
+        fetch('/save_selected_squares', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(selectedValuesList),
+        });
+    });
+</script>
+</body>
+</html>
