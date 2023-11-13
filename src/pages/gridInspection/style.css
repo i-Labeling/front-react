@@ -1,0 +1,69 @@
+.gridInspection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 100px);
+  grid-template-rows: repeat(10, 100px);
+  gap: 2px;
+  background-color: rgba(255, 255, 255, 0.6);
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  background-color: transparent;
+  border: 1px solid #0ae10a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.rounded-button {
+  margin-right: 10px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #ffff;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.rounded-button:hover {
+  background-color: rgb(64, 64, 216);
+  color: #ffff;
+}
+
+.rounded-button-close {
+  margin-right: 10px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #ffff;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.rounded-button-close:hover {
+  background-color: gray;
+  color: #ffff;
+}

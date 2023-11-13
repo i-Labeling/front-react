@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
-import ColorConstants from "../../colors";
 
 interface RadioGroupProps {
   onChange: (value: string) => void;

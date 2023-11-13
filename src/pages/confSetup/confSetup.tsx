@@ -2,10 +2,11 @@ import { useNavigate } from "react-router-dom";
 import BasicButton from "../../components/basiclButton/basicButton";
 import BoxSetup from "../../components/boxSetup/boxSetup";
 import Menu from "../../components/menu/menu";
-import axiosInstance from "../../services/instanceAxios";
 import "./style.css";
 import { useState, useEffect } from "react";
 import RadioButtonGroup from "../../components/radioButtonGroup/radioButtonGroup";
+import { useGlobalState } from "../../contexts/globalStateContext";
+import axiosInstance from "../../services/instanceAxios";
 
 export default function confSetup() {
   const styleBtn = {
@@ -13,13 +14,9 @@ export default function confSetup() {
     width: "40%",
   };
   const navigate = useNavigate();
-  const [setupInf, setSetupInf] = useState({
-    customer: "1",
-    serviceOrder: "null",
-    amauntMemory: "null",
-    typeMemory: "udimm",
-    inspectionMode: 1,
-  });
+  const { setupInf, setSetupInf } = useGlobalState();
+
+  console.log("setupInf", setupInf);
 
   const [inspectionModeNumber, setInspectionModeNumber] = useState<number>(1);
 
@@ -31,7 +28,8 @@ export default function confSetup() {
         serviceOrder: setupInf.serviceOrder,
         amauntMemory: setupInf.amauntMemory,
         typeMemory: setupInf.typeMemory,
-        inspectionMemory: setupInf.inspectionMode,
+        inspectionMode: setupInf.inspectionMode,
+        gridList: setupInf.gridList,
       })
       .then((res) => {
         console.log(res);
@@ -39,6 +37,20 @@ export default function confSetup() {
       })
       .catch((res) => console.log(res + " " + setupInf));
   };
+
+  const handleClick = (value: string) => {
+    switch (value) {
+      case "GridInspection":
+        navigate("/gridinspection");
+        break;
+      case "AllInspections" || "IgnoreInspection":
+        createSetup;
+        break;
+      default:
+        navigate("/gridinspection");
+    }
+  };
+
   useEffect(() => {
     console.log(setupInf);
   }, [setupInf]);
@@ -47,8 +59,9 @@ export default function confSetup() {
     setSetupInf((prevSetupInf) => ({
       ...prevSetupInf,
       inspectionMode: inspectionModeNumber,
+      typeMemory: setupInf.typeMemory,
     }));
-  }, [inspectionModeNumber]);
+  }, [inspectionModeNumber, setupInf.typeMemory]);
 
   const handleRadioGroupChange = (value: string) => {
     switch (value) {
@@ -124,7 +137,7 @@ export default function confSetup() {
           <BasicButton
             text="Confirm"
             personalizedStyle={styleBtn}
-            functionButton={createSetup}
+            functionButton={handleClick}
           />
         </div>
       </main>
