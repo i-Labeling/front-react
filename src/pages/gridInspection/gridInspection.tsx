@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useGlobalState } from "../../contexts/globalStateContext";
 import axiosInstance from "../../services/instanceAxios";
 import { useNavigate } from "react-router-dom";
+import readLogs from "../../functions/readLogs.tsx";
 
 const GRID_SIZE = 10;
 const PUBLIC_URL = "src/assets/";
@@ -11,6 +12,7 @@ function GridInspection() {
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const { setupInf, setSetupInf } = useGlobalState();
   const navigate = useNavigate();
+  const { sodimm, udimm } = readLogs();
 
   const changeColor = (cell: HTMLElement | null) => {
     if (cell) {
@@ -128,13 +130,25 @@ function GridInspection() {
     minHeight: "100vh",
   };
 
+  const backgroundImageUrl = (typeMemory: string) => {
+    const fallbackTypeMemoryImage = `url(${PUBLIC_URL}/${typeMemory.toUpperCase()}.jpeg)`;
+    switch (typeMemory) {
+      case "sodimm":
+        return sodimm ? `url(${sodimm})` : fallbackTypeMemoryImage;
+      case "udimm":
+        return udimm ? `url(${udimm})` : fallbackTypeMemoryImage;
+      default:
+        return udimm ? `url(${udimm})` : fallbackTypeMemoryImage;
+    }
+  };
+
   const backgroundStyle = {
     display: "grid",
     gridTemplateColumns: `repeat(${GRID_SIZE}, 100px)`,
     gridTemplateRows: `repeat(${GRID_SIZE}, 100px)`,
     gap: "2px",
     backgroundColor: "rgba(255, 255, 255, 0.6)",
-    backgroundImage: `url(${PUBLIC_URL}/UDIMM.jpeg)`,
+    backgroundImage: backgroundImageUrl(setupInf.typeMemory),
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
     width: `${GRID_SIZE * 100}px`,
