@@ -5,27 +5,42 @@ import ColorConstants from "../../colors";
 interface BasicTextFieldProps {
   label: string;
   placeholder: string;
-  personalizedStyle?: any;
+  className?: any;
+  value?: string;
+  error?: boolean;
+  errorMessage?: string;
   onChange: (value: string) => void;
+  type?: string;
+  required?: boolean;
 }
 
-const BasicTextField: React.FC<BasicTextFieldProps> = (
-  props: BasicTextFieldProps
-) => {
-  const [inputValue, setInputValue] = useState("");
+const BasicTextField: React.FC<BasicTextFieldProps> = ({
+  label,
+  placeholder,
+  className,
+  value,
+  error,
+  onChange,
+  errorMessage,
+  type,
+  required = false,
+}) => {
+  const [inputValue, setInputValue] = useState(value ?? "");
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setInputValue(value);
-    props.onChange(value);
+    onChange(value);
   };
 
   return (
     <TextField
-      id="outlined-basic"
-      label={props.label}
+      className={className}
+      label={label}
       variant="outlined"
-      placeholder={props.placeholder}
+      error={error}
+      placeholder={placeholder}
+      helperText={error && errorMessage}
       sx={{
         "& .MuiOutlinedInput-root": {
           "&.Mui-focused fieldset": {
@@ -38,6 +53,8 @@ const BasicTextField: React.FC<BasicTextFieldProps> = (
       }}
       value={inputValue}
       onChange={handleOnChange}
+      type={type}
+      required={required}
     />
   );
 };

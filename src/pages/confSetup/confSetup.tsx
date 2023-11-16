@@ -16,8 +16,6 @@ export default function confSetup() {
   const navigate = useNavigate();
   const { setupInf, setSetupInf } = useGlobalState();
 
-  console.log("setupInf", setupInf);
-
   const [inspectionModeNumber, setInspectionModeNumber] = useState<number>(1);
 
   const createSetup = async (e: any) => {

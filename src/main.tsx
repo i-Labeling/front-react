@@ -11,6 +11,8 @@ import Test from "./pages/testPage/testPage.tsx";
 import Login from "./pages/Login/login.tsx";
 import GridInspection from "./pages/gridInspection/gridInspection.tsx";
 import { GlobalStateProvider } from "./contexts/globalStateContext.tsx";
+import RegisterUser from "./pages/registerUser/registerUser.tsx";
+import EditUser from "./pages/editUser/editUser.tsx";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ const router = createBrowserRouter([
   {
     path: "/gridinspection",
     element: <GridInspection />,
+  },
+  {
+    path: "/registeruser",
+    element: <RegisterUser />,
+  },
+  {
+    path: "/edituser",
+    element: <EditUser />,
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(

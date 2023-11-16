@@ -17,14 +17,15 @@ const useStyles = makeStyles({
   card: {
     backgroundColor: "#e0e0e0",
     width: "60%",
-    height: "50vh",
+    height: "fit-content",
+    minHeight: "50vh",
     borderRadius: "40px !important",
     display: "flex",
     flexDirection: "column",
     gap: 20,
     paddingLeft: 80,
     paddingRight: 80,
-    paddingTop: 100,
+    paddingTop: 50,
   },
 });
 
