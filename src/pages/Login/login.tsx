@@ -4,6 +4,8 @@ import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import { makeStyles } from "@mui/styles";
+import ConfirmationModal from "../../components/confirmationModal/confirmationModal";
+import TokenModal from "../../components/tokenModal/tokenModal";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -53,6 +55,12 @@ const Login: React.FC = () => {
     console.log("CLICKED");
   };
 
+  //TO DO: Implement the function do generate the token
+  const generateToken = () => {
+    const number = 978556;
+    return number;
+  };
+
   return (
     <>
       <Menu />
@@ -81,6 +89,29 @@ const Login: React.FC = () => {
           />
         </div>
       </CardGeneral>
+      {/* <ConfirmationModal
+        open={true}
+        onClose={() => console.log("Close")}
+        onNegativeButton={() => console.log("No")}
+        onPositiveButton={() => console.log("Yes")}
+        text={"Are you sure you want to proceed?"}
+      /> */}
+      {/* <ConfirmationModal
+        open={true}
+        onClose={() => console.log("Close")}
+        onNegativeButton={() => console.log("No")}
+        onPositiveButton={() => console.log("Yes")}
+        text={"Are you sure you want to close it?"}
+      /> */}
+      <TokenModal
+        open={true}
+        onClose={() => console.log("Close")}
+        onConfirmButton={() => console.log("Ok")}
+        title="User Registered!"
+        subtitle="This is your unique  token:"
+        message="Make sure to take notes,\n one time exhibition token"
+        token={generateToken()}
+      />
     </>
   );
 };
