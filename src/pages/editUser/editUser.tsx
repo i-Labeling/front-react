@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import Menu from "../../components/menu/menu";
+import Menu from "../../components/customMenu/customMenu";
 import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import { makeStyles } from "@mui/styles";
 import Title from "../../components/textTitle/textTitle";
 import CustomSelect from "../../components/select/customSelect";
+import BackButton from "../../components/backButton/backButton";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -19,6 +20,19 @@ const useStyles = makeStyles({
   },
   title: {
     fontSize: "28px !important",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "10px",
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  backButtonContainer: {
+    marginRight: "20px",
   },
 });
 
@@ -138,7 +152,14 @@ const EditUser: React.FC = () => {
     <>
       <Menu />
       <CardGeneral>
-        <Title title="Edit User" className={classes.title} />
+        <div className={classes.header}>
+          <div className={classes.backButtonContainer}>
+            <BackButton />
+          </div>
+          <div className={classes.titleContainer}>
+            <Title title="Edit User" className={classes.title} />
+          </div>
+        </div>
         <BasicTextField
           label="Email"
           value={formData.email}

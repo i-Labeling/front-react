@@ -1,26 +1,12 @@
 import React, { useState } from "react";
-import Menu from "../../components/menu/menu";
+import Menu from "../../components/customMenu/customMenu";
 import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
-import { makeStyles } from "@mui/styles";
 import Title from "../../components/textTitle/textTitle";
 import CustomSelect from "../../components/select/customSelect";
-
-const useStyles = makeStyles({
-  buttonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    paddingTop: 40,
-    paddingBottom: 40,
-  },
-  button: {
-    width: "100%",
-  },
-  title: {
-    fontSize: "28px !important",
-  },
-});
+import BackButton from "../../components/backButton/backButton";
+import { useStyles } from "./styles";
 
 const RegisterUser: React.FC = () => {
   const classes = useStyles();
@@ -116,7 +102,14 @@ const RegisterUser: React.FC = () => {
     <>
       <Menu />
       <CardGeneral>
-        <Title title="Register New User" className={classes.title} />
+        <div className={classes.header}>
+          <div className={classes.backButtonContainer}>
+            <BackButton />
+          </div>
+          <div className={classes.titleContainer}>
+            <Title title="Register User" className={classes.title} />
+          </div>
+        </div>
         <BasicTextField
           label="ID"
           placeholder="ID"

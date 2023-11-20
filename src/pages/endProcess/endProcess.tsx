@@ -1,5 +1,5 @@
 import CardLog from "../../components/cardLog/cardLog";
-import Menu from "../../components/menu/menu";
+import Menu from "../../components/customMenu/customMenu";
 import { IoFileTrayOutline } from "react-icons/io5";
 import { BsRepeat } from "react-icons/bs";
 import { AiOutlineFieldTime, AiOutlineCamera } from "react-icons/ai";

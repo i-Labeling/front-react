@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
   card: {
     backgroundColor: "#e0e0e0",
-    width: "60%",
+    minWidth: "60%",
     height: "fit-content",
     minHeight: "50vh",
     borderRadius: "40px !important",

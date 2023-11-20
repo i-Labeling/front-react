@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import Menu from "../../components/menu/menu";
+import React, { useEffect, useState } from "react";
+import Menu from "../../components/customMenu/customMenu";
 import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import { makeStyles } from "@mui/styles";
-import ConfirmationModal from "../../components/confirmationModal/confirmationModal";
-import TokenModal from "../../components/tokenModal/tokenModal";
+import { useUser } from "../../contexts/userStateContext";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -20,6 +19,7 @@ const useStyles = makeStyles({
 
 const Login: React.FC = () => {
   const classes = useStyles();
+  const { user, setUser } = useUser();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -53,7 +53,24 @@ const Login: React.FC = () => {
   //TO DO: Implement the function to do a request (get) of the information on the data base
   const handleClick = () => {
     console.log("CLICKED");
+    //After the confirmation that the user is correct and the login is done
+    const dataObject = new Date();
+    const data = dataObject.toLocaleDateString();
+    const timeLogged = dataObject.toLocaleTimeString();
+
+    // Assuming user data is fetched or created after successful login
+    const userInfo = {
+      email: formData.email,
+      timeLogged: `${data} ${timeLogged}`,
+    };
+
+    // Set the user using setUser provided by useUser hook
+    setUser(userInfo);
   };
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
 
   //TO DO: Implement the function do generate the token
   const generateToken = () => {
@@ -103,7 +120,7 @@ const Login: React.FC = () => {
         onPositiveButton={() => console.log("Yes")}
         text={"Are you sure you want to close it?"}
       /> */}
-      <TokenModal
+      {/* <TokenModal
         open={true}
         onClose={() => console.log("Close")}
         onConfirmButton={() => console.log("Ok")}
@@ -111,7 +128,7 @@ const Login: React.FC = () => {
         subtitle="This is your unique  token:"
         message="Make sure to take notes,\n one time exhibition token"
         token={generateToken()}
-      />
+      /> */}
     </>
   );
 };

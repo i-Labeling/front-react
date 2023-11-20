@@ -13,6 +13,8 @@ import GridInspection from "./pages/gridInspection/gridInspection.tsx";
 import { GlobalStateProvider } from "./contexts/globalStateContext.tsx";
 import RegisterUser from "./pages/registerUser/registerUser.tsx";
 import EditUser from "./pages/editUser/editUser.tsx";
+import AccessControl from "./pages/accessControl/accessControl.tsx";
+import { UserProvider } from "./contexts/userStateContext.tsx";
 
 const router = createBrowserRouter([
   {
@@ -55,11 +57,17 @@ const router = createBrowserRouter([
     path: "/edituser",
     element: <EditUser />,
   },
+  {
+    path: "/accesscontrol",
+    element: <AccessControl />,
+  },
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <GlobalStateProvider>
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
+    <UserProvider>
+      <React.StrictMode>
+        <RouterProvider router={router} />
+      </React.StrictMode>
+    </UserProvider>
   </GlobalStateProvider>
 );

@@ -1,4 +1,4 @@
-import Menu from "../../components/menu/menu";
+import Menu from "../../components/customMenu/customMenu";
 import "./style.css";
 import { useState, useEffect } from "react";
 import Status from "../../components/status/status";

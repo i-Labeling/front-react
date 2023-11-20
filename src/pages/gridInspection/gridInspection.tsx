@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGlobalState } from "../../contexts/globalStateContext";
 import axiosInstance from "../../services/instanceAxios";
 import { useNavigate } from "react-router-dom";
@@ -7,12 +7,28 @@ import readLogs from "../../functions/readLogs.tsx";
 const GRID_SIZE = 10;
 const PUBLIC_URL = "src/assets/";
 
-function GridInspection() {
+const GridInspection = () => {
   const [selectedSquares, setSelectedSquares] = useState<number[]>([]);
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const { setupInf, setSetupInf } = useGlobalState();
   const navigate = useNavigate();
-  const { sodimm, udimm } = readLogs();
+
+  const [sodimm, setSodimm] = useState<string | null>(null);
+  const [udimm, setUdimm] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { sodimm: sodimmData, udimm: udimmData } = await readLogs();
+        setSodimm(sodimmData);
+        setUdimm(udimmData);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const changeColor = (cell: HTMLElement | null) => {
     if (cell) {
@@ -193,6 +209,6 @@ function GridInspection() {
       </div>
     </div>
   );
-}
+};
 
 export default GridInspection;

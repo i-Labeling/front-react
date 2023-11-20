@@ -1,17 +1,13 @@
 import { Link } from "react-router-dom";
 import "./style.css";
 import { useEffect, useState } from "react";
-export default function Menu() {
+export default function CustomMenu() {
   const [activeItem, setActiveItem] = useState(""); // State to track active item
 
   useEffect(() => {
     const pathname = location.pathname.substr(1);
     setActiveItem(pathname);
   }, [location.pathname]);
-
-  useEffect(() => {
-    console.log("active item", activeItem);
-  }, [activeItem]);
 
   return (
     <header className="container_menu">
@@ -30,6 +26,15 @@ export default function Menu() {
           className={`nav-item ${activeItem === "dashboard" ? "active" : ""}`}
         >
           Dashboard
+        </Link>
+        {/* TO DO: Create a logic with the access type to make it visible this link */}
+        <Link
+          to={"/accesscontrol"}
+          className={`nav-item ${
+            activeItem === "accesscontrol" ? "active" : ""
+          }`}
+        >
+          Access Control
         </Link>
       </div>
     </header>

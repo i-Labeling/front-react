@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import BasicButton from "../../components/basiclButton/basicButton";
 import BoxSetup from "../../components/boxSetup/boxSetup";
-import Menu from "../../components/menu/menu";
+import Menu from "../../components/customMenu/customMenu";
 import "./style.css";
 import { useState, useEffect } from "react";
 import RadioButtonGroup from "../../components/radioButtonGroup/radioButtonGroup";
@@ -45,7 +45,7 @@ export default function confSetup() {
         createSetup;
         break;
       default:
-        navigate("/gridinspection");
+        break;
     }
   };
 

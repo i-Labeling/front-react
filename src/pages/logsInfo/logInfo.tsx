@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Menu from "../../components/menu/menu";
+import Menu from "../../components/customMenu/customMenu";
 import "./style.css";
 import { BsAlignCenter } from "react-icons/bs";
 interface Log {
