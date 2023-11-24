@@ -43,7 +43,7 @@ export default function Home() {
   //   generateMockDevices();
   //   mockStatusUpdate({
   //     log: "",
-  //     idProcess: "error",
+  //     idProcess: "processing",
   //   });
   // }, []);
 
@@ -119,6 +119,8 @@ export default function Home() {
                   backgroundColor:
                     statusProcess.idProcess === "processing"
                       ? "rgb(255, 238, 178)"
+                      : statusProcess.idProcess === "waiting"
+                      ? "#F3F3FF"
                       : statusProcess.idProcess === "error"
                       ? "rgb(255, 178, 178)"
                       : statusProcess.idProcess === "succefull"

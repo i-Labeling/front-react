@@ -1,25 +1,42 @@
-.container_page_logs{
-    min-height: 70vh;
-    margin-inline: 2%;
+.container_page_logs {
+  min-height: 70vh;
+  margin-inline: 2%;
 }
-.title_page_logs{
-    color:  rgb(64, 64, 216);
-    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+.title_page_logs {
+  color: rgb(64, 64, 216);
+  font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
-.container_logs{
-    height: 65vh;
-    width: 100%;
-    border: 1px solid  rgb(64, 64, 216);
-    border-radius: 10px;
-    overflow-y:scroll;
-    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
-   
+.container_logs {
+  height: 65vh;
+  width: 100%;
+  border: 1px solid #cecece;
+  border-radius: 10px;
+  overflow-y: scroll;
+  font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
 }
-.content_logs{
-    margin-left: 1%;
-}
-
-hr{
-    border: 0.1px solid  rgb(64, 64, 216);
+.hr {
+  border: 0.1px solid rgb(64, 64, 216);
 }
 
+.title_container {
+  display: flex;
+  justify-content: center;
+}
+
+.back_button_container {
+  margin-right: 20px;
+  margin-top: 20px;
+  width: fit-content;
+}
+
+.customer-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.logs-card-container {
+  margin-right: 3%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}

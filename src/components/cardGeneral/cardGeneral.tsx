@@ -15,7 +15,6 @@ const useStyles = makeStyles({
     boxShadow: "0px 5px 10px 0px rgba(0, 0, 0, 0.5)",
   },
   card: {
-    backgroundColor: "#e0e0e0",
     minWidth: "60%",
     height: "fit-content",
     minHeight: "50vh",

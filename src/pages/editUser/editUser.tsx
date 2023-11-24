@@ -174,6 +174,7 @@ const EditUser: React.FC = () => {
           listItems={menuItems}
           value={formData.accessType}
           onChange={(value) => handleTextFieldChange(value, "accessType")}
+          label={"Edit user"}
         />
         <BasicTextField
           label="Password"
