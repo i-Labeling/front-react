@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import BasicButton from "../../components/basiclButton/basicButton";
 import BoxSetup from "../../components/boxSetup/boxSetup";
 import Menu from "../../components/customMenu/customMenu";
 import "./style.css";
@@ -7,16 +6,36 @@ import { useState, useEffect } from "react";
 import RadioButtonGroup from "../../components/radioButtonGroup/radioButtonGroup";
 import { useGlobalState } from "../../contexts/globalStateContext";
 import axiosInstance from "../../services/instanceAxios";
+import { Card } from "@mui/material";
+import SimpleButton from "../../components/simpleButton/simpleButton";
+import BasicTextField from "../../components/basicTextField/basicTextField";
+import CustomSelect from "../../components/select/customSelect";
 
 export default function confSetup() {
-  const styleBtn = {
-    margin: "20px",
-    width: "40%",
-  };
   const navigate = useNavigate();
   const { setupInf, setSetupInf } = useGlobalState();
+  const [errors, setErrors] = useState({
+    orderOfService: "",
+    qtdMemories: "",
+    memoryType: "",
+  });
+
+  const typeMemoryList = [
+    { value: "udimm", label: "UDIMM" },
+    { value: "sodimm", label: "SODIMM" },
+  ];
+
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const [inspectionModeNumber, setInspectionModeNumber] = useState<number>(1);
+
+  useEffect(() => {
+    const allFieldsFilled =
+      setupInf.serviceOrder !== "null" && setupInf.amauntMemory !== "null";
+    Object.values(errors).every((error) => error === "");
+
+    setButtonDisabled(!allFieldsFilled);
+  }, [setupInf, errors]);
 
   const createSetup = async (e: any) => {
     e.preventDefault();
@@ -36,17 +55,37 @@ export default function confSetup() {
       .catch((res) => console.log(res + " " + setupInf));
   };
 
-  const handleClick = (value: string) => {
-    switch (value) {
-      case "GridInspection":
+  const handleClick = () => {
+    switch (inspectionModeNumber) {
+      case 2:
         navigate("/gridinspection");
         break;
-      case "AllInspections" || "IgnoreInspection":
+      case 1 || 3:
         createSetup;
         break;
       default:
         break;
     }
+  };
+
+  const validateField = (value: string, identifier: string) => {
+    let errorMessage = "";
+
+    if (identifier === "serviceOrder" || identifier === "amauntMemory") {
+      const numberRegex = /^[0-9][A-Za-z0-9 -]*$/;
+      if (!numberRegex.test(value)) {
+        errorMessage = "Just numbers allowed";
+      }
+    }
+    setErrors({ ...errors, [identifier]: errorMessage });
+  };
+
+  const handleTextFieldChange = (value: string, identifier: string) => {
+    setSetupInf({
+      ...setupInf,
+      [identifier]: value,
+    });
+    validateField(value, identifier);
   };
 
   useEffect(() => {
@@ -58,8 +97,9 @@ export default function confSetup() {
       ...prevSetupInf,
       inspectionMode: inspectionModeNumber,
       typeMemory: setupInf.typeMemory,
+      serviceOrder: setupInf.serviceOrder,
     }));
-  }, [inspectionModeNumber, setupInf.typeMemory]);
+  }, [inspectionModeNumber, setupInf.typeMemory, setupInf.serviceOrder]);
 
   const handleRadioGroupChange = (value: string) => {
     switch (value) {
@@ -78,66 +118,52 @@ export default function confSetup() {
     <>
       <Menu />
       <main className="container_page_setup">
-        <div className="container_box_conf">
+        <Card className="container_box_conf">
           <div className="container_menu_box_status">
-            <h1>i-Labeling</h1>
+            <h1 style={{ color: "rgb(64, 64, 216)" }}>Setup</h1>
           </div>
           <BoxSetup setSetupInf={setSetupInf} setupInf={setupInf} />
-
           <form action="" className="container_form_setup">
-            <input
-              type="text"
-              className="input_text_setup"
-              id="order"
-              name="order_service"
+            <BasicTextField
+              label="Order of Service"
               placeholder="Order of Service"
-              onChange={(e) => {
-                setSetupInf(() => ({
-                  ...setupInf,
-                  serviceOrder: e.target.value,
-                }));
-              }}
-            ></input>
-            <input
-              type="text"
-              className="input_text_setup"
-              id="quantity"
-              name="quantity"
+              className="text_field_size"
+              onChange={(value) => handleTextFieldChange(value, "serviceOrder")}
+              type="custom"
+              error={!!errors.orderOfService}
+              errorMessage={errors.orderOfService}
+              required
+            />
+            <div style={{ marginRight: "20px" }}></div>
+            <BasicTextField
+              className="text_field_size"
+              label="Quantity of Memories"
               placeholder="Quantity of Memories"
-              onKeyDown={(e) => {
-                const charCode = e.charCode;
-              }}
-              onChange={(e) => {
-                setSetupInf(() => ({
-                  ...setupInf,
-                  amauntMemory: e.target.value,
-                }));
-              }}
-            ></input>
-            <select
-              className="input_select_setup"
-              id="memory"
-              name="memory"
-              onChange={(e) => {
-                setSetupInf(() => ({
-                  ...setupInf,
-                  typeMemory: e.target.value,
-                }));
-              }}
-            >
-              <option value="udimm">UDIMM</option>
-              <option value="sodimm">SODIMM</option>
-            </select>
+              onChange={(value) => handleTextFieldChange(value, "amauntMemory")}
+              type="custom"
+              error={!!errors.orderOfService}
+              errorMessage={errors.orderOfService}
+              required
+            />
+            <div style={{ marginRight: "20px" }}></div>
+            <CustomSelect
+              label="Memory type"
+              listItems={typeMemoryList}
+              onChange={(value) => handleTextFieldChange(value, "typeMemory")}
+            />
           </form>
           <RadioButtonGroup
             onChange={(value) => handleRadioGroupChange(value)}
           />
-          <BasicButton
-            text="Confirm"
-            personalizedStyle={styleBtn}
-            functionButton={handleClick}
-          />
-        </div>
+          <div className="container_btn_setup">
+            <SimpleButton
+              title="Confirm"
+              onClick={handleClick}
+              personalisedStyle={"buttonInitSetup"}
+              disabled={buttonDisabled}
+            />
+          </div>
+        </Card>
       </main>
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   FormControl,
   InputLabel,
@@ -9,6 +9,7 @@ import {
 import ColorConstants from "../../colors";
 
 interface CustomSelectProps {
+  label: string;
   listItems: { value: string; label: string }[];
   value?: string;
   onChange: (value: string) => void;
@@ -17,7 +18,7 @@ interface CustomSelectProps {
 const CustomSelect: React.FC<CustomSelectProps> = (
   props: CustomSelectProps
 ) => {
-  const [selection, setSelection] = React.useState("");
+  const [selection, setSelection] = React.useState("udimm");
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelection(event.target.value as string);
@@ -34,7 +35,7 @@ const CustomSelect: React.FC<CustomSelectProps> = (
           },
         }}
       >
-        Access Type
+        {props.label}
       </InputLabel>
       <Select
         labelId="demo-simple-select-label"

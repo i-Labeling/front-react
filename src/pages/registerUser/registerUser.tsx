@@ -129,6 +129,7 @@ const RegisterUser: React.FC = () => {
           required
         />
         <CustomSelect
+          label="Access type"
           listItems={menuItems}
           onChange={(value) => handleTextFieldChange(value, "accessType")}
         />

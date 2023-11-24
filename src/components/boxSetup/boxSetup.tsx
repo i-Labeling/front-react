@@ -1,67 +1,121 @@
-import {useState,useEffect} from "react"
+import { useState, useEffect } from "react";
 import axiosInstance from "../../services/instanceAxios";
-import "./style.css"
+import "./style.css";
+import CheckIcon from "@mui/icons-material/Check";
 
-interface InfConf{
-    setupInf: {};
-    setSetupInf: any;
+interface InfConf {
+  setupInf: {};
+  setSetupInf: any;
 }
-interface Costumer{
-    name: string;
+interface Costumer {
+  name: string;
 }
-export default function BoxSetup(props:InfConf){
-    const [infs,setInfs] = useState<Costumer[]>([])
+export default function BoxSetup(props: InfConf) {
+  const [infs, setInfs] = useState<Costumer[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState("");
 
-    const getCostumers = async () =>{
-        await axiosInstance.get('costumer')
-            .then((res)=>{
-                setInfs(res.data)
-            })
-            .catch((res)=>console.log(res))
+  // Mock data for customers
+  // const mockCostumers: Costumer[] = [
+  //   { name: "Flextronics-IPG<" },
+  //   { name: "WINTRONIC" },
+  //   { name: "AMD" },
+  //   { name: "SAE-South America Eletronicse" },
+  //   { name: "SAE-South America Eletronicsr" },
+  //   { name: "SAE-South America Eletronicsg" },
+  //   { name: "SAE-South America Eletronicsp" },
+  // ];
+
+  const checkIconStyle = {
+    position: "absolute" as "absolute",
+    right: "10px",
+    fontSize: "24px",
+  };
+
+  //To mock the list of Costumers
+  useEffect(() => {
+    // setInfs(mockCostumers);
+    if (infs.length > 0 && selectedCustomer === "") {
+      setSelectedCustomer(infs[0].name);
+      props.setSetupInf((e: any) => ({
+        ...props.setupInf,
+        customer: infs[0].name,
+      }));
     }
+  }, [props]);
 
-    useEffect(()=>{
-        getCostumers()
-    },[])
-    
-    const [selectColor,setSelectedColor] = useState({
-        val:"",
-        select:false
-    });
-    const color = (val:string)=>{
-        return selectColor.val === val? 
-        {
-            backgroundColor: "rgb(64, 64, 216)",
-            color: "white"
-        }
-        :
-        {
-            backgroundColor: "transparent",
-            color: "black"
-        }
+  const getCostumers = async () => {
+    try {
+      const res = await axiosInstance.get("costumer");
+      setInfs(res.data);
+      if (res.data.length > 0 && selectedCustomer === "") {
+        setSelectedCustomer(res.data[0].name);
+        props.setSetupInf((e: any) => ({
+          ...props.setupInf,
+          customer: res.data[0].name,
+        }));
+      }
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    return(
-        <div className="container_inf_setup">
-            <h1 className="title">
-                i-Labeling Setup
-            </h1>
-            {infs.map((inf,index) =>(
-                <div 
-                className="inf" 
+  useEffect(() => {
+    getCostumers();
+  }, []);
+
+  const handleItemClick = (name: string) => {
+    setSelectedCustomer(name);
+    props.setSetupInf((e: any) => ({
+      ...props.setupInf,
+      customer: name,
+    }));
+  };
+
+  const getItemStyle = (name: string) => {
+    return {
+      display: "flex",
+      alignItems: "center",
+      backgroundColor:
+        selectedCustomer === name ? "rgb(64, 64, 216)" : "#F3F3FF",
+      minHeight: "35px",
+      color: selectedCustomer === name ? "white" : "rgb(64, 64, 216)",
+      fontSize: "22px",
+      fontFamily: "Motiva Sans, Twemoji, Noto Sans, Helvetica, sans-serif",
+      fontWeight: 700,
+      margin: "5px",
+      border: "1px solid transparent",
+      borderRadius: "6px",
+      position: "relative" as "relative",
+    };
+  };
+
+  return (
+    <div className="container_inf_setup">
+      <div
+        className="customer-list-container"
+        style={{ height: infs.length > 0 ? "195px" : "100px" }}
+      >
+        {!(infs.length > 0) && <h4 className="title_no_list">iLabeling</h4>}
+        <ul className="customer-list">
+          {infs.map((inf, index) => (
+            <div key={index} style={{ margin: 5 }}>
+              <li
                 key={index}
-                onClick={()=>{
-                props.setSetupInf((e:any)=>({...props.setupInf,customer:inf.name}));
-                setSelectedColor({
-                    val: inf.name,
-                    select: !selectColor.select
-                })
-                }}
-                style={color(inf.name)}>
-                    {inf.name}
-                </div>
-            ))}
-            
-        </div>
-    )
+                className={`inf ${
+                  selectedCustomer === inf.name ? "selected" : ""
+                }`}
+                onClick={() => handleItemClick(inf.name)}
+                style={getItemStyle(inf.name)}
+              >
+                <div style={{ marginLeft: "10px" }}>{inf.name}</div>
+                {selectedCustomer === inf.name && (
+                  <CheckIcon style={checkIconStyle} />
+                )}
+              </li>
+            </div>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }

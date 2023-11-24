@@ -2,9 +2,10 @@ import Menu from "../../components/customMenu/customMenu";
 import "./style.css";
 import { useState, useEffect } from "react";
 import Status from "../../components/status/status";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Loading from "../../components/loading/loading";
-import BasicButton from "../../components/basiclButton/basicButton";
+import SimpleButton from "../../components/simpleButton/simpleButton";
+import { Card } from "@mui/material";
 
 interface StatusDevice {
   connection: boolean;
@@ -23,6 +24,29 @@ export default function Home() {
     log: "",
     idProcess: "waiting",
   });
+
+  // Mock SSE event to simulate status updates
+  // const mockStatusUpdate = (processStatus: StatusProcessI) => {
+  //   setStatusProcess(processStatus);
+  // };
+
+  // const generateMockDevices = () => {
+  //   const mockDevices: Array<StatusDevice> = [
+  //     { connection: true, name: "Device 1", port: "192.168.1.100" },
+  //     { connection: false, name: "Device 2", port: "192.168.1.101" },
+  //   ];
+  //   setStatusDevice(mockDevices);
+  // };
+
+  // useEffect(() => {
+  //   // Simulating initial device population
+  //   generateMockDevices();
+  //   mockStatusUpdate({
+  //     log: "",
+  //     idProcess: "error",
+  //   });
+  // }, []);
+
   useEffect(() => {
     const eventSource = new EventSource(
       "http://127.0.0.1:5000/sse/statusDevice"
@@ -60,69 +84,93 @@ export default function Home() {
   const toNavigate = () => {
     navigate("/conf");
   };
+
+  const handleProcessLogsClick = () => {
+    navigate("/logs");
+  };
+
+  const handleEndOfProcessClick = () => {
+    navigate("/end");
+  };
+
   return (
     <>
       <Menu />
       <main className="container_page">
-        <div className="container_box_status">
+        <Card className="container_box_status">
           <div className="container_menu_box_status">
-            <h1>i-Labeling</h1>
+            <h1 style={{ color: " #4443ce" }}>Status</h1>
           </div>
-          <div className="content_box_status">
-            <ul className="list_status">
-              {statusDevice.map((statusResponse, index) => (
-                <Status
-                  key={index}
-                  connection={statusResponse.connection}
-                  name={statusResponse.name}
-                  port={statusResponse.port}
-                />
-              ))}
-            </ul>
-            <div
-              className="container_status_process"
-              style={{
-                backgroundColor:
-                  statusProcess.idProcess === "processing"
-                    ? "rgb(255, 238, 178)"
-                    : statusProcess.idProcess === "error"
-                    ? "rgb(255, 178, 178)"
-                    : statusProcess.idProcess === "succefull"
-                    ? "rgb(188, 255, 178)"
-                    : "rgb(255,255,255)",
-              }}
-            >
-              {statusProcess.idProcess !== "waiting" ? (
-                <div className="content_status_process">
-                  <div className="container_first_informations">
-                    <p className="status_process">{statusProcess.log}</p>
-                  </div>
-                  <div className="container_second_informations">
-                    <Link to="/logs" className="links_process">
-                      Process Logs
-                    </Link>
-                    {statusProcess.idProcess === "succefull" ||
-                    statusProcess.idProcess === "error" ? (
-                      <Link to="/end" className="links_process">
-                        End of Process
-                      </Link>
-                    ) : (
-                      <></>
+          <div className="container_info_status">
+            <div className="content_box_status">
+              <ul className="list_status">
+                {statusDevice.map((statusResponse, index) => (
+                  <Status
+                    key={index}
+                    connection={statusResponse.connection}
+                    name={statusResponse.name}
+                    port={statusResponse.port}
+                  />
+                ))}
+              </ul>
+              <div
+                className="container_status_process"
+                style={{
+                  backgroundColor:
+                    statusProcess.idProcess === "processing"
+                      ? "rgb(255, 238, 178)"
+                      : statusProcess.idProcess === "error"
+                      ? "rgb(255, 178, 178)"
+                      : statusProcess.idProcess === "succefull"
+                      ? "#B3FAC3"
+                      : "rgb(255,255,255)",
+                }}
+              >
+                {statusProcess.idProcess !== "waiting" ? (
+                  <div className="content_status_process">
+                    <h5 style={{ color: " #4443ce" }}>Setup</h5>
+
+                    {statusProcess.log && (
+                      <div className="container_first_informations">
+                        <p className="status_process">{statusProcess.log}</p>
+                      </div>
                     )}
+                    <div className="container_second_informations">
+                      <SimpleButton
+                        title="Process Logs"
+                        onClick={handleProcessLogsClick}
+                      />
+                      {statusProcess.idProcess === "succefull" ||
+                      statusProcess.idProcess === "error" ? (
+                        <>
+                          <span style={{ margin: "0 10px" }}></span>
+                          <SimpleButton
+                            title="End of Process"
+                            onClick={handleEndOfProcessClick}
+                          />
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="container_idle">
-                  <p className="text_idle">Waiting...</p>
-                  <Loading />
-                </div>
-              )}
+                ) : (
+                  <div className="container_idle">
+                    <p className="text_idle">Waiting...</p>
+                    <Loading />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="container_btn_setup">
-            <BasicButton text="Init Setup" functionButton={toNavigate} />
+            <SimpleButton
+              title="Init Setup"
+              onClick={toNavigate}
+              personalisedStyle={"buttonInitSetup"}
+            />
           </div>
-        </div>
+        </Card>
       </main>
     </>
   );
