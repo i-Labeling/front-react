@@ -68,57 +68,44 @@ export default function EndProcess() {
           <h1>Order of Service : {infProccess.order} - End of Process</h1>
         </div>
         <div className="container_cards_horizontal">
+          <CardLog title="Tray" val={infProccess.tray} show={true} />
           <CardLog
-            icon={tray}
-            title="Tray"
-            val={infProccess.tray}
-            show={true}
-          />
-          <CardLog
-            icon={cycle}
             title="Total Cycle Time"
             val={infProccess.totalCycleTime + " s"}
             show={true}
           />
           <CardLog
-            icon={time}
             title="Time in Minutes per Tray"
             val={infProccess.minutesPerTray + " min"}
             show={true}
           />
           <CardLog
-            icon={memory}
             title="Seconds by Memory"
             val={infProccess.timePerMemory + " s"}
             show={true}
           />
           <CardLog
-            icon={note}
             title="Memories with a Grade Below A"
             val={infProccess.creamBelowA}
             show={true}
           />
           <CardLog
-            icon={glass}
             title="Memories with Inspection Error"
             val={infProccess.inspectionErrors}
             show={true}
           />
           <CardLog
-            icon={camera}
             title="Camera Error Number"
             val={infProccess.cameraError}
             show={true}
           />
           <CardLog
-            icon={error}
             title="Error Memory (Index)"
             val={infProccess.indexMemoryError}
             style={styleCard}
             show={true}
           />
           <CardLog
-            icon={map}
             title="Scrap Position and Error Type"
             val={infProccess.positionAndError}
             style={styleCard}

@@ -1,117 +1,107 @@
-.container_card_log{
-    height: 115px;
-    width: 20%;
-    margin-inline: 6%;
-    padding: 0%;
-    display: flex;
-    margin-bottom: 5%;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: 0.2s;
-    cursor: pointer;
-    border: 0;
+.container_card_log {
+  height: 115px;
+  width: 20%;
+  margin-inline: 6%;
+  padding: 0%;
+  display: flex;
+  margin-bottom: 5%;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: 0.2s;
+  cursor: pointer;
+  border: 0;
 }
-.container_card_log:hover{
-   scale: 1.1;
+.container_card_log:hover {
+  scale: 1.1;
 }
-.container_card_inf_log{
-    width: 100vw;
-    height: 110vh;
-    background-color: rgba(0, 0, 0, 0.578);
-    position:fixed;
-    margin-top: -250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
+.container_card_inf_log {
+  width: 100vw;
+  height: 110vh;
+  background-color: rgba(0, 0, 0, 0.578);
+  position: fixed;
+  margin-top: -250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.container_box_cord_inf_log{
-    font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
-    width:30%;
-    height: 40%;
-    background-color: white;
-    border-radius: 12px;
+.container_box_cord_inf_log {
+  font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+  width: 30%;
+  height: 40%;
+  background-color: white;
+  border-radius: 12px;
 }
-.container_title_box_card_inf_log{
-    width: 100%;
-    height: 30%;
-    background-color:  rgb(64, 64, 216);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    border-radius: 1px;
+.container_title_box_card_inf_log {
+  width: 100%;
+  height: 30%;
+  background-color: rgb(64, 64, 216);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  border-radius: 1px;
 }
-.title_box_card_inf_log{
-    margin: 0;
-    text-align: center;
+.title_box_card_inf_log {
+  margin: 0;
+  text-align: center;
 }
-.container_val_box_card_inf_log{
-    position:relative;
-    height: 70%;
-    width: 100%;
-    display: flex;
-    overflow-x: scroll;
-    overflow-wrap: break-word;
-    font-size: 43px;
+.container_val_box_card_inf_log {
+  position: relative;
+  height: 70%;
+  width: 100%;
+  display: flex;
+  overflow-x: scroll;
+  overflow-wrap: break-word;
+  font-size: 43px;
 }
-.val_box_card_inf_log{
-    margin: auto;
-    width: auto;
-    max-width:  100%;
-    display: flex;
-    flex-direction: column;
+.val_box_card_inf_log {
+  margin: auto;
+  width: auto;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
 }
-.container_icon_log{
-    width: 30%;
-    height: 100%;
-    background-color: rgb(64, 64, 216);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.container_inf {
+  height: 100%;
+  width: 100%;
 }
-.container_inf{
-    height: 100%;
-    width: 70%;
+.container_header_card {
+  background-color: rgb(64, 64, 216);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
 }
-.container_header_card{
-    background-color: rgb(64, 64, 216);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    padding-right: 10px;
-    flex-direction: column;
-}
-.title_card{
-    margin: 0;
-    color: white;
-    font-size: 16px;
-    height: 40%;
-    display: flex;
-    justify-content: center;
-    align-items:center;
-}
-.container_content_card{
-    width: 100%;
-    height: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 28px;
-    overflow:hidden;
-    margin-inline:1%;
-    color:  white;
-    border-top: 1px solid white;
-    overflow-wrap: break-word;
+.title_card {
+  margin: 0;
+  color: white;
+  font-size: 16px;
+  height: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
 }
 
-.val{
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.container_content_card {
+  width: 100%;
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  overflow: hidden;
+  color: white;
+  overflow-wrap: break-word;
+}
+
+.val {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

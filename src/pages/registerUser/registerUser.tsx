@@ -88,9 +88,9 @@ const RegisterUser: React.FC = () => {
   };
 
   const menuItems = [
-    { value: "manager", label: "Manager" },
-    { value: "operator", label: "Operator" },
-    { value: "maintenance", label: "Maintenance" },
+    { value: "ADMIN", label: "Manager" },
+    { value: "OPERATOR", label: "Operator" },
+    { value: "IT", label: "Maintenance" },
   ];
 
   //TO DO: Create a function to save on the database the user by his id

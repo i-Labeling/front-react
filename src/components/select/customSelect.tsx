@@ -10,8 +10,8 @@ import ColorConstants from "../../colors";
 
 interface CustomSelectProps {
   label: string;
-  listItems: { value: string; label: string }[];
-  value?: string;
+  listItems: { value: any; label: string }[];
+  value?: any;
   onChange: (value: string) => void;
 }
 
