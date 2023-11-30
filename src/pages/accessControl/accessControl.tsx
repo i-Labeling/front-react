@@ -21,7 +21,8 @@ import { useUser } from "../../contexts/userStateContext";
 const AccessControl: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [listUsers, setListUsers] = useState<any>();
+  const [listUsers, setListUsers] = useState<any[]>();
+  const [listReady, setListReady] = useState<boolean>(false);
   const { user } = useUser();
 
   useEffect(() => {
@@ -40,19 +41,15 @@ const AccessControl: React.FC = () => {
 
   const getUsers = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5002/user/cadastro?id={}",
-        {
-          method: "GET",
-        }
-      );
-
-      console.log("1111111", response);
+      const response = await fetch("http://127.0.0.1:5002/user/usuarios", {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
 
       if (response.ok) {
         const users = await response.json();
         setListUsers(users);
-        console.log(response);
+        setListReady(true);
       }
     } catch (e) {
       console.error("Failed to getting users", e);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Menu from "../../components/customMenu/customMenu";
 import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
@@ -38,6 +38,9 @@ const useStyles = makeStyles({
 
 const EditUser: React.FC = () => {
   const classes = useStyles();
+  const params = new URLSearchParams();
+  const id = params.get("id");
+  const [user, setUser] = useState<any>();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -54,24 +57,26 @@ const EditUser: React.FC = () => {
     confirmPassword: "",
   });
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     //   try {
-  //     //     const userData = await getUserById(formData.id); // Fetch user data
-  //     //     setFormData({
-  //     //       ...formData,
-  //     //       email: userData.email || "",
-  //     //       accessType: userData.accessType || "",
-  //     //       // Update other fields as required
-  //     //     });
-  //     //   } catch (error) {
-  //     //     console.error("Error fetching user data:", error);
-  //     //   }
-  //   };
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5002/user/usuarios", {
+          method: "POST",
+          body: JSON.stringify({ id: id }),
+        });
 
-  //   // Fetch user data when any form data changes
-  //   fetchUser();
-  // }, [formData]);
+        if (response.ok) {
+          const user = await response.json();
+          setUser(user);
+        }
+      } catch (e) {
+        console.error("Failed to getting user", e);
+      }
+    };
+
+    // Fetch user data when any form data changes
+    fetchUser();
+  }, []);
 
   const validateField = (value: string, identifier: string) => {
     let errorMessage = "";
@@ -162,7 +167,7 @@ const EditUser: React.FC = () => {
         </div>
         <BasicTextField
           label="Email"
-          value={formData.email}
+          value={user.login}
           placeholder="Email"
           onChange={(value) => handleTextFieldChange(value, "email")}
           type="email"
@@ -172,14 +177,14 @@ const EditUser: React.FC = () => {
         />
         <CustomSelect
           listItems={menuItems}
-          value={formData.accessType}
+          value={user.profile}
           onChange={(value) => handleTextFieldChange(value, "accessType")}
           label={"Edit user"}
         />
         <BasicTextField
           label="Password"
           placeholder="Password"
-          value={formData.password}
+          value={user.senha}
           onChange={(value) => handleTextFieldChange(value, "password")}
           type="password"
           error={!!errors.password}
@@ -188,7 +193,7 @@ const EditUser: React.FC = () => {
         />
         <BasicTextField
           label="Confirm Password"
-          value={formData.confirmPassword}
+          value={user.senha}
           placeholder="Confirm Password"
           onChange={(value) => handleTextFieldChange(value, "confirmPassword")}
           type="password"

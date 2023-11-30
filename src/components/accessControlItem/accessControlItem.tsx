@@ -27,10 +27,10 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
 
   const ITEM_HEIGHT = 48;
 
-  const handleEdit = (id: number) => {
+  const handleEdit = async (id: number) => {
     // Handle edit action with the specific ID
     console.log(`Edit clicked for ID: ${id}`);
-    navigate("/edituser");
+    navigate(`/edituser?id=${id}`);
   };
 
   const handleCloseModal = () => {
@@ -47,8 +47,8 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
 
   const handleConfirmRemoveModal = async () => {
     await fetch("http://127.0.0.1:5002/user/delete", {
-      method: "GET", // Alterado para POST
-      body: JSON.stringify({ registration: props.data.id }),
+      method: "DELETE", // Alterado para POST
+      body: JSON.stringify({ id: props.data.id }),
     });
     setOpenRemoveModal(false);
   };
@@ -104,14 +104,14 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
       <TableRow key={props.data.id}>
         <TableCell className={classes.tableBodyCell}>{props.data.id}</TableCell>
         <TableCell className={classes.tableBodyCell}>
-          {props.data.name}
+          {props.data.login}
         </TableCell>
         <TableCell className={classes.tableBodyCell}>
-          {props.data.accessType}
+          {props.data.profile}
         </TableCell>
         <TableCell className={classes.tableBodyCell}>
           <div className={classes.tokenCell}>
-            {maskToken(props.data.token)}
+            {/* {maskToken(props.data.token)} */}
             <IconButton
               aria-label="more"
               id="long-button"
