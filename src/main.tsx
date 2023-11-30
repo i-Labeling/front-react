@@ -18,11 +18,11 @@ import { UserProvider } from "./contexts/userStateContext.tsx";
 
 const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/",
     element: <Login />,
   },
   {
-    path: "/",
+    path: "/home",
     element: <Home />,
   },
   {

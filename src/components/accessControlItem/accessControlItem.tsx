@@ -45,7 +45,11 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
     setOpenRemoveModal(false);
   };
 
-  const handleConfirmRemoveModal = () => {
+  const handleConfirmRemoveModal = async () => {
+    await fetch("http://127.0.0.1:5002/user/delete", {
+      method: "GET", // Alterado para POST
+      body: JSON.stringify({ registration: props.data.id }),
+    });
     setOpenRemoveModal(false);
   };
 

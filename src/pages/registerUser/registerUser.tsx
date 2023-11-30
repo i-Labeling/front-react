@@ -7,9 +7,13 @@ import Title from "../../components/textTitle/textTitle";
 import CustomSelect from "../../components/select/customSelect";
 import BackButton from "../../components/backButton/backButton";
 import { useStyles } from "./styles";
+import { useUser } from "../../contexts/userStateContext";
 
 const RegisterUser: React.FC = () => {
   const classes = useStyles();
+  const { user } = useUser();
+
+  console.log("aaaaaaa", user.token);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -82,9 +86,36 @@ const RegisterUser: React.FC = () => {
     console.log("fields", !allFieldsFilled);
   }, [formData]);
 
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${user.token}`,
+  };
+  console.log(user.token);
   //TO DO: Implement the function to do a request (post) of the information do the data base
-  const handleClick = () => {
-    console.log("CLICKED");
+  const handleClick = async () => {
+    try {
+      console.log(formData);
+      console.log(
+        JSON.stringify({
+          login: formData.email,
+          senha: formData.password,
+          profile: formData.accessType,
+          registration: formData.id,
+        })
+      );
+      await fetch("http://127.0.0.1:5002/user/cadastro", {
+        method: "POST", // Alterado para POST,
+        headers: headers,
+        body: JSON.stringify({
+          login: formData.email,
+          senha: formData.password,
+          profile: formData.accessType,
+          registration: formData.id,
+        }),
+      });
+    } catch (error) {
+      console.error("Erro ao fazer login", error);
+    }
   };
 
   const menuItems = [

@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 interface User {
   email: string;
   timeLogged: string;
+  token: string;
 }
 
 interface UserContextType {
@@ -18,6 +19,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User>({
     email: "null",
     timeLogged: "null",
+    token: "null",
   });
 
   const value: UserContextType = {

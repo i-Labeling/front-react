@@ -50,7 +50,7 @@ export default function confSetup() {
       })
       .then((res) => {
         console.log(res);
-        navigate("/");
+        navigate("/home");
       })
       .catch((res) => console.log(res + " " + setupInf));
   };

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Menu from "../../components/customMenu/customMenu";
 import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import { makeStyles } from "@mui/styles";
 import { useUser } from "../../contexts/userStateContext";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -20,6 +21,7 @@ const useStyles = makeStyles({
 const Login: React.FC = () => {
   const classes = useStyles();
   const { user, setUser } = useUser();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -28,8 +30,6 @@ const Login: React.FC = () => {
 
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  //TO DO: This is a way to take the values and send them to a request
-  //I've created an identifier to filter each change
   const handleTextFieldChange = (value: string, identifier: string) => {
     setFormData({
       ...formData,
@@ -37,46 +37,57 @@ const Login: React.FC = () => {
     });
   };
 
-  // Checking if all required fields are filled
-  React.useEffect(() => {
+  useEffect(() => {
     const allFieldsFilled = formData.email !== "" && formData.password !== "";
-
     setButtonDisabled(!allFieldsFilled);
   }, [formData]);
 
-  //TO DO: Create a function to get on the database the user by his email
-  const getUserByEmail = () => {
-    //This function in the final will return a boolean saying if the user exists and it's correct
-    //Save this email information related to the id to use it on the editUser after
-  };
+  const handleClick = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5002/user/login", {
+        method: "POST", // Alterado para POST
+        body: JSON.stringify({
+          login: formData.email,
+          senha: formData.password,
+        }),
+      });
 
-  //TO DO: Implement the function to do a request (get) of the information on the data base
-  const handleClick = () => {
-    console.log("CLICKED");
-    //After the confirmation that the user is correct and the login is done
-    const dataObject = new Date();
-    const data = dataObject.toLocaleDateString();
-    const timeLogged = dataObject.toLocaleTimeString();
+      if (response.ok) {
+        const { token } = await response.json();
 
-    // Assuming user data is fetched or created after successful login
-    const userInfo = {
-      email: formData.email,
-      timeLogged: `${data} ${timeLogged}`,
-    };
+        // Aqui você pode decidir o que fazer com o token.
+        // No exemplo, armazenamos o token no localStorage.
+        localStorage.setItem("jwtToken", token);
 
-    // Set the user using setUser provided by useUser hook
-    setUser(userInfo);
+        const dataObject = new Date();
+        const data = dataObject.toLocaleDateString();
+        const timeLogged = dataObject.toLocaleTimeString();
+
+        console.log("token login", token);
+        // Após a autenticação bem-sucedida, você pode definir o usuário usando setUser.
+        setUser({
+          email: formData.email,
+          timeLogged: `${data} ${timeLogged}`,
+          token: token,
+        });
+
+        // Redirecione ou execute outras ações necessárias após o login.
+        navigate("/home");
+      } else {
+        console.error("Falha no login");
+      }
+    } catch (error) {
+      console.error("Erro ao fazer login", error);
+    }
   };
 
   useEffect(() => {
-    console.log("user", user);
+    console.log("token login user", user.token);
   }, [user]);
 
-  //TO DO: Implement the function do generate the token
-  const generateToken = () => {
-    const number = 978556;
-    return number;
-  };
+  useEffect(() => {
+    console.log("formData", formData);
+  }, [formData]);
 
   return (
     <>
@@ -106,29 +117,6 @@ const Login: React.FC = () => {
           />
         </div>
       </CardGeneral>
-      {/* <ConfirmationModal
-        open={true}
-        onClose={() => console.log("Close")}
-        onNegativeButton={() => console.log("No")}
-        onPositiveButton={() => console.log("Yes")}
-        text={"Are you sure you want to proceed?"}
-      /> */}
-      {/* <ConfirmationModal
-        open={true}
-        onClose={() => console.log("Close")}
-        onNegativeButton={() => console.log("No")}
-        onPositiveButton={() => console.log("Yes")}
-        text={"Are you sure you want to close it?"}
-      /> */}
-      {/* <TokenModal
-        open={true}
-        onClose={() => console.log("Close")}
-        onConfirmButton={() => console.log("Ok")}
-        title="User Registered!"
-        subtitle="This is your unique  token:"
-        message="Make sure to take notes,\n one time exhibition token"
-        token={generateToken()}
-      /> */}
     </>
   );
 };

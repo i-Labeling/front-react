@@ -17,7 +17,7 @@ export default function CustomMenu() {
       <div className="navbar">
         <Link
           className={`nav-item ${activeItem === "" ? "active" : ""}`}
-          to={"/"}
+          to={"/home"}
         >
           Setup
         </Link>

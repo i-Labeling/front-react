@@ -61,7 +61,7 @@ const GridInspection = () => {
           inspectionMode: 1,
           gridList: [],
         });
-        navigate("/");
+        navigate("/home");
       })
       .catch((res) => console.log(res + " " + setupInf));
   };
