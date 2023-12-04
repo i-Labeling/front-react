@@ -150,6 +150,7 @@ export default function confSetup() {
               label="Memory type"
               listItems={typeMemoryList}
               onChange={(value) => handleTextFieldChange(value, "typeMemory")}
+              initialSelection="udimm"
             />
           </form>
           <RadioButtonGroup

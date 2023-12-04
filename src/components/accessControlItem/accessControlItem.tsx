@@ -16,7 +16,6 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
 ) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const [openTokenModal, setOpenTokenModal] = useState(false);
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
   const [token, setToken] = useState<number>();
@@ -28,7 +27,6 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
   const ITEM_HEIGHT = 48;
 
   const handleEdit = async (id: number) => {
-    // Handle edit action with the specific ID
     console.log(`Edit clicked for ID: ${id}`);
     navigate(`/edituser?id=${id}`);
   };
@@ -47,23 +45,20 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
 
   const handleConfirmRemoveModal = async () => {
     await fetch("http://127.0.0.1:5002/user/delete", {
-      method: "DELETE", // Alterado para POST
+      method: "DELETE",
       body: JSON.stringify({ id: props.data.id }),
     });
     setOpenRemoveModal(false);
   };
 
   const regenerateToken = (id: number) => {
-    // Handle edit action with the specific ID
     console.log(`Regenerating token to ID: ${id}`);
 
-    //Create function to generate the token
     setToken(344544);
     setOpenTokenModal(true);
   };
 
   const handleRemove = (id: number) => {
-    // Handle remove action with the specific ID
     console.log(`Remove clicked for ID: ${id}`);
     setOpenRemoveModal(true);
   };
@@ -90,19 +85,14 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
     setAnchorEl(event.currentTarget);
   };
 
-  //TO DO: Verificar log ingo e mostrar password para o dono do acesso
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const maskToken = (token: string | any[]) => {
-    return showPassword ? token : "*".repeat(token.length);
+  const maskToken = (token: string) => {
+    const lengthOfString = token.length;
+    return "*".repeat(lengthOfString);
   };
 
   return (
     <>
       <TableRow key={props.data.id}>
-        <TableCell className={classes.tableBodyCell}>{props.data.id}</TableCell>
         <TableCell className={classes.tableBodyCell}>
           {props.data.login}
         </TableCell>
@@ -111,7 +101,7 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
         </TableCell>
         <TableCell className={classes.tableBodyCell}>
           <div className={classes.tokenCell}>
-            {/* {maskToken(props.data.token)} */}
+            {maskToken(props.data.token ?? "123232")}
             <IconButton
               aria-label="more"
               id="long-button"

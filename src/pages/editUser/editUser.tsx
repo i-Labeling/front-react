@@ -148,9 +148,9 @@ const EditUser: React.FC = () => {
   };
 
   const menuItems = [
-    { value: "manager", label: "Manager" },
-    { value: "operator", label: "Operator" },
-    { value: "maintenance", label: "Maintenance" },
+    { value: "ADMIN", label: "Manager" },
+    { value: "OPERATOR", label: "Operator" },
+    { value: "IT", label: "Maintenance" },
   ];
 
   return (

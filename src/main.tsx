@@ -15,6 +15,7 @@ import RegisterUser from "./pages/registerUser/registerUser.tsx";
 import EditUser from "./pages/editUser/editUser.tsx";
 import AccessControl from "./pages/accessControl/accessControl.tsx";
 import { UserProvider } from "./contexts/userStateContext.tsx";
+import { ToastContainer } from "react-toastify";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <UserProvider>
       <React.StrictMode>
         <RouterProvider router={router} />
+        <ToastContainer />
       </React.StrictMode>
     </UserProvider>
   </GlobalStateProvider>

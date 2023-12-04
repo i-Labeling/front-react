@@ -8,15 +8,18 @@ import CustomSelect from "../../components/select/customSelect";
 import BackButton from "../../components/backButton/backButton";
 import { useStyles } from "./styles";
 import { useUser } from "../../contexts/userStateContext";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegisterUser: React.FC = () => {
   const classes = useStyles();
   const { user } = useUser();
-
-  console.log("aaaaaaa", user.token);
+  const [error, setError] = useState<string>("");
+  const [token, setToken] = useState<string>("123321");
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    id: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -25,7 +28,6 @@ const RegisterUser: React.FC = () => {
 
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [errors, setErrors] = useState({
-    id: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -42,11 +44,6 @@ const RegisterUser: React.FC = () => {
     } else if (identifier === "password") {
       if (value.length < 8) {
         errorMessage = "Incorrect password format: less than 8 characters";
-      }
-    } else if (identifier === "id") {
-      const numberRegex = /^[0-9][A-Za-z0-9 -]*$/;
-      if (!numberRegex.test(value)) {
-        errorMessage = "Just numbers allowed";
       }
     } else if (
       identifier === "confirmPassword" &&
@@ -65,8 +62,6 @@ const RegisterUser: React.FC = () => {
     setErrors({ ...errors, [identifier]: errorMessage });
   };
 
-  //TO DO: This is a way to take the values and send them to a request
-  //I've created an identifier to filter each change and updating the FormData
   const handleTextFieldChange = (value: string, identifier: string) => {
     setFormData({
       ...formData,
@@ -75,44 +70,39 @@ const RegisterUser: React.FC = () => {
     validateField(value, identifier);
   };
 
-  // Checking if all required fields are filled
   React.useEffect(() => {
     const allFieldsFilled =
       Object.values(formData).every((field) => field !== "") &&
       Object.values(errors).every((error) => error === "");
 
     setButtonDisabled(!allFieldsFilled);
-    console.log("formData", formData);
-    console.log("fields", !allFieldsFilled);
   }, [formData]);
 
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${user.token}`,
   };
-  console.log(user.token);
-  //TO DO: Implement the function to do a request (post) of the information do the data base
+
   const handleClick = async () => {
     try {
-      console.log(formData);
-      console.log(
-        JSON.stringify({
-          login: formData.email,
-          senha: formData.password,
-          profile: formData.accessType,
-          registration: formData.id,
-        })
-      );
-      await fetch("http://127.0.0.1:5002/user/cadastro", {
-        method: "POST", // Alterado para POST,
+      const response = await fetch("http://127.0.0.1:5002/user/cadastro", {
+        method: "POST",
         headers: headers,
         body: JSON.stringify({
           login: formData.email,
           senha: formData.password,
           profile: formData.accessType,
-          registration: formData.id,
+          token: token,
         }),
       });
+
+      if (response.ok) {
+        navigate("/accesscontrol");
+      } else if (response.status === 409) {
+        toast.error("User already exists! Try another login name.");
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
     } catch (error) {
       console.error("Erro ao fazer login", error);
     }
@@ -123,11 +113,6 @@ const RegisterUser: React.FC = () => {
     { value: "OPERATOR", label: "Operator" },
     { value: "IT", label: "Maintenance" },
   ];
-
-  //TO DO: Create a function to save on the database the user by his id
-  const saveUser = () => {
-    //This function will save a new user
-  };
 
   return (
     <>
@@ -141,15 +126,6 @@ const RegisterUser: React.FC = () => {
             <Title title="Register User" className={classes.title} />
           </div>
         </div>
-        <BasicTextField
-          label="ID"
-          placeholder="ID"
-          onChange={(value) => handleTextFieldChange(value, "id")}
-          type="custom"
-          error={!!errors.id}
-          errorMessage={errors.id}
-          required
-        />
         <BasicTextField
           label="Email"
           placeholder="Email"
@@ -190,6 +166,7 @@ const RegisterUser: React.FC = () => {
             disabled={buttonDisabled}
           />
         </div>
+        <ToastContainer />
       </CardGeneral>
     </>
   );

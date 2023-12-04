@@ -81,14 +81,6 @@ const Login: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("token login user", user.token);
-  }, [user]);
-
-  useEffect(() => {
-    console.log("formData", formData);
-  }, [formData]);
-
   return (
     <>
       <Menu />

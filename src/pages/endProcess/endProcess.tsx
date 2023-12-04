@@ -8,6 +8,9 @@ import { BiError, BiSolidMemoryCard, BiMap } from "react-icons/bi";
 import "./style.css";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../services/instanceAxios";
+import OSCard from "../../components/OSCard/OSCard";
+import Title from "../../components/textTitle/textTitle";
+import BackButton from "../../components/backButton/backButton";
 
 interface infProcess {
   tray: string;
@@ -63,54 +66,88 @@ export default function EndProcess() {
   return (
     <>
       <Menu />
+      <div className="backButton">
+        <BackButton />
+      </div>
+      <Title title="End of Process" className="title" />
       <main className="container_page_endProcess">
         <div className="container_page_title_endProcess">
-          <h1>Order of Service : {infProccess.order} - End of Process</h1>
+          <OSCard
+            title="Order of Service"
+            content={
+              infProccess.order !== "0"
+                ? infProccess.order
+                : "2023-10-31 10:43:40.018339"
+            }
+          />
         </div>
         <div className="container_cards_horizontal">
-          <CardLog title="Tray" val={infProccess.tray} show={true} />
+          <CardLog
+            title="Tray"
+            val={infProccess.tray}
+            show={true}
+            className="cardLog"
+            titleBackgroundColor={"#4443CE"}
+          />
           <CardLog
             title="Total Cycle Time"
             val={infProccess.totalCycleTime + " s"}
             show={true}
+            className="cardLog"
+            titleBackgroundColor={"#4443CE"}
           />
           <CardLog
-            title="Time in Minutes per Tray"
+            title="Time per Tray (min)"
             val={infProccess.minutesPerTray + " min"}
             show={true}
-          />
-          <CardLog
-            title="Seconds by Memory"
-            val={infProccess.timePerMemory + " s"}
-            show={true}
-          />
-          <CardLog
-            title="Memories with a Grade Below A"
-            val={infProccess.creamBelowA}
-            show={true}
-          />
-          <CardLog
-            title="Memories with Inspection Error"
-            val={infProccess.inspectionErrors}
-            show={true}
-          />
-          <CardLog
-            title="Camera Error Number"
-            val={infProccess.cameraError}
-            show={true}
-          />
-          <CardLog
-            title="Error Memory (Index)"
-            val={infProccess.indexMemoryError}
-            style={styleCard}
-            show={true}
+            className="cardLog"
+            titleBackgroundColor={"#4443CE"}
           />
           <CardLog
             title="Scrap Position and Error Type"
             val={infProccess.positionAndError}
             style={styleCard}
             show={false}
+            className="cardLog"
+            titleBackgroundColor={"#E8405E"}
           />
+          <CardLog
+            title="Inspection Error Counter"
+            val={infProccess.inspectionErrors}
+            show={true}
+            className="cardLog"
+            titleBackgroundColor={"#E8405E"}
+          />
+          <CardLog
+            title="Camera Error Counter"
+            val={infProccess.cameraError}
+            show={true}
+            className="cardLog"
+            titleBackgroundColor={"#E8405E"}
+          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <CardLog
+              title="Seconds by Memory"
+              val={infProccess.timePerMemory + " s"}
+              show={true}
+              className="cardLog"
+              titleBackgroundColor={"#4443CE"}
+            />
+            <CardLog
+              title="Grade Below A Counter"
+              val={infProccess.creamBelowA}
+              show={true}
+              className="cardLog"
+              titleBackgroundColor={"#4443CE"}
+            />
+          </div>
         </div>
       </main>
     </>

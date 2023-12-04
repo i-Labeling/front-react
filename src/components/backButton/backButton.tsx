@@ -1,12 +1,16 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import { IconButton } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useNavigate } from "react-router-dom";
+import ColorConstants from "../../colors";
 
 const useStyles = makeStyles({
   backButton: {
-    marginBottom: "10px",
+    display: "inline-block",
+    backgroundColor: "#F3F3FF",
+    borderRadius: "10px",
+    padding: "5px",
   },
 });
 
@@ -19,15 +23,17 @@ const BackButton: React.FC = () => {
   };
 
   return (
-    <>
-      <IconButton
-        className={classes.backButton}
-        onClick={handleBack}
-        aria-label="back"
-      >
-        <ArrowBackIcon style={{ width: "40px", height: "40px" }} />
+    <div className={classes.backButton} onClick={handleBack} aria-label="back">
+      <IconButton onClick={handleBack} aria-label="back">
+        <ArrowBackIosNewIcon
+          style={{
+            width: "40px",
+            height: "40px",
+            color: ColorConstants.primary,
+          }}
+        />
       </IconButton>
-    </>
+    </div>
   );
 };
 

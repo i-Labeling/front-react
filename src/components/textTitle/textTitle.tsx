@@ -15,6 +15,7 @@ const Title: React.FC<TextTitleProps> = (props: TextTitleProps) => {
         display: "flex",
         justifyContent: "center",
         fontFamily: "Motiva Sans, Twemoji, Noto Sans, Helvetica, sans-serif",
+        fontWeight: 700,
       }}
       className={props.className}
     >

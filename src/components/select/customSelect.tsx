@@ -13,12 +13,15 @@ interface CustomSelectProps {
   listItems: { value: any; label: string }[];
   value?: any;
   onChange: (value: string) => void;
+  initialSelection?: string;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = (
   props: CustomSelectProps
 ) => {
-  const [selection, setSelection] = React.useState("udimm");
+  const [selection, setSelection] = React.useState(
+    props.initialSelection ?? ""
+  );
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelection(event.target.value as string);
