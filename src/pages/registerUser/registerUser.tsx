@@ -15,7 +15,6 @@ import "react-toastify/dist/ReactToastify.css";
 const RegisterUser: React.FC = () => {
   const classes = useStyles();
   const { user } = useUser();
-  const [error, setError] = useState<string>("");
   const [token, setToken] = useState<string>("123321");
   const navigate = useNavigate();
 
@@ -97,6 +96,7 @@ const RegisterUser: React.FC = () => {
       });
 
       if (response.ok) {
+        toast.success("User successfully created!");
         navigate("/accesscontrol");
       } else if (response.status === 409) {
         toast.error("User already exists! Try another login name.");

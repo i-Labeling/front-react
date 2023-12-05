@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface User {
   email: string;
@@ -9,6 +15,7 @@ interface User {
 interface UserContextType {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
+  clearUserData: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -16,15 +23,33 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User>({
-    email: "null",
-    timeLogged: "null",
-    token: "null",
-  });
+  const storedUser = localStorage.getItem("userData");
+  const initialUser: User = storedUser
+    ? JSON.parse(storedUser)
+    : { email: "", timeLogged: "", token: "" };
+
+  const [user, setUser] = useState<User>(initialUser);
+
+  useEffect(() => {
+    localStorage.setItem("userData", JSON.stringify(user));
+    sessionStorage.setItem("userData", JSON.stringify(user));
+  }, [user]);
+
+  const clearUserData = () => {
+    localStorage.removeItem("userData");
+    sessionStorage.removeItem("userData");
+    sessionStorage.removeItem("profile");
+    setUser({
+      email: "null",
+      timeLogged: "null",
+      token: "null",
+    });
+  };
 
   const value: UserContextType = {
     user,
     setUser,
+    clearUserData,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

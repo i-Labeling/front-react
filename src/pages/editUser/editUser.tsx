@@ -7,6 +7,8 @@ import { makeStyles } from "@mui/styles";
 import Title from "../../components/textTitle/textTitle";
 import CustomSelect from "../../components/select/customSelect";
 import BackButton from "../../components/backButton/backButton";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -38,9 +40,14 @@ const useStyles = makeStyles({
 
 const EditUser: React.FC = () => {
   const classes = useStyles();
-  const params = new URLSearchParams();
-  const id = params.get("id");
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get("id");
   const [user, setUser] = useState<any>();
+  const [profile, setProfile] = useState<any>();
+  const navigate = useNavigate();
+
+  const userToken = localStorage.getItem("jwtToken");
 
   const [formData, setFormData] = useState({
     email: "",
@@ -61,20 +68,33 @@ const EditUser: React.FC = () => {
     const fetchUser = async () => {
       try {
         const response = await fetch("http://127.0.0.1:5002/user/usuarios", {
+          headers: headers,
           method: "POST",
-          body: JSON.stringify({ id: id }),
+          body: JSON.stringify({ id: id && parseInt(id, 10) }),
         });
-
         if (response.ok) {
           const user = await response.json();
           setUser(user);
+          toast.success("User successfully edited!");
+          switch (user[0].profile) {
+            case 1:
+              setProfile("IT");
+              break;
+            case 2:
+              setProfile("OPERATOR");
+              break;
+            case 3:
+              setProfile("ADMIN");
+              break;
+            default:
+              break;
+          }
         }
       } catch (e) {
         console.error("Failed to getting user", e);
       }
     };
 
-    // Fetch user data when any form data changes
     fetchUser();
   }, []);
 
@@ -125,26 +145,44 @@ const EditUser: React.FC = () => {
   // Checking if all required fields are filled
   React.useEffect(() => {
     const allFieldsFilled =
-      Object.values(formData).every((field) => field !== "") &&
-      Object.values(errors).every((error) => error === "");
+      Object.entries(formData).every(([key, value]) => {
+        if (key === "email" || key === "accessType") {
+          return true;
+        }
+        return value !== "";
+      }) && Object.values(errors).every((error) => error === "");
 
     setButtonDisabled(!allFieldsFilled);
     console.log("formData", formData);
     console.log("fields", !allFieldsFilled);
   }, [formData]);
 
-  //TO DO: Implement the function to do a request (post) of the information do the data base
-  const handleClick = () => {
-    console.log("CLICKED");
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
   };
 
-  //TO DO: Create a function to get on the database the user by his id
-  const getUserById = () => {
-    //This function in the final will return the entire object of the user information
-  };
+  const handleClick = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5002/user/update", {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify({
+          id: user[0].id,
+          login: formData.email === "" ? user[0].login : formData.email,
+          senha: formData.password === "" ? user[0].senha : formData.password,
+          profile: formData.accessType === "" ? profile : formData.accessType,
+        }),
+      });
 
-  const updateUserById = () => {
-    //This function should take the new values on the form data and update it
+      if (response.ok) {
+        navigate("/accesscontrol");
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Erro ao fazer login", error);
+    }
   };
 
   const menuItems = [
@@ -165,42 +203,49 @@ const EditUser: React.FC = () => {
             <Title title="Edit User" className={classes.title} />
           </div>
         </div>
-        <BasicTextField
-          label="Email"
-          value={user.login}
-          placeholder="Email"
-          onChange={(value) => handleTextFieldChange(value, "email")}
-          type="email"
-          error={!!errors.email}
-          errorMessage={errors.email}
-          required
-        />
-        <CustomSelect
-          listItems={menuItems}
-          value={user.profile}
-          onChange={(value) => handleTextFieldChange(value, "accessType")}
-          label={"Edit user"}
-        />
-        <BasicTextField
-          label="Password"
-          placeholder="Password"
-          value={user.senha}
-          onChange={(value) => handleTextFieldChange(value, "password")}
-          type="password"
-          error={!!errors.password}
-          errorMessage={errors.password}
-          required
-        />
-        <BasicTextField
-          label="Confirm Password"
-          value={user.senha}
-          placeholder="Confirm Password"
-          onChange={(value) => handleTextFieldChange(value, "confirmPassword")}
-          type="password"
-          error={!!errors.confirmPassword}
-          errorMessage={errors.confirmPassword}
-          required
-        />
+        {user && (
+          <>
+            <BasicTextField
+              label="Email"
+              value={user[0]?.login}
+              placeholder="Email"
+              onChange={(value) => handleTextFieldChange(value, "email")}
+              type="email"
+              error={!!errors.email}
+              errorMessage={errors.email}
+              required
+            />
+            <CustomSelect
+              listItems={menuItems}
+              initialSelection={profile}
+              value={user[0]?.profile}
+              onChange={(value) => handleTextFieldChange(value, "accessType")}
+              label={"Edit user"}
+            />
+            <BasicTextField
+              label="Password"
+              placeholder="Password"
+              value={user[0]?.senha}
+              onChange={(value) => handleTextFieldChange(value, "password")}
+              type="password"
+              error={!!errors.password}
+              errorMessage={errors.password}
+              required
+            />
+            <BasicTextField
+              label="Confirm Password"
+              value={user[0]?.senha}
+              placeholder="Confirm Password"
+              onChange={(value) =>
+                handleTextFieldChange(value, "confirmPassword")
+              }
+              type="password"
+              error={!!errors.confirmPassword}
+              errorMessage={errors.confirmPassword}
+              required
+            />
+          </>
+        )}
         <div className={classes.buttonContainer}>
           <SimpleButton
             title="Save"

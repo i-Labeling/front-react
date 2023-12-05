@@ -5,7 +5,7 @@ import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import { makeStyles } from "@mui/styles";
 import { useUser } from "../../contexts/userStateContext";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
   const handleClick = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5002/user/login", {
-        method: "POST", // Alterado para POST
+        method: "POST",
         body: JSON.stringify({
           login: formData.email,
           senha: formData.password,
@@ -53,25 +53,21 @@ const Login: React.FC = () => {
       });
 
       if (response.ok) {
-        const { token } = await response.json();
+        const user = await response.json();
 
-        // Aqui você pode decidir o que fazer com o token.
-        // No exemplo, armazenamos o token no localStorage.
-        localStorage.setItem("jwtToken", token);
+        localStorage.setItem("jwtToken", user.token);
+        sessionStorage.setItem("profile", user.profile);
 
         const dataObject = new Date();
         const data = dataObject.toLocaleDateString();
         const timeLogged = dataObject.toLocaleTimeString();
 
-        console.log("token login", token);
-        // Após a autenticação bem-sucedida, você pode definir o usuário usando setUser.
         setUser({
           email: formData.email,
           timeLogged: `${data} ${timeLogged}`,
-          token: token,
+          token: user.token,
         });
 
-        // Redirecione ou execute outras ações necessárias após o login.
         navigate("/home");
       } else {
         console.error("Falha no login");

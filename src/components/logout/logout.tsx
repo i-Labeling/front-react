@@ -19,15 +19,11 @@ const useStyles = makeStyles({
 const LogoutButton: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const { setUser } = useUser();
+  const { clearUserData } = useUser();
 
   const handleBack = () => {
-    const userInfo = {
-      email: "",
-      timeLogged: "",
-    };
-    setUser(userInfo);
-    navigate("/login");
+    clearUserData();
+    navigate("/");
   };
 
   return (

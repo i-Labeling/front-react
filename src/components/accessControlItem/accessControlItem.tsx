@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import TokenModal from "../tokenModal/tokenModal";
 import { useStyles } from "./styles";
 import ConfirmationModal from "../confirmationModal/confirmationModal";
+import { toast } from "react-toastify";
 
 interface AccessControlItemProps {
   data: any;
@@ -26,8 +27,22 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
 
   const ITEM_HEIGHT = 48;
 
+  const getProfileName = (profileId: number) => {
+    switch (profileId) {
+      case 1:
+        return "Maintenance";
+      case 2:
+        return "Operator";
+      case 3:
+        return "Manager";
+      default:
+        return "";
+    }
+  };
+
+  const profileName = getProfileName(props.data.profile);
+
   const handleEdit = async (id: number) => {
-    console.log(`Edit clicked for ID: ${id}`);
     navigate(`/edituser?id=${id}`);
   };
 
@@ -44,22 +59,27 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
   };
 
   const handleConfirmRemoveModal = async () => {
-    await fetch("http://127.0.0.1:5002/user/delete", {
-      method: "DELETE",
-      body: JSON.stringify({ id: props.data.id }),
-    });
-    setOpenRemoveModal(false);
+    try {
+      const response = await fetch("http://127.0.0.1:5002/user/delete", {
+        method: "DELETE",
+        body: JSON.stringify({ id: props.data.id }),
+      });
+
+      if (response.ok) {
+        toast.success("User successfully removed!");
+        setOpenRemoveModal(false);
+      }
+    } catch (e) {
+      console.error("Failed to delete user", e);
+    }
   };
 
-  const regenerateToken = (id: number) => {
-    console.log(`Regenerating token to ID: ${id}`);
-
+  const regenerateToken = () => {
     setToken(344544);
     setOpenTokenModal(true);
   };
 
-  const handleRemove = (id: number) => {
-    console.log(`Remove clicked for ID: ${id}`);
+  const handleRemove = () => {
     setOpenRemoveModal(true);
   };
 
@@ -71,10 +91,10 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
         handleEdit(props.data.id);
         break;
       case "Remove user":
-        handleRemove(props.data.id);
+        handleRemove();
         break;
       case "Regenerate token":
-        regenerateToken(props.data.id);
+        regenerateToken();
         break;
       default:
         break;
@@ -96,9 +116,7 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
         <TableCell className={classes.tableBodyCell}>
           {props.data.login}
         </TableCell>
-        <TableCell className={classes.tableBodyCell}>
-          {props.data.profile}
-        </TableCell>
+        <TableCell className={classes.tableBodyCell}>{profileName}</TableCell>
         <TableCell className={classes.tableBodyCell}>
           <div className={classes.tokenCell}>
             {maskToken(props.data.token ?? "123232")}

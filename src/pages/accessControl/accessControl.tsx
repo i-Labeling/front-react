@@ -21,11 +21,18 @@ const AccessControl: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [listUsers, setListUsers] = useState<any[]>();
+  const userToken = localStorage.getItem("jwtToken");
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
+  };
 
   const fetchUsers = useCallback(async () => {
     try {
       const response = await fetch("http://127.0.0.1:5002/user/usuarios", {
         method: "POST",
+        headers: headers,
         body: JSON.stringify({}),
       });
 

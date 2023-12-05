@@ -3,7 +3,8 @@ import "./style.css";
 import { useEffect, useState } from "react";
 import LogoutButton from "../logout/logout";
 export default function CustomMenu() {
-  const [activeItem, setActiveItem] = useState(""); // State to track active item
+  const [activeItem, setActiveItem] = useState("");
+  const userProfile = sessionStorage.getItem("profile");
 
   useEffect(() => {
     const pathname = location.pathname.substr(1);
@@ -34,14 +35,16 @@ export default function CustomMenu() {
             >
               Dashboard
             </Link>
-            <Link
-              to={"/accesscontrol"}
-              className={`nav-item ${
-                activeItem === "accesscontrol" ? "active" : ""
-              }`}
-            >
-              Access Control
-            </Link>
+            {userProfile == "ADMIN" && (
+              <Link
+                to={"/accesscontrol"}
+                className={`nav-item ${
+                  activeItem === "accesscontrol" ? "active" : ""
+                }`}
+              >
+                Access Control
+              </Link>
+            )}
             <LogoutButton />
           </>
         )}
