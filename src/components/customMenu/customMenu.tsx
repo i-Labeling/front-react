@@ -35,7 +35,7 @@ export default function CustomMenu() {
             >
               Dashboard
             </Link>
-            {userProfile == "ADMIN" && (
+            {userProfile == "IT" && (
               <Link
                 to={"/accesscontrol"}
                 className={`nav-item ${

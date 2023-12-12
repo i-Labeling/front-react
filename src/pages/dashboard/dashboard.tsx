@@ -1,12 +1,28 @@
-import CardDashboard from "../../components/cardDashboard/cardDashboard";
 import Menu from "../../components/customMenu/customMenu";
 import SelectDashboard from "../../components/selectDashboard/selectDashboard";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Line,
+  LineChart,
+} from "recharts";
 import "./style.css";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../services/instanceAxios";
 import { format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
+import BackButton from "../../components/backButton/backButton";
+import OSCard from "../../components/OSCard/OSCard";
+import { Card, CardContent, List, ListItem, Typography } from "@mui/material";
+import background from "../../assets/calendar.png";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 interface KPIs {
   labelled: string;
@@ -54,19 +70,20 @@ export default function Dashboard() {
 
     return options ? options.slice(0, -1) : options;
   }
-  const styleCardErro = {
-    width: "43%",
-    fontSize: "13px",
-  };
+  // const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
   const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
   const [filterGet, setFilterGet] = useState({
     costumer: ["WINTRONIC", "AMD"],
     date: new Date().toISOString().split("T")[0],
     typeM: ["udimm", "sodimm"],
   });
+
+  const [value, setValue] = useState<any>(dayjs(filterGet.date));
+
   const [graph1, setGraph1] = useState<Graph1[]>([]);
   const [graph2, setGraph2] = useState<Graph2[]>([]);
   const [errors, setErrors] = useState<Erros[]>([]);
+
   const [kpis, setKpis] = useState<KPIs>({
     labelled: "",
     reworks: "",
@@ -90,6 +107,15 @@ export default function Dashboard() {
         setGraph1(res.data);
       })
       .catch((res) => console.log(res));
+
+    // Mock data for graph1
+    // Testing
+    // const mockGraph1Data = [
+    //   { hour: "00:00", sodinn: 10, udinn: 15, quantity: 25 },
+    //   { hour: "01:00", sodinn: 12, udinn: 18, quantity: 30 },
+    // ];
+
+    // setGraph1(mockGraph1Data);
   };
   const getGraph2 = async () => {
     await axiosInstance
@@ -101,17 +127,36 @@ export default function Dashboard() {
         setGraph2(res.data);
       })
       .catch((res) => console.log(res));
+
+    //Test
+    // Mock data for graph2
+    // const mockGraph2Data = [
+    //   { day: "Mon", sodinn: 50, udinn: 30, quantity: 80 },
+    //   { day: "Tue", sodinn: 45, udinn: 35, quantity: 80 },
+    //   { day: "Wed", sodinn: 35, udinn: 25, quantity: 80 },
+    //   { day: "Thu", sodinn: 45, udinn: 35, quantity: 80 },
+    // ];
+
+    // setGraph2(mockGraph2Data);
   };
   const getErros = async () => {
-    await axiosInstance
-      .get("dashboard/erros", {
-        params: filterGet,
-        paramsSerializer: (params) => parseParams(params),
-      })
-      .then((res) => {
-        setErrors(res.data);
-      })
-      .catch((res) => console.log(res));
+    // await axiosInstance
+    //   .get("dashboard/erros", {
+    //     params: filterGet,
+    //     paramsSerializer: (params) => parseParams(params),
+    //   })
+    //   .then((res) => {
+    //     setErrors(res.data);
+    //   })
+    //   .catch((res) => console.log(res));
+
+    const mockErrors = [
+      { erro: "Error 1: Something went wrong" },
+      { erro: "Error 2: Another issue occurred" },
+      { erro: "Error 3: An error message here" },
+    ];
+
+    setErrors(mockErrors);
   };
   const getKPIs = async () => {
     await axiosInstance
@@ -132,9 +177,11 @@ export default function Dashboard() {
         setIdsCostumers(res.data);
       })
       .catch((res) => console.log(res));
+
+    // const mockCostumers = [{ name: "AMD" }, { name: "WINTRONIC" }];
+
+    // setIdsCostumers(mockCostumers);
   };
-  const dateFormat = () =>
-    format(utcToZonedTime(filterGet.date, "America/Sao_Paulo"), "dd-MM-yyyy");
   const att = () => {
     getGraph1();
     getGraph2();
@@ -153,13 +200,16 @@ export default function Dashboard() {
     att();
     console.log(filterGet);
   }, [filterGet]);
+
   return (
     <>
       <Menu />
       <main className="container_page_dashboard">
         <div className="container_menu_header_dashboard">
           <div className="container_menu_dashboard">
-            <h1 className="title_menu_dashboard">i-Labeling</h1>
+            <div className="back_button_container">
+              <BackButton />
+            </div>
             <SelectDashboard
               vals={idsCostumers}
               filterGet={filterGet}
@@ -172,40 +222,123 @@ export default function Dashboard() {
               setFilterGet={setFilterGet}
               filterField="typeM"
             />
-            <input
-              className="container_input_date_dashboard"
-              type="date"
-              id="data"
-              name="data"
-              value={filterGet.date}
-              onChange={(e) => {
-                setFilterGet((inf) => ({ ...filterGet, date: e.target.value }));
-              }}
-            ></input>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt">
+              <DatePicker
+                className="container_input_date_dashboard"
+                format="DD/MM/YYYY"
+                value={value}
+                onChange={(date: Date | null) => {
+                  if (date) {
+                    const formattedDate = date.toISOString().split("T")[0];
+                    setFilterGet((prevFilter) => ({
+                      ...prevFilter,
+                      date: formattedDate,
+                    }));
+                    setValue(formattedDate);
+                  }
+                }}
+              />
+            </LocalizationProvider>
           </div>
-          <div className="container_date_dashboard">
-            <h1 className="date_dashboard">
-              {format(
-                utcToZonedTime(filterGet.date, "America/Sao_Paulo"),
-                "dd-MM-yyyy"
-              )}
-            </h1>
+          <div
+            style={{
+              backgroundImage: `url(${background})`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "contain",
+              height: 120,
+              width: 120,
+              padding: "0 !important",
+            }}
+          >
+            <div style={{ textAlign: "center", paddingTop: "50px" }}>
+              <span
+                style={{
+                  fontSize: "28px",
+                }}
+                className="text_calendar"
+              >
+                {format(
+                  utcToZonedTime(filterGet.date, "America/Sao_Paulo"),
+                  "dd"
+                )}
+              </span>
+              <br />
+              <span className="text_calendar">
+                {format(
+                  utcToZonedTime(filterGet.date, "America/Sao_Paulo"),
+                  "MMM yyyy"
+                )}
+              </span>
+            </div>
           </div>
         </div>
         <div className="container_cards_dasboard">
-          <CardDashboard tittle="To Rework" val={kpis.reworks} />
-          <CardDashboard tittle="Labelled" val={kpis.labelled} />
-          <CardDashboard tittle="Trays Worked" val={kpis.trays} />
-          <div className="container_card_dashboard_erro">
+          <OSCard
+            title="Labelled"
+            content={kpis.labelled != "" ? kpis.labelled : "0"}
+            titleBackgroundColor="#4443CE"
+          />
+          <div style={{ marginRight: "40px" }}></div>
+          <OSCard
+            title="Trays Worked"
+            content={kpis.trays != "" ? kpis.trays : "0"}
+            titleBackgroundColor="#4443CE"
+          />
+          <div style={{ marginRight: "40px" }}></div>
+          <OSCard
+            title="To Rework"
+            content={kpis.reworks != "" ? kpis.reworks : "0"}
+            titleBackgroundColor="#DFB54A"
+          />
+          <div style={{ marginRight: "40px" }}></div>
+          <Card className="container_card_dashboard_erro">
             <div className="container_card_menu_dashboard_erro">
-              <h1 className="title_card_dashboard_erro">Error</h1>
+              <Typography
+                variant="h5"
+                component="h1"
+                className="title_card_dashboard_erro"
+              >
+                Error
+              </Typography>
             </div>
-            <div className="content_card_dashboard_erro">
-              {errors.map((e) => (
-                <p className="val_card_dashboard">{e.erro}</p>
-              ))}
-            </div>
-          </div>
+            <CardContent
+              className="content_card_dashboard_erro"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <List
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                }}
+              >
+                {errors.map((e, index) => (
+                  <ListItem
+                    key={index}
+                    className="val_card_dashboard"
+                    style={{
+                      backgroundColor: "white",
+                      borderBottom: "1px solid #ccc",
+                      padding: "10px 0",
+                    }}
+                  >
+                    <Typography
+                      className="title_card_dashboard_erro"
+                      style={{
+                        display: "flex",
+                        marginLeft: "10px",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {e.erro}
+                    </Typography>
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
         </div>
         <div className="container_graph">
           <div className="content_graph">
@@ -228,18 +361,18 @@ export default function Dashboard() {
               {allValuesNullSodimm ? (
                 <></>
               ) : (
-                <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="hr" />
+                <Bar dataKey="sodinn" fill="rgb(64, 64, 216)" unit="hr" />
               )}
               {allValuesNullUdimm ? (
                 <></>
               ) : (
-                <Bar dataKey="udimm" fill="#82ca9d" />
+                <Bar dataKey="udinn" fill="#82ca9d" />
               )}
             </BarChart>
           </div>
           <div className="content_graph">
             <h1 className="title_graph">LABELING BY WEEK</h1>
-            <BarChart
+            <LineChart
               width={500}
               height={240}
               data={graph2}
@@ -257,14 +390,18 @@ export default function Dashboard() {
               {allValuesNullSodimm ? (
                 <></>
               ) : (
-                <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" />
+                <Line
+                  type="monotone"
+                  dataKey="sodinn"
+                  stroke="rgb(64, 64, 216)"
+                />
               )}
               {allValuesNullUdimm ? (
                 <></>
               ) : (
-                <Bar dataKey="udimm" fill="#82ca9d" />
+                <Line type="monotone" dataKey="udinn" stroke="#82ca9d" />
               )}
-            </BarChart>
+            </LineChart>
           </div>
         </div>
       </main>

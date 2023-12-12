@@ -10,7 +10,7 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   subtitle?: string;
-  token?: number;
+  token?: any;
   message?: string;
 }
 

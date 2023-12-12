@@ -11,12 +11,14 @@ import { useUser } from "../../contexts/userStateContext";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import TokenModal from "../../components/tokenModal/tokenModal";
 
 const RegisterUser: React.FC = () => {
   const classes = useStyles();
   const { user } = useUser();
   const [token, setToken] = useState<string>("123321");
   const navigate = useNavigate();
+  const [modalTokenOpen, setModalTokenOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -31,6 +33,16 @@ const RegisterUser: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const handleCloseModal = () => {
+    setModalTokenOpen(false);
+    navigate("/accessControl");
+  };
+
+  const handleConfirmModal = () => {
+    setModalTokenOpen(false);
+    navigate("/accessControl");
+  };
 
   const validateField = (value: string, identifier: string) => {
     let errorMessage = "";
@@ -96,15 +108,20 @@ const RegisterUser: React.FC = () => {
       });
 
       if (response.ok) {
+        const { tokenUser } = await response.json();
         toast.success("User successfully created!");
-        navigate("/accesscontrol");
+        setToken(tokenUser);
+        setModalTokenOpen(true);
       } else if (response.status === 409) {
         toast.error("User already exists! Try another login name.");
       } else {
         toast.error("An error occurred. Please try again later.");
       }
     } catch (error) {
-      console.error("Erro ao fazer login", error);
+      toast.error(
+        "Error to register an user. Verify if you have the right permissions."
+      );
+      console.error("Error to register a new user", error);
     }
   };
 
@@ -168,6 +185,15 @@ const RegisterUser: React.FC = () => {
         </div>
         <ToastContainer />
       </CardGeneral>
+      <TokenModal
+        open={modalTokenOpen}
+        onClose={handleCloseModal}
+        onConfirmButton={handleConfirmModal}
+        title="User Registered!"
+        subtitle="This is your unique  token:"
+        message="Make sure to take notes,\n one time exhibition token"
+        token={token}
+      />
     </>
   );
 };

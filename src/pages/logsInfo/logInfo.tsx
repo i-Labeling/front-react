@@ -37,45 +37,45 @@ export default function LogsInfo() {
   }, []);
 
   // Mock data for logs (replace this with your own test data)
-  // const mockLogs: Log[] = [
-  //   {
-  //     inspection: "Inspection",
-  //     labeling: "Labeling",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "https://example.com/image1.png",
-  //   },
-  //   {
-  //     inspection: "Inspection",
-  //     labeling: "Labeling",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "https://example.com/image2.png",
-  //   },
-  //   {
-  //     inspection: "Inspection",
-  //     labeling: "Labeling",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "https://example.com/image3.png",
-  //   },
-  // ];
+  const mockLogs: Log[] = [
+    {
+      inspection: "Inspection",
+      labeling: "Labeling",
+      validateLabel: "Validate label",
+      leaveMemory: "Leave memory",
+      errorMemory: "Error memory",
+      takeMemory: "Take memory",
+      path: "https://example.com/image1.png",
+    },
+    {
+      inspection: "Inspection",
+      labeling: "Labeling",
+      validateLabel: "Validate label",
+      leaveMemory: "Leave memory",
+      errorMemory: "Error memory",
+      takeMemory: "Take memory",
+      path: "https://example.com/image2.png",
+    },
+    {
+      inspection: "Inspection",
+      labeling: "Labeling",
+      validateLabel: "Validate label",
+      leaveMemory: "Leave memory",
+      errorMemory: "Error memory",
+      takeMemory: "Take memory",
+      path: "https://example.com/image3.png",
+    },
+  ];
 
-  // useEffect(() => {
-  //   // Set the logs to the mock data
-  //   setLog(mockLogs);
-  // }, []);
+  useEffect(() => {
+    // Set the logs to the mock data
+    setLog(mockLogs);
+  }, []);
 
-  // useEffect(() => {
-  //   // Set the logs to the mock data
-  //   console.log("url", url);
-  // }, [url]);
+  useEffect(() => {
+    // Set the logs to the mock data
+    console.log("url", url);
+  }, [url]);
 
   return (
     <>

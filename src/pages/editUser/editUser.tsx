@@ -75,7 +75,6 @@ const EditUser: React.FC = () => {
         if (response.ok) {
           const user = await response.json();
           setUser(user);
-          toast.success("User successfully edited!");
           switch (user[0].profile) {
             case 1:
               setProfile("IT");
@@ -146,7 +145,12 @@ const EditUser: React.FC = () => {
   React.useEffect(() => {
     const allFieldsFilled =
       Object.entries(formData).every(([key, value]) => {
-        if (key === "email" || key === "accessType") {
+        if (
+          key === "email" ||
+          key === "accessType" ||
+          key === "password" ||
+          key === "confirmPassword"
+        ) {
           return true;
         }
         return value !== "";
@@ -176,6 +180,7 @@ const EditUser: React.FC = () => {
       });
 
       if (response.ok) {
+        toast.success("User successfully edited!");
         navigate("/accesscontrol");
       } else {
         toast.error("An error occurred. Please try again later.");

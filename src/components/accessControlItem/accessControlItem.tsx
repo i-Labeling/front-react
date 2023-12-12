@@ -19,7 +19,8 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openTokenModal, setOpenTokenModal] = useState(false);
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
-  const [token, setToken] = useState<number>();
+  const userToken = localStorage.getItem("jwtToken");
+  const [token, setToken] = useState<any>();
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
 
@@ -70,13 +71,37 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
         setOpenRemoveModal(false);
       }
     } catch (e) {
+      toast.error("Failed to delete user!");
       console.error("Failed to delete user", e);
     }
   };
 
-  const regenerateToken = () => {
-    setToken(344544);
-    setOpenTokenModal(true);
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
+  };
+
+  const regenerateToken = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5002/user/update-token", {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify({
+          id: props.data.id,
+        }),
+      });
+
+      if (response.ok) {
+        const { tokenUser } = await response.json();
+        toast.success("User Token successfully generated!");
+        setToken(tokenUser);
+        setOpenTokenModal(true);
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Erro ao fazer login", error);
+    }
   };
 
   const handleRemove = () => {

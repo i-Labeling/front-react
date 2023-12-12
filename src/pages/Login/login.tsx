@@ -6,6 +6,7 @@ import BasicTextField from "../../components/basicTextField/basicTextField";
 import { makeStyles } from "@mui/styles";
 import { useUser } from "../../contexts/userStateContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles({
   buttonContainer: {
@@ -70,7 +71,7 @@ const Login: React.FC = () => {
 
         navigate("/home");
       } else {
-        console.error("Falha no login");
+        toast.error("User not found! Verify your email or password.");
       }
     } catch (error) {
       console.error("Erro ao fazer login", error);
