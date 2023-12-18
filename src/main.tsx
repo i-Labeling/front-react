@@ -1,7 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import Home from "./pages/home/home.tsx";
 import LogsInfo from "./pages/logsInfo/logInfo.tsx";
 import ConfSetup from "./pages/confSetup/confSetup.tsx";
@@ -15,59 +20,62 @@ import RegisterUser from "./pages/registerUser/registerUser.tsx";
 import EditUser from "./pages/editUser/editUser.tsx";
 import AccessControl from "./pages/accessControl/accessControl.tsx";
 import { UserProvider } from "./contexts/userStateContext.tsx";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import PrivateRoutes from "./components/privateRoutes/privateRoutes.tsx";
+import UnauthorizedErrorPage from "./pages/unauthorized/unauthorized.tsx";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Login />,
-  },
-  {
-    path: "/home",
-    element: <Home />,
-  },
-  {
-    path: "/logs",
-    element: <LogsInfo />,
-  },
-  {
-    path: "/conf",
-    element: <ConfSetup />,
-  },
-  {
-    path: "/end",
-    element: <EndProcess />,
-  },
-  {
-    path: "/dashboard",
-    element: <Dashboard />,
-  },
-  {
-    path: "/test",
-    element: <Test />,
-  },
-  {
-    path: "/gridinspection",
-    element: <GridInspection />,
-  },
-  {
-    path: "/registeruser",
-    element: <RegisterUser />,
-  },
-  {
-    path: "/edituser",
-    element: <EditUser />,
-  },
-  {
-    path: "/accesscontrol",
-    element: <AccessControl />,
-  },
-]);
+type Profile = "ADMIN" | "OPERATOR" | "IT";
+
+interface PrivateRouteProps {
+  profileRequired: Profile;
+  children: React.ReactNode;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({
+  profileRequired,
+  children,
+}) => {
+  const userProfile = localStorage.getItem("profile");
+
+  const hasRequiredProfile = userProfile === profileRequired;
+
+  React.useEffect(() => {
+    if (!hasRequiredProfile) {
+      toast.error("User does not have the required profile");
+    }
+  }, [hasRequiredProfile]);
+
+  return hasRequiredProfile && <>{children}</>;
+};
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <GlobalStateProvider>
     <UserProvider>
       <React.StrictMode>
-        <RouterProvider router={router} />
+        <Router>
+          <Routes>
+            <Route element={<PrivateRoutes />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/logs" element={<LogsInfo />} />
+              <Route path="/conf" element={<ConfSetup />} />
+              <Route path="/end" element={<EndProcess />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/test" element={<Test />} />
+              <Route path="/gridinspection" element={<GridInspection />} />
+              <Route path="/registeruser" element={<RegisterUser />} />
+              <Route path="/edituser" element={<EditUser />} />
+              <Route
+                path="/accesscontrol"
+                element={
+                  <PrivateRoute profileRequired="IT">
+                    <AccessControl />{" "}
+                  </PrivateRoute>
+                }
+              />
+            </Route>
+            <Route element={<Login />} path="/" />
+          </Routes>
+        </Router>
         <ToastContainer />
       </React.StrictMode>
     </UserProvider>

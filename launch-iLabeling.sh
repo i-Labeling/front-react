@@ -1,7 +1,8 @@
 #!/bin/bash
+source .env
 
-BACKEND_PATH="/Users/geanneolimpio/Documents/Develop/api-ilabeling"
-FRONTEND_PATH="/Users/geanneolimpio/Documents/Develop/front-react"
+backend_path=$BACKEND_PATH
+frontend_path=$FRONTEND_PATH
 
 find_pid_by_port() {
     local port=$1
@@ -27,7 +28,7 @@ terminate_backend() {
 }
 
 launch_backend() {
-    cd "$BACKEND_PATH" || exit
+    cd "$backend_path" || exit
 
     pipenv run flask db upgrade
     pipenv run python3 src/main.py &
@@ -36,7 +37,7 @@ launch_backend() {
 }
 
 launch_frontend() {
-    cd "$FRONTEND_PATH" || exit
+    cd "$frontend_path" || exit
 
     npm run dev
 }

@@ -9,7 +9,7 @@ import React, {
 interface User {
   email: string;
   timeLogged: string;
-  token: string;
+  token: any;
 }
 
 interface UserContextType {
@@ -33,16 +33,30 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     localStorage.setItem("userData", JSON.stringify(user));
     sessionStorage.setItem("userData", JSON.stringify(user));
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+
+      clearUserData();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, [user]);
 
   const clearUserData = () => {
     localStorage.removeItem("userData");
+    localStorage.removeItem("jwtToken");
     sessionStorage.removeItem("userData");
     sessionStorage.removeItem("profile");
     setUser({
       email: "null",
       timeLogged: "null",
-      token: "null",
+      token: null,
     });
   };
 

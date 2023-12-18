@@ -1,5 +1,12 @@
 ## iLabeling
 
+### .env
+
+Create a .env on your project root and add the variables with the paths of your project:
+
+`BACKEND_PATH="/Users/geanneolimpio/Documents/Develop/api-ilabeling"`
+`FRONTEND_PATH="/Users/geanneolimpio/Documents/Develop/front-react"`
+
 ### Run iLabeling
 
 To set the executable permissions: `ls -l`

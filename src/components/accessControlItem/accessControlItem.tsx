@@ -131,8 +131,8 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
   };
 
   const maskToken = (token: string) => {
-    const lengthOfString = token.length;
-    return "*".repeat(lengthOfString);
+    const maskedPart = "*".repeat(Math.min(token.length, 7));
+    return maskedPart;
   };
 
   return (
