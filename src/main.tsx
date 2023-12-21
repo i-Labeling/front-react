@@ -2,10 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import {
-  Navigate,
   Route,
   BrowserRouter as Router,
   Routes,
+  useNavigate,
 } from "react-router-dom";
 import Home from "./pages/home/home.tsx";
 import LogsInfo from "./pages/logsInfo/logInfo.tsx";
@@ -22,7 +22,6 @@ import AccessControl from "./pages/accessControl/accessControl.tsx";
 import { UserProvider } from "./contexts/userStateContext.tsx";
 import { ToastContainer, toast } from "react-toastify";
 import PrivateRoutes from "./components/privateRoutes/privateRoutes.tsx";
-import UnauthorizedErrorPage from "./pages/unauthorized/unauthorized.tsx";
 
 type Profile = "ADMIN" | "OPERATOR" | "IT";
 
@@ -35,13 +34,15 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   profileRequired,
   children,
 }) => {
-  const userProfile = localStorage.getItem("profile");
+  const userProfile = sessionStorage.getItem("profile");
+  const navigate = useNavigate();
 
   const hasRequiredProfile = userProfile === profileRequired;
 
   React.useEffect(() => {
     if (!hasRequiredProfile) {
       toast.error("User does not have the required profile");
+      navigate("/home");
     }
   }, [hasRequiredProfile]);
 

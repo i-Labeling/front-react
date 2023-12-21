@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../../components/loading/loading";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import { Card } from "@mui/material";
+import axiosInstance from "../../services/instanceAxios";
 
 interface StatusDevice {
   connection: boolean;
@@ -17,13 +18,29 @@ interface StatusProcessI {
   idProcess: string;
 }
 
+interface UserAuthIHM {
+  token: any;
+  profile: any;
+}
+
+interface User {
+  token: any;
+  profile: any;
+}
+
 export default function Home() {
   const navigate = useNavigate();
+  const userToken = localStorage.getItem("jwtToken");
+  console.log("userToken", userToken);
   const [statusDevice, setStatusDevice] = useState<Array<StatusDevice>>([]);
   const [statusProcess, setStatusProcess] = useState<StatusProcessI>({
     log: "",
     idProcess: "waiting",
   });
+
+  // Implement state variable to user auth IHM
+  const [userAuthIHM, setUserAuthIHM] = useState<UserAuthIHM>();
+  const [user, setUser] = useState<User>();
 
   // Mock SSE event to simulate status updates
   // const mockStatusUpdate = (processStatus: StatusProcessI) => {
@@ -80,6 +97,79 @@ export default function Home() {
       eventSource.close();
     };
   }, []);
+
+  //Implementing user token IHM
+  useEffect(() => {
+    const eventSource = new EventSource(
+      "http://127.0.0.1:5000/sse/userAuthIHM"
+    );
+
+    eventSource.onmessage = (event) => {
+      const parsedData = JSON.parse(event.data);
+      setUserAuthIHM(parsedData);
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+      eventSource.close();
+    };
+    return () => {
+      eventSource.close();
+    };
+  }, [userAuthIHM]);
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
+  };
+
+  const getUserIdByToken = async (token: any) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5002/user/userTokenIHM", {
+        headers: headers,
+        method: "POST",
+        body: JSON.stringify({ token: token }),
+      });
+
+      let user = { token: token, profile: "-1" };
+
+      if (response.ok) {
+        user = await response.json();
+        setUser(user);
+      }
+
+      return user;
+    } catch (e) {
+      console.error("Failed to getting user", e);
+      return { token: token, profile: "-1" };
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getUserIdByToken(userAuthIHM?.token);
+
+        await axiosInstance
+          .post("post", {
+            token: user?.token,
+            profile: user?.profile,
+          })
+          .then((res) => {
+            console.log("Posting profile information", res);
+          })
+          .catch((error: any) => {
+            console.error("Error on token ihm verification", error);
+          });
+      } catch (error) {
+        console.error("Error on token ihm verification", error);
+      }
+    };
+
+    if (userAuthIHM) {
+      fetchData();
+    }
+  }, [userAuthIHM]);
 
   const toNavigate = () => {
     navigate("/conf");
