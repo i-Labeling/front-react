@@ -38,10 +38,6 @@ export const useStyles = makeStyles({
   buttonContainer: {
     display: "flex",
     justifyContent: "center",
-  },
-  viewbuttonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    paddingBottom: 30,
+    paddingBottom: 40,
   },
 });

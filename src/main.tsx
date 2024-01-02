@@ -22,6 +22,7 @@ import AccessControl from "./pages/accessControl/accessControl.tsx";
 import { UserProvider } from "./contexts/userStateContext.tsx";
 import { ToastContainer, toast } from "react-toastify";
 import PrivateRoutes from "./components/privateRoutes/privateRoutes.tsx";
+import UserActionsLogs from "./pages/userActionsLogs/userActionsLogs.tsx";
 
 type Profile = "ADMIN" | "OPERATOR" | "IT";
 
@@ -70,6 +71,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 element={
                   <PrivateRoute profileRequired="IT">
                     <AccessControl />{" "}
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/actionslogs"
+                element={
+                  <PrivateRoute profileRequired="IT">
+                    <UserActionsLogs />{" "}
                   </PrivateRoute>
                 }
               />

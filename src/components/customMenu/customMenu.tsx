@@ -22,7 +22,7 @@ export default function CustomMenu() {
         {!isSpecificRoute && (
           <>
             <Link
-              className={`nav-item ${activeItem === "" ? "active" : ""}`}
+              className={`nav-item ${activeItem === "home" ? "active" : ""}`}
               to={"/home"}
             >
               Setup

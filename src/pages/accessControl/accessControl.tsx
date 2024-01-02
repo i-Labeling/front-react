@@ -22,6 +22,7 @@ const AccessControl: React.FC = () => {
   const navigate = useNavigate();
   const [listUsers, setListUsers] = useState<any[]>();
   const userToken = localStorage.getItem("jwtToken");
+  const userProfile = sessionStorage.getItem("profile");
 
   const headers = {
     "Content-Type": "application/json",
@@ -60,6 +61,10 @@ const AccessControl: React.FC = () => {
     navigate("/registeruser");
   };
 
+  const handleUserActionLogs = () => {
+    navigate("/actionslogs");
+  };
+
   return (
     <>
       <CustomMenu />
@@ -92,6 +97,15 @@ const AccessControl: React.FC = () => {
             personalisedStyle={classes.button}
             onClick={handleNewUserClick}
           />
+        </div>
+        <div className={classes.viewbuttonContainer}>
+          {userProfile == "IT" && (
+            <SimpleButton
+              title="View users actions"
+              personalisedStyle={classes.button}
+              onClick={handleUserActionLogs}
+            />
+          )}
         </div>
       </CardGeneral>
     </>
