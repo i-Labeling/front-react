@@ -46,13 +46,27 @@ const UserActionsLogs: React.FC = () => {
 
       if (response.ok) {
         const users = await response.json();
-        users.sort(
-          (a: { date: any; hour: any }, b: { date: any; hour: any }) => {
-            const dateA = new Date(`${a.date} ${a.hour}`).getTime();
-            const dateB = new Date(`${b.date} ${b.hour}`).getTime();
-            return dateB - dateA;
-          }
-        );
+        users.sort((a: any, b: any) => {
+          const [dayA, monthA, yearA] = a.date.split("-").map(Number);
+          const [dayB, monthB, yearB] = b.date.split("-").map(Number);
+
+          const dateA = new Date(
+            yearA,
+            monthA - 1,
+            dayA,
+            a.hour.split(":")[0],
+            a.hour.split(":")[1]
+          ).getTime();
+          const dateB = new Date(
+            yearB,
+            monthB - 1,
+            dayB,
+            b.hour.split(":")[0],
+            b.hour.split(":")[1]
+          ).getTime();
+
+          return dateB - dateA;
+        });
         setListUsersActions(users);
       }
     } catch (e) {
