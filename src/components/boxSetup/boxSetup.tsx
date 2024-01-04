@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "../../services/instanceAxios";
 import "./style.css";
 import CheckIcon from "@mui/icons-material/Check";
 
@@ -45,17 +44,50 @@ export default function BoxSetup(props: InfConf) {
 
   const getCostumers = async () => {
     try {
-      const res = await axiosInstance.get("costumer");
-      setInfs(res.data);
-      if (res.data.length > 0 && selectedCustomer === "") {
-        setSelectedCustomer(res.data[0].name);
-        props.setSetupInf((e: any) => ({
-          ...props.setupInf,
-          customer: res.data[0].name,
+      const response = await fetch(
+        "http://127.0.0.1:5001/WebServices/get_list_of_customers",
+        {
+          method: "POST",
+        }
+      );
+
+      if (response.ok) {
+        const xmlString = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+        const setupElements = xmlDoc.getElementsByTagName("SetupiLabelling");
+        const setupList = [];
+
+        for (let i = 0; i < setupElements.length; i++) {
+          const setupData = {
+            Cliente:
+              setupElements[i].getElementsByTagName("Cliente")[0].textContent,
+            PN_Smart:
+              setupElements[i].getElementsByTagName("PN_Smart")[0].textContent,
+            PN_Cliente:
+              setupElements[i].getElementsByTagName("PN_Cliente")[0]
+                .textContent,
+          };
+          setupList.push(setupData);
+        }
+        const filteredSetupList = setupList.filter(
+          (customer) => customer.Cliente !== null
+        );
+        const customerNames = filteredSetupList.map((customer) => ({
+          name: customer.Cliente as string,
         }));
+        setInfs(customerNames);
+        if (customerNames.length > 0 && selectedCustomer === "") {
+          setSelectedCustomer(customerNames[0].name);
+          props.setSetupInf((e: any) => ({
+            ...props.setupInf,
+            customer: customerNames[0].name,
+          }));
+        }
       }
     } catch (error) {
-      console.error(error);
+      console.error("Axios error:", error);
     }
   };
 

@@ -31,7 +31,6 @@ interface User {
 export default function Home() {
   const navigate = useNavigate();
   const userToken = localStorage.getItem("jwtToken");
-  console.log("userToken", userToken);
   const [statusDevice, setStatusDevice] = useState<Array<StatusDevice>>([]);
   const [statusProcess, setStatusProcess] = useState<StatusProcessI>({
     log: "",
