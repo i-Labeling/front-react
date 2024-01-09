@@ -16,6 +16,7 @@ import SimpleButton from "../../components/simpleButton/simpleButton";
 import { useNavigate } from "react-router-dom";
 import AccessControlItem from "../../components/accessControlItem/accessControlItem";
 import { useStyles } from "./styles";
+import axiosInstance from "../../services/instanceAxios";
 
 const AccessControl: React.FC = () => {
   const classes = useStyles();
@@ -41,6 +42,14 @@ const AccessControl: React.FC = () => {
         const users = await response.json();
         if (JSON.stringify(users) !== JSON.stringify(listUsers)) {
           setListUsers(users);
+          await axiosInstance
+            .post("usersIHM", {
+              users: users,
+            })
+            .then((res) => {
+              console.log("Success users post CLP", res);
+            })
+            .catch((res) => console.log(res));
         }
       }
     } catch (e) {

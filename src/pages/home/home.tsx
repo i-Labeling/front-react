@@ -97,26 +97,6 @@ export default function Home() {
     };
   }, []);
 
-  //Implementing user token IHM
-  useEffect(() => {
-    const eventSource = new EventSource(
-      "http://127.0.0.1:5000/sse/userAuthIHM"
-    );
-
-    eventSource.onmessage = (event) => {
-      const parsedData = JSON.parse(event.data);
-      setUserAuthIHM(parsedData);
-    };
-
-    eventSource.onerror = (error) => {
-      console.error("SSE connection error:", error);
-      eventSource.close();
-    };
-    return () => {
-      eventSource.close();
-    };
-  }, [userAuthIHM]);
-
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${userToken}`,
@@ -144,32 +124,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getUserIdByToken(userAuthIHM?.token);
-
-        await axiosInstance
-          .post("post", {
-            token: user?.token,
-            profile: user?.profile,
-          })
-          .then((res) => {
-            console.log("Posting profile information", res);
-          })
-          .catch((error: any) => {
-            console.error("Error on token ihm verification", error);
-          });
-      } catch (error) {
-        console.error("Error on token ihm verification", error);
-      }
-    };
-
-    if (userAuthIHM) {
-      fetchData();
-    }
-  }, [userAuthIHM]);
-
   const toNavigate = () => {
     navigate("/conf");
   };
@@ -193,14 +147,16 @@ export default function Home() {
           <div className="container_info_status">
             <div className="content_box_status">
               <ul className="list_status">
-                {statusDevice.map((statusResponse, index) => (
-                  <Status
-                    key={index}
-                    connection={statusResponse.connection}
-                    name={statusResponse.name}
-                    port={statusResponse.port}
-                  />
-                ))}
+                {statusDevice &&
+                  statusDevice.length > 0 &&
+                  statusDevice.map((statusResponse, index) => (
+                    <Status
+                      key={index}
+                      connection={statusResponse.connection}
+                      name={statusResponse.name}
+                      port={statusResponse.port}
+                    />
+                  ))}
               </ul>
               <div
                 className="container_status_process"
@@ -258,6 +214,7 @@ export default function Home() {
             <SimpleButton
               title="Init Setup"
               onClick={toNavigate}
+              disabled={statusDevice.length <= 0}
               personalisedStyle={"buttonInitSetup"}
             />
           </div>

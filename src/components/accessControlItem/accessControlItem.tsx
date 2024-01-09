@@ -63,6 +63,7 @@ const AccessControlItem: React.FC<AccessControlItemProps> = (
     try {
       const response = await fetch("http://127.0.0.1:5002/user/delete", {
         method: "DELETE",
+        headers: headers,
         body: JSON.stringify({ id: props.data.id }),
       });
 
