@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import {
@@ -50,42 +50,67 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   return hasRequiredProfile && <>{children}</>;
 };
 
+const App = () => {
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "F11") {
+        event.preventDefault();
+        document.documentElement.requestFullscreen();
+        console.log("teste");
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
+  return (
+    <div>
+      <Router>
+        <Routes>
+          <Route element={<PrivateRoutes />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/logs" element={<LogsInfo />} />
+            <Route path="/conf" element={<ConfSetup />} />
+            <Route path="/end" element={<EndProcess />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/test" element={<Test />} />
+            <Route path="/gridinspection" element={<GridInspection />} />
+            <Route path="/registeruser" element={<RegisterUser />} />
+            <Route path="/edituser" element={<EditUser />} />
+            <Route
+              path="/accesscontrol"
+              element={
+                <PrivateRoute profileRequired="IT">
+                  <AccessControl />{" "}
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/actionslogs"
+              element={
+                <PrivateRoute profileRequired="IT">
+                  <UserActionsLogs />{" "}
+                </PrivateRoute>
+              }
+            />
+          </Route>
+          <Route element={<Login />} path="/" />
+        </Routes>
+      </Router>
+      <ToastContainer />
+    </div>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <GlobalStateProvider>
     <UserProvider>
       <React.StrictMode>
-        <Router>
-          <Routes>
-            <Route element={<PrivateRoutes />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/logs" element={<LogsInfo />} />
-              <Route path="/conf" element={<ConfSetup />} />
-              <Route path="/end" element={<EndProcess />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/test" element={<Test />} />
-              <Route path="/gridinspection" element={<GridInspection />} />
-              <Route path="/registeruser" element={<RegisterUser />} />
-              <Route path="/edituser" element={<EditUser />} />
-              <Route
-                path="/accesscontrol"
-                element={
-                  <PrivateRoute profileRequired="IT">
-                    <AccessControl />{" "}
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/actionslogs"
-                element={
-                  <PrivateRoute profileRequired="IT">
-                    <UserActionsLogs />{" "}
-                  </PrivateRoute>
-                }
-              />
-            </Route>
-            <Route element={<Login />} path="/" />
-          </Routes>
-        </Router>
+        <App />
         <ToastContainer />
       </React.StrictMode>
     </UserProvider>
