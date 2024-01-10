@@ -5,6 +5,7 @@ backend_path=$BACKEND_PATH
 frontend_path=$FRONTEND_PATH
 routine_integration_path=$ROUTINE_INTEGRATION_PATH
 mock_wiptrack_path=$MOCK_ILABELING_PATH
+api_dashboard_path=$API_DASHBOARD_PATH
 
 find_pid_by_port() {
     local port=$1
@@ -43,7 +44,7 @@ launch_backend() {
 #ROUTINE INTEGRATION
 
 launch_get_banco_data() {
-    cd "$routine_integration_path" || exit
+    cd "$api_dashboard_path" || exit
     
     python3 getBancoData.py &
 

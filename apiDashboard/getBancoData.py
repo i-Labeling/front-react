@@ -23,7 +23,7 @@ url = os.environ["API_DASHBOARD"]
  
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="*")
 connection = psycopg2.connect(
     dbname="postgres",
     user="postgres",
@@ -136,7 +136,7 @@ def consumir_api():
             # Iterar sobre as informações de cada cliente
             for cliente_info in clientes_info:
                 cliente_data = {
-                    'Cliente': cliente_info['Cliente'],
+                    'name': cliente_info['Cliente'],
                     #'PN_Smart': cliente_info['PN_Smart'],
                     #'PN_Cliente': cliente_info['PN_Cliente']
                 }

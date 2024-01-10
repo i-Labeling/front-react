@@ -4,6 +4,8 @@ import psycopg2
 from psycopg2 import extras
 from flask_cors import CORS
 import json
+import xmltodict 
+import requests
 
 app = Flask(__name__)
 

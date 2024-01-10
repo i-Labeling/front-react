@@ -12,7 +12,6 @@ import {
 } from "recharts";
 import "./style.css";
 import { useState, useEffect } from "react";
-import axiosInstance from "../../services/instanceAxios";
 import { format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import BackButton from "../../components/backButton/backButton";
@@ -70,10 +69,10 @@ export default function Dashboard() {
 
     return options ? options.slice(0, -1) : options;
   }
-  // const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
   const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
+  const userToken = localStorage.getItem("jwtToken");
   const [filterGet, setFilterGet] = useState({
-    costumer: ["WINTRONIC", "AMD"],
+    costumer: idsCostumers,
     date: new Date().toISOString().split("T")[0],
     typeM: ["udimm", "sodimm"],
   });
@@ -83,6 +82,11 @@ export default function Dashboard() {
   const [graph1, setGraph1] = useState<Graph1[]>([]);
   const [graph2, setGraph2] = useState<Graph2[]>([]);
   const [errors, setErrors] = useState<Erros[]>([]);
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
+  };
 
   const [kpis, setKpis] = useState<KPIs>({
     labelled: "",
@@ -97,16 +101,22 @@ export default function Dashboard() {
   const allValuesNullUdimm = graph1.every((dictI: any) => {
     return dictI[verificationUdimmKey] === null;
   });
+
+  const parseParamsQuery = (params: any) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return queryParams;
+  };
+
   const getGraph1 = async () => {
-    await axiosInstance
-      .get("dashboard/graph1", {
-        params: filterGet,
-        paramsSerializer: (params) => parseParams(params),
-      })
-      .then((res) => {
-        setGraph1(res.data);
-      })
-      .catch((res) => console.log(res));
+    const response = await fetch(
+      "http://127.0.0.1:5000/dashboard/graph1?" + parseParamsQuery(filterGet),
+      { method: "GET", headers: headers }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setGraph1(data);
+    }
 
     // Mock data for graph1
     // Testing
@@ -118,15 +128,15 @@ export default function Dashboard() {
     // setGraph1(mockGraph1Data);
   };
   const getGraph2 = async () => {
-    await axiosInstance
-      .get("dashboard/graph2", {
-        params: filterGet,
-        paramsSerializer: (params) => parseParams(params),
-      })
-      .then((res) => {
-        setGraph2(res.data);
-      })
-      .catch((res) => console.log(res));
+    const response = await fetch(
+      "http://127.0.0.1:5000/dashboard/graph2?" + parseParamsQuery(filterGet),
+      { method: "GET", headers: headers }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setGraph2(data);
+    }
 
     //Test
     // Mock data for graph2
@@ -140,47 +150,46 @@ export default function Dashboard() {
     // setGraph2(mockGraph2Data);
   };
   const getErros = async () => {
-    // await axiosInstance
-    //   .get("dashboard/erros", {
-    //     params: filterGet,
-    //     paramsSerializer: (params) => parseParams(params),
-    //   })
-    //   .then((res) => {
-    //     setErrors(res.data);
-    //   })
-    //   .catch((res) => console.log(res));
+    const response = await fetch(
+      "http://127.0.0.1:5000/dashboard/erros?" + parseParamsQuery(filterGet),
+      { method: "GET", headers: headers }
+    );
 
-    const mockErrors = [
-      { erro: "Error 1: Something went wrong" },
-      { erro: "Error 2: Another issue occurred" },
-      { erro: "Error 3: An error message here" },
-    ];
+    if (response.ok) {
+      const data = await response.json();
+      setErrors(data);
+    }
 
-    setErrors(mockErrors);
+    // const mockErrors = [
+    //   { erro: "Error 1: Something went wrong" },
+    //   { erro: "Error 2: Another issue occurred" },
+    //   { erro: "Error 3: An error message here" },
+    // ];
+
+    // setErrors(mockErrors);
   };
   const getKPIs = async () => {
-    await axiosInstance
-      .get("dashboard/kpis", {
-        params: filterGet,
-        paramsSerializer: (params) => parseParams(params),
-      })
-      .then((res) => {
-        setKpis(res.data);
-        console.log(res.data);
-      })
-      .catch((res) => console.log(res));
+    const response = await fetch(
+      "http://127.0.0.1:5000/dashboard/kpis?" + parseParamsQuery(filterGet),
+      { method: "GET", headers: headers }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setKpis(data);
+    }
   };
+
   const getCostumers = async () => {
-    await axiosInstance
-      .get("costumer")
-      .then((res) => {
-        setIdsCostumers(res.data);
-      })
-      .catch((res) => console.log(res));
+    const response = await fetch("http://127.0.0.1:5000/costumer", {
+      method: "GET",
+      headers: headers,
+    });
 
-    // const mockCostumers = [{ name: "AMD" }, { name: "WINTRONIC" }];
-
-    // setIdsCostumers(mockCostumers);
+    if (response.ok) {
+      const users = await response.json();
+      setIdsCostumers(users);
+    }
   };
   const att = () => {
     getGraph1();
