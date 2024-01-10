@@ -1,23 +1,31 @@
 from flask import Flask, jsonify, request, Response
 import psycopg2
+import requests
 from psycopg2 import extras
 import json
 from flask_cors import CORS
 import time
 import os
 import sys
+import xml.etree.ElementTree as ET
+import dotenv
+import xmltodict 
+
+
 # PROGRAMA PRINCIPAL
 
 
-sys.path.append(
-    r"C:\Users\walfr\OneDrive\Ambiente de Trabalho\iLabeling_conexao\new_front_react\front-end\front-react\apiDashboard")
+
+dotenv.load_dotenv()
+sys.path.append(os.environ["API_DASHBOARD"])
 global url
-url = "C:/Users/walfr/OneDrive/Ambiente de Trabalho/iLabeling_conexao/new_front_react/front-end/front-react/apiDashboard/"
+url = os.environ["API_DASHBOARD"]
+ 
 
 app = Flask(__name__)
 CORS(app)
 connection = psycopg2.connect(
-    dbname="bd_ilabeling",
+    dbname="postgres",
     user="postgres",
     password="2023",
     host="localhost",
@@ -106,24 +114,71 @@ def post_example():
         return resultado, 200  # 200 indica sucesso
     else:
         return "Método não permitido", 405
-
+    
 
 @app.route('/costumer', methods=['GET'])
-def get_costumer():
-    data = [{
-            "name": "FLEXTRONICS - IPG<",
-            },
-            {
-            "name": "WINTRONIC",
-            },
-            {
-            "name": "AMD",
-            },
-            {
-        "name": "SAE - South America Eletronics"
-    }
-    ]
-    return data
+def consumir_api():
+    api_url = 'http://127.0.0.1:5001/WebServices/get_list_of_customers'  
+
+    try:
+        # Enviar uma solicitação POST para a API
+        response = requests.post(api_url)
+
+        # Verificar se a solicitação foi bem-sucedida (código de status 200)
+        if response.status_code == 200:
+            # Converter o XML para um dicionário Python
+            xml_dict = xmltodict.parse(response.text)
+
+            # Extrair apenas as informações sob a tag "Cliente"
+            clientes_info = xml_dict['soap:Envelope']['soap:Body']['GetListOfCustomersResponse']['GetListOfCustomersResult']['SetupiLabelling']
+            clientes_list = []
+
+            # Iterar sobre as informações de cada cliente
+            for cliente_info in clientes_info:
+                cliente_data = {
+                    'Cliente': cliente_info['Cliente'],
+                    #'PN_Smart': cliente_info['PN_Smart'],
+                    #'PN_Cliente': cliente_info['PN_Cliente']
+                }
+                clientes_list.append(cliente_data)
+
+            # Converter a lista de clientes para JSON
+            data = json.dumps(clientes_list, indent=2)
+
+            # Retornar os dados JSON
+            return Response(response=data, status=200, mimetype="application/json")
+        else:
+            # Se a solicitação não for bem-sucedida, retornar um erro
+            return jsonify({'error': f'Código de status da API: {response.status_code}'}), 500
+
+    except Exception as e:
+        # Se ocorrer uma exceção, retornar um erro
+        return jsonify({'error': str(e)}), 500
+
+# @app.route('/costumer', methods=['GET'])
+# def get_costumer():
+#     data = [{
+#             "name": "IBM",
+#             },
+#             {
+#             "name": "DELL INC.",
+#             },
+#             {
+#             "name": "SUPERA",
+#             },
+#             {
+#              "name":"AMD"
+#             },
+#              {
+#              "name":"FLEXTRONICS"
+#             },
+#              {
+#              "name":"WINTRONIC"
+#             }
+#             ]
+#     return data 
+    
+
 
 
 @app.route('/sse/statusDevice', methods=['GET'])
@@ -148,15 +203,15 @@ def status_process():
     return Response(event_stream(), content_type='text/event-stream')
 
 
-@app.route('/sse/userAuthIHM')
-def status_device():
-    def event_stream():
-        while True:
-            with open('dataUser.json', 'r') as file:
-                new_data = json.load(file)
-            yield f"data:{json.dumps(new_data)}\n\n"
-            time.sleep(1)
-    return Response(event_stream(), content_type='text/event-stream')
+# @app.route('/sse/userAuthIHM')
+# def status_device():
+#     def event_stream():
+#         while True:
+#             with open('dataUser.json', 'r') as file:
+#                 new_data = json.load(file)
+#             yield f"data:{json.dumps(new_data)}\n\n"
+#             time.sleep(1)
+#     return Response(event_stream(), content_type='text/event-stream')
 
 
 @app.route('/sse/log')
@@ -182,7 +237,7 @@ def dash_hourxunits():
     }
     try:
         connection = psycopg2.connect(
-            dbname="bd_ilabeling",
+            dbname="postgres",
             user="postgres",
             password="2023",
             host="localhost",

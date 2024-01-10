@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import extras
 from flask_cors import CORS
 import json
+
 app = Flask(__name__)
 
 db_params = {
@@ -129,19 +130,57 @@ def error_states():
     except Exception as e:
         return jsonify({'error': str(e)})
     
-@app.route('/costumer', methods = ['GET'])
-def get_costumer():
-    data = [{
-            "name": "FLEXTRONICS - IPG<",
-            },
-            {
-            "name": "WINTRONIC",
-            },
-            {
-            "name": "AMD",
-            },
-            ]
-    return data
+# @app.route('/costumer', methods = ['GET'])
+# def get_costumer():
+#     data = [{
+#             "name": "FLEXTRONICS - IPG<",
+#             },
+#             {
+#             "name": "WINTRONIC",
+#             },
+#             {
+#             "name": "AMD",
+#             },
+#             ]
+#     return data
+@app.route('/costumer', methods=['GET'])
+def consumir_api():
+    api_url = 'http://127.0.0.1:5001/WebServices/get_list_of_customers'  
+
+    try:
+        # Enviar uma solicitação POST para a API
+        response = requests.post(api_url)
+
+        # Verificar se a solicitação foi bem-sucedida (código de status 200)
+        if response.status_code == 200:
+            # Converter o XML para um dicionário Python
+            xml_dict = xmltodict.parse(response.text)
+
+            # Extrair apenas as informações sob a tag "Cliente"
+            clientes_info = xml_dict['soap:Envelope']['soap:Body']['GetListOfCustomersResponse']['GetListOfCustomersResult']['SetupiLabelling']
+            clientes_list = []
+
+            # Iterar sobre as informações de cada cliente
+            for cliente_info in clientes_info:
+                cliente_data = {
+                    'Cliente': cliente_info['Cliente'],
+                    #'PN_Smart': cliente_info['PN_Smart'],
+                    #'PN_Cliente': cliente_info['PN_Cliente']
+                }
+                clientes_list.append(cliente_data)
+
+            # Converter a lista de clientes para JSON
+            data = json.dumps(clientes_list, indent=2)
+
+            # Retornar os dados JSON
+            return Response(response=data, status=200, mimetype="application/json")
+        else:
+            # Se a solicitação não for bem-sucedida, retornar um erro
+            return jsonify({'error': f'Código de status da API: {response.status_code}'}), 500
+
+    except Exception as e:
+        # Se ocorrer uma exceção, retornar um erro
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == "__main__":
