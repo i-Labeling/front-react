@@ -51,22 +51,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 };
 
 const App = () => {
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === "F11") {
-        event.preventDefault();
-        document.documentElement.requestFullscreen();
-        console.log("teste");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyPress);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, []);
-
   return (
     <div>
       <Router>

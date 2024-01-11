@@ -22,7 +22,7 @@ const OSCard: React.FC<EndProcessCardProps> = (props: EndProcessCardProps) => {
 
   return (
     <div onClick={onClick} className={className}>
-      <Card sx={{ width: "100%", height: "100%" }}>
+      <Card sx={{ width: "100%", height: "100%", backgroundColor: "#F3F3FF" }}>
         <CardHeader
           title={title}
           sx={{

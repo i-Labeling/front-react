@@ -48,27 +48,6 @@ interface Costumer {
 }
 
 export default function Dashboard() {
-  function parseParams(params: any) {
-    const keys = Object.keys(params);
-    let options = "";
-
-    keys.forEach((key) => {
-      const isParamTypeObject = typeof params[key] === "object";
-      const isParamTypeArray = isParamTypeObject && params[key].length >= 0;
-
-      if (!isParamTypeObject) {
-        options += `${key}=${params[key]}&`;
-      }
-
-      if (isParamTypeObject && isParamTypeArray) {
-        params[key].forEach((element: any) => {
-          options += `${key}=${element}&`;
-        });
-      }
-    });
-
-    return options ? options.slice(0, -1) : options;
-  }
   const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
   const userToken = localStorage.getItem("jwtToken");
   const [filterGet, setFilterGet] = useState({
@@ -216,9 +195,6 @@ export default function Dashboard() {
       <main className="container_page_dashboard">
         <div className="container_menu_header_dashboard">
           <div className="container_menu_dashboard">
-            <div className="back_button_container">
-              <BackButton />
-            </div>
             <SelectDashboard
               vals={idsCostumers}
               filterGet={filterGet}
@@ -257,6 +233,7 @@ export default function Dashboard() {
               height: 120,
               width: 120,
               padding: "0 !important",
+              marginRight: "6%",
             }}
           >
             <div style={{ textAlign: "center", paddingTop: "50px" }}>
@@ -319,32 +296,33 @@ export default function Dashboard() {
                   flex: 1,
                   width: "100%",
                   marginTop: "10px",
-                  marginBottom: "10px",
+                  marginBottom: "30px",
                 }}
               >
-                {errors.map((e, index) => (
-                  <ListItem
-                    key={index}
-                    className="val_card_dashboard"
-                    style={{
-                      backgroundColor: "white",
-                      borderBottom: "1px solid #ccc",
-                      padding: "10px 0",
-                    }}
-                  >
-                    <Typography
-                      className="title_card_dashboard_erro"
+                {errors &&
+                  errors.map((e, index) => (
+                    <ListItem
+                      key={index}
+                      className="val_card_dashboard"
                       style={{
-                        display: "flex",
-                        marginLeft: "10px",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        backgroundColor: "white",
+                        borderBottom: "1px solid #ccc",
+                        padding: "10px 0",
                       }}
                     >
-                      {e.erro}
-                    </Typography>
-                  </ListItem>
-                ))}
+                      <Typography
+                        className="title_card_dashboard_erro"
+                        style={{
+                          display: "flex",
+                          marginLeft: "10px",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {e.erro}
+                      </Typography>
+                    </ListItem>
+                  ))}
               </List>
             </CardContent>
           </Card>

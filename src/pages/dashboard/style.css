@@ -19,6 +19,7 @@
   display: flex;
   color: rgb(64, 64, 216);
   font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+  margin-left: 5%;
 }
 .title_menu_dashboard {
   margin: 0;
