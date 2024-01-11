@@ -68,6 +68,5 @@ sleep 15
 echo "front-end"
 launch_frontend &
 
-trap ctrl_c INT
 
 wait
