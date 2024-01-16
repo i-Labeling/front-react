@@ -17,9 +17,9 @@ import xmltodict
 
 
 dotenv.load_dotenv()
-sys.path.append(os.environ["API_DASHBOARD"])
+sys.path.append("C:/Users/svcman.d20155/Documents/develope/front-react/apiDashboard/")
 global url
-url = os.environ["API_DASHBOARD"]
+url = "C:/Users/svcman.d20155/Documents/develope/front-react/apiDashboard/" #os.environ["API_DASHBOARD"]
  
 
 app = Flask(__name__)

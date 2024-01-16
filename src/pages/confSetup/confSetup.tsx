@@ -37,8 +37,7 @@ export default function confSetup() {
     setButtonDisabled(!allFieldsFilled);
   }, [setupInf, errors]);
 
-  const createSetup = async (e: any) => {
-    e.preventDefault();
+  const createSetup = async () => {
     await axiosInstance
       .post("post", {
         customer: setupInf.customer,
@@ -49,19 +48,23 @@ export default function confSetup() {
         gridList: setupInf.gridList,
       })
       .then((res) => {
-        console.log(res);
+        console.log("Success post info data",res);
         navigate("/home");
       })
-      .catch((res) => console.log(res + " " + setupInf));
+      .catch((res) => console.log("Error post infos OS: "+ res + " " + setupInf));
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    console.log(inspectionModeNumber)
     switch (inspectionModeNumber) {
+      case 1 :
+        createSetup()
+        break;
       case 2:
         navigate("/gridinspection");
         break;
-      case 1 || 3:
-        createSetup;
+      case 3:
+        createSetup()
         break;
       default:
         break;
