@@ -23,17 +23,14 @@ const style = {
 };
 
 const ImageModal: React.FC<ModalProps> = (props: ModalProps) => {
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-  };
-
   return (
     <Modal
       open={props.open}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      onBackdropClick={props.onClose}
     >
-      <Box sx={style} onClick={handleBackdropClick}>
+      <Box sx={style}>
         <IconButton
           aria-label="close"
           onClick={props.onClose}
@@ -43,12 +40,12 @@ const ImageModal: React.FC<ModalProps> = (props: ModalProps) => {
         </IconButton>
         <div
           style={{
-            marginTop: "15%",
-            width: "fit-content",
-            height: "fit-content",
+            marginTop: "5%",
+            width: "100%",
+            height: "auto",
           }}
         >
-          <img src={props.src} />
+          <img src={props.src} style={{ width: "100%", height: "auto" }} />
         </div>
       </Box>
     </Modal>

@@ -13,14 +13,12 @@ interface Log {
   takeMemory: string;
   path: string;
 }
-interface Val {
-  key: [];
-}
+
 export default function LogsInfo() {
   const [logs, setLog] = useState<Array<Log>>([]);
-  const [val, setVal] = useState<Val[]>([]);
   const [open, setOpenModal] = useState<boolean>(false);
-  const [url, setImageUrl] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+
   useEffect(() => {
     const eventSource = new EventSource("http://127.0.0.1:5000/sse/log");
     eventSource.onmessage = (event) => {
@@ -45,7 +43,7 @@ export default function LogsInfo() {
   //     leaveMemory: "Leave memory",
   //     errorMemory: "Error memory",
   //     takeMemory: "Take memory",
-  //     path: "https://example.com/image1.png",
+  //     path: "/public/img_inspection/sodimm_16-01-2024_11-54-50.jpg",
   //   },
   //   {
   //     inspection: "Inspection",
@@ -65,19 +63,21 @@ export default function LogsInfo() {
   //     takeMemory: "Take memory",
   //     path: "https://example.com/image3.png",
   //   },
+  //   {
+  //     inspection: "Inspection",
+  //     labeling: "Labeling",
+  //     validateLabel: "Validate label",
+  //     leaveMemory: "Leave memory",
+  //     errorMemory: "Error memory",
+  //     takeMemory: "Take memory",
+  //     path: "",
+  //   },
   // ];
 
   // useEffect(() => {
   //   // Set the logs to the mock data
   //   setLog(mockLogs);
   // }, []);
-
-  useEffect(() => {
-    // Set the logs to the mock data
-    console.log("url", url);
-  }, [url]);
-
-  console.log("LOGS", logs);
 
   return (
     <>
@@ -106,7 +106,11 @@ export default function LogsInfo() {
               ))}
           </ul>
         </div>
-        <ImageModal open={open} onClose={() => setOpenModal(false)} src={url} />
+        <ImageModal
+          open={open}
+          onClose={() => setOpenModal(false)}
+          src={imageUrl}
+        />
       </main>
     </>
   );
