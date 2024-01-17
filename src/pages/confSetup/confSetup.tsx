@@ -13,6 +13,7 @@ import CustomSelect from "../../components/select/customSelect";
 
 export default function confSetup() {
   const navigate = useNavigate();
+  const userToken = localStorage.getItem("jwtToken");
   const { setupInf, setSetupInf } = useGlobalState();
   const [errors, setErrors] = useState({
     orderOfService: "",
@@ -28,6 +29,11 @@ export default function confSetup() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const [inspectionModeNumber, setInspectionModeNumber] = useState<number>(1);
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
+  };
 
   useEffect(() => {
     const allFieldsFilled =
@@ -47,24 +53,43 @@ export default function confSetup() {
         inspectionMode: setupInf.inspectionMode,
         gridList: setupInf.gridList,
       })
-      .then((res) => {
-        console.log("Success post info data",res);
+      .then(async (res) => {
+        console.log("Success post info data", res);
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:5002/user/actionslogs",
+            {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify({ OSnumber: setupInf.serviceOrder }),
+            }
+          );
+
+          if (response.ok) {
+            console.log("Success on saving new OS action");
+          }
+        } catch (e) {
+          console.error("Failed to save OS action", e);
+        }
+
         navigate("/home");
       })
-      .catch((res) => console.log("Error post infos OS: "+ res + " " + setupInf));
+      .catch((res) =>
+        console.log("Error post infos OS: " + res + " " + setupInf)
+      );
   };
 
   const handleClick = async () => {
-    console.log(inspectionModeNumber)
+    console.log(inspectionModeNumber);
     switch (inspectionModeNumber) {
-      case 1 :
-        createSetup()
+      case 1:
+        createSetup();
         break;
       case 2:
         navigate("/gridinspection");
         break;
       case 3:
-        createSetup()
+        createSetup();
         break;
       default:
         break;

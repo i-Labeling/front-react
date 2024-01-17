@@ -10,8 +10,14 @@ const PUBLIC_URL = "src/assets/";
 const GridInspection = () => {
   const [selectedSquares, setSelectedSquares] = useState<number[]>([]);
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
+  const userToken = localStorage.getItem("jwtToken");
   const { setupInf, setSetupInf } = useGlobalState();
   const navigate = useNavigate();
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
+  };
 
   const [sodimm, setSodimm] = useState<string | null>(null);
   const [udimm, setUdimm] = useState<string | null>(null);
@@ -51,8 +57,24 @@ const GridInspection = () => {
         inspectionMode: setupInf.inspectionMode,
         gridList: list,
       })
-      .then((res) => {
+      .then(async (res) => {
         console.log(res);
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:5002/user/actionslogs",
+            {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify({ OSnumber: setupInf.serviceOrder }),
+            }
+          );
+
+          if (response.ok) {
+            console.log("Success on saving new OS action");
+          }
+        } catch (e) {
+          console.error("Failed to save OS action", e);
+        }
         setSetupInf({
           customer: "1",
           serviceOrder: "null",
