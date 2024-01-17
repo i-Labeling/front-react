@@ -5,13 +5,12 @@ import BackButton from "../../components/backButton/backButton";
 import CardLogItem from "../../components/cardLogItem/cardLogItem";
 import ImageModal from "../../components/imageModal/imageModal";
 interface Log {
-  inspection: string;
-  labeling: string;
-  validateLabel: string;
-  leaveMemory: string;
-  errorMemory: string;
-  takeMemory: string;
-  path: string;
+  inspection?: string;
+  validateLabel?: string;
+  leaveMemory?: string;
+  errorMemory?: string;
+  takeMemory?: string;
+  path?: string;
 }
 
 export default function LogsInfo() {
@@ -38,7 +37,6 @@ export default function LogsInfo() {
   // const mockLogs: Log[] = [
   //   {
   //     inspection: "Inspection",
-  //     labeling: "Labeling",
   //     validateLabel: "Validate label",
   //     leaveMemory: "Leave memory",
   //     errorMemory: "Error memory",
@@ -47,7 +45,6 @@ export default function LogsInfo() {
   //   },
   //   {
   //     inspection: "Inspection",
-  //     labeling: "Labeling",
   //     validateLabel: "Validate label",
   //     leaveMemory: "Leave memory",
   //     errorMemory: "Error memory",
@@ -56,7 +53,6 @@ export default function LogsInfo() {
   //   },
   //   {
   //     inspection: "Inspection",
-  //     labeling: "Labeling",
   //     validateLabel: "Validate label",
   //     leaveMemory: "Leave memory",
   //     errorMemory: "Error memory",
@@ -65,7 +61,6 @@ export default function LogsInfo() {
   //   },
   //   {
   //     inspection: "Inspection",
-  //     labeling: "Labeling",
   //     validateLabel: "Validate label",
   //     leaveMemory: "Leave memory",
   //     errorMemory: "Error memory",
@@ -98,7 +93,7 @@ export default function LogsInfo() {
                     log={log}
                     index={index}
                     onClick={() => {
-                      setImageUrl(log.path);
+                      setImageUrl(log.path ? log.path : "");
                       setOpenModal(true);
                     }}
                   />

@@ -9,6 +9,7 @@ interface CardLogItemProps {
 }
 
 const CardLogItem: React.FC<CardLogItemProps> = ({ log, index, onClick }) => {
+  console.log("LOG INFO", log);
   return (
     <>
       <Card style={{ backgroundColor: "#F3F3FF" }}>
@@ -50,27 +51,21 @@ const CardLogItem: React.FC<CardLogItemProps> = ({ log, index, onClick }) => {
               )}
             </div>
             <hr className="divider" />
-            {log.labeling != "" && (
-              <p className="content_logs" key={index + ".4"}>
-                - {log.labeling}
-              </p>
-            )}
-            <hr className="divider" />
             {log.validateLabel != "" && (
               <p className="content_logs" key={index + ".5"}>
                 - {log.validateLabel}
               </p>
             )}
             <hr className="divider" />
-            {log.errorMemory != "" && (
-              <p className="content_logs" key={index + ".6"}>
-                - {log.errorMemory}
-              </p>
-            )}
-            <hr className="divider" />
             {log.leaveMemory != "" && (
               <p className="content_logs" key={index + ".7"}>
                 - {log.leaveMemory}
+              </p>
+            )}
+            <hr className="divider" />
+            {log.errorMemory != "" && (
+              <p className="content_logs" key={index + ".6"}>
+                - {log.errorMemory}
               </p>
             )}
           </div>
