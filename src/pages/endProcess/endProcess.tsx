@@ -1,16 +1,12 @@
 import CardLog from "../../components/cardLog/cardLog";
 import Menu from "../../components/customMenu/customMenu";
-import { IoFileTrayOutline } from "react-icons/io5";
-import { BsRepeat } from "react-icons/bs";
-import { AiOutlineFieldTime, AiOutlineCamera } from "react-icons/ai";
-import { FaFileLines, FaMagnifyingGlass } from "react-icons/fa6";
-import { BiError, BiSolidMemoryCard, BiMap } from "react-icons/bi";
 import "./style.css";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../services/instanceAxios";
 import OSCard from "../../components/OSCard/OSCard";
 import Title from "../../components/textTitle/textTitle";
 import BackButton from "../../components/backButton/backButton";
+import { useNavigate } from "react-router-dom";
 
 interface infProcess {
   tray: string;
@@ -37,15 +33,8 @@ export default function EndProcess() {
     positionAndError: "0",
     order: "0",
   });
-  const tray = <IoFileTrayOutline size="30" color="white" />;
-  const cycle = <BsRepeat size="30" color="white" />;
-  const time = <AiOutlineFieldTime size="30" color="white" />;
-  const note = <FaFileLines size="30" color="white" />;
-  const error = <BiError size="30" color="white" />;
-  const memory = <BiSolidMemoryCard size="30" color="white" />;
-  const camera = <AiOutlineCamera size="30" color="white" />;
-  const glass = <FaMagnifyingGlass size="30" color="white" />;
-  const map = <BiMap size="30" color="white" />;
+  const navigate = useNavigate();
+
   const styleCard = {
     fontSize: "15px",
     justifyContent: "start",
@@ -67,7 +56,7 @@ export default function EndProcess() {
     <>
       <Menu />
       <div className="backButton">
-        <BackButton />
+        <BackButton onClick={() => navigate("/home")} />
       </div>
       <Title title="End of Process" className="title" />
       <main className="container_page_endProcess">

@@ -11,6 +11,7 @@ interface Log {
   errorMemory?: string;
   takeMemory?: string;
   path?: string;
+  finish?: string;
 }
 
 export default function LogsInfo() {
@@ -18,11 +19,62 @@ export default function LogsInfo() {
   const [open, setOpenModal] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
 
+  // const mockLogs: Log[] = [
+  //   { inspection: "Inspection 16" },
+  //   { validateLabel: "Validate label" },
+  //   { leaveMemory: "Leave memory" },
+  //   { errorMemory: "Error memory" },
+  //   { takeMemory: "Take Memory - n\u00ba: 1" },
+  //   { path: "/public/img_inspection/sodimm_16-01-2024_11-54-50.jpg" },
+  //   { finish: "finished" },
+  //   { inspection: "Inspection 2" },
+  //   { validateLabel: "Validate label" },
+  //   { leaveMemory: "Leave memory" },
+  //   { errorMemory: "Error memory" },
+  //   { takeMemory: "Take Memory - n\u00ba: 2" },
+  //   { path: "https://example.com/image2.pn" },
+  //   { finish: "finished" },
+  //   { inspection: "Inspection 3" },
+  //   { validateLabel: "Validate label" },
+  //   { leaveMemory: "Leave memory" },
+  //   { errorMemory: "Error memory" },
+  //   { takeMemory: "Take Memory - n\u00ba: 3" },
+  //   { path: "https://example.com/image3.png" },
+  //   { finish: "finished" },
+  //   { inspection: "Inspection 6" },
+  //   { validateLabel: "Validate label" },
+  //   { leaveMemory: "Leave memory" },
+  //   { errorMemory: "Error memory" },
+  //   { takeMemory: "Take Memory - n\u00ba: 6" },
+  //   { path: "https://example.com/image3.png" },
+  //   { finish: "finished" },
+  // ];
+
   useEffect(() => {
     const eventSource = new EventSource("http://127.0.0.1:5000/sse/log");
     eventSource.onmessage = (event) => {
       const parsedData = JSON.parse(event.data);
-      setLog(parsedData);
+      const transformedData = [];
+      let currentMemory = {};
+
+      parsedData.forEach((item: {}) => {
+        if ("finish" in item) {
+          if (Object.keys(currentMemory).length > 0) {
+            transformedData.push(currentMemory);
+            currentMemory = {};
+          }
+        } else {
+          currentMemory = { ...currentMemory, ...item };
+        }
+      });
+
+      if (Object.keys(currentMemory).length > 0) {
+        transformedData.push(currentMemory);
+      }
+
+      if (JSON.stringify(transformedData) !== JSON.stringify(logs)) {
+        setLog(transformedData);
+      }
     };
     eventSource.onerror = (error) => {
       console.error("SSE connection error:", error);
@@ -31,48 +83,30 @@ export default function LogsInfo() {
     return () => {
       eventSource.close();
     };
-  }, []);
 
-  // Mock data for logs (replace this with your own test data)
-  // const mockLogs: Log[] = [
-  //   {
-  //     inspection: "Inspection",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "/public/img_inspection/sodimm_16-01-2024_11-54-50.jpg",
-  //   },
-  //   {
-  //     inspection: "Inspection",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "https://example.com/image2.png",
-  //   },
-  //   {
-  //     inspection: "Inspection",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "https://example.com/image3.png",
-  //   },
-  //   {
-  //     inspection: "Inspection",
-  //     validateLabel: "Validate label",
-  //     leaveMemory: "Leave memory",
-  //     errorMemory: "Error memory",
-  //     takeMemory: "Take memory",
-  //     path: "",
-  //   },
-  // ];
+    //MOCK TEST
+    // const transformedData = [];
+    // let currentMemory = {};
 
-  // useEffect(() => {
-  //   // Set the logs to the mock data
-  //   setLog(mockLogs);
-  // }, []);
+    // mockLogs.forEach((item: {}) => {
+    //   if ("finish" in item) {
+    //     if (Object.keys(currentMemory).length > 0) {
+    //       transformedData.push(currentMemory);
+    //       currentMemory = {};
+    //     }
+    //   } else {
+    //     currentMemory = { ...currentMemory, ...item };
+    //   }
+    // });
+
+    // if (Object.keys(currentMemory).length > 0) {
+    //   transformedData.push(currentMemory);
+    // }
+
+    // if (JSON.stringify(transformedData) !== JSON.stringify(logs)) {
+    //   setLog(transformedData);
+    // }
+  }, [logs]);
 
   return (
     <>

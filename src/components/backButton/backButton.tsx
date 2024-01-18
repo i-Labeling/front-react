@@ -14,7 +14,11 @@ const useStyles = makeStyles({
   },
 });
 
-const BackButton: React.FC = () => {
+interface BackButtonProps {
+  onClick?: () => void;
+}
+
+const BackButton: React.FC<BackButtonProps> = (props: BackButtonProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -23,8 +27,15 @@ const BackButton: React.FC = () => {
   };
 
   return (
-    <div className={classes.backButton} onClick={handleBack} aria-label="back">
-      <IconButton onClick={handleBack} aria-label="back">
+    <div
+      className={classes.backButton}
+      onClick={props.onClick ? props.onClick : handleBack}
+      aria-label="back"
+    >
+      <IconButton
+        onClick={props.onClick ? props.onClick : handleBack}
+        aria-label="back"
+      >
         <ArrowBackIosNewIcon
           style={{
             width: "40px",
