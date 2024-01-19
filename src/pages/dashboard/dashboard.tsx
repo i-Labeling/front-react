@@ -14,7 +14,6 @@ import "./style.css";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-import BackButton from "../../components/backButton/backButton";
 import OSCard from "../../components/OSCard/OSCard";
 import { Card, CardContent, List, ListItem, Typography } from "@mui/material";
 import background from "../../assets/calendar.png";
@@ -316,7 +315,7 @@ export default function Dashboard() {
                   marginBottom: "30px",
                 }}
               >
-                {errors &&
+                {errors.length > 0 &&
                   errors.map((e, index) => (
                     <ListItem
                       key={index}
