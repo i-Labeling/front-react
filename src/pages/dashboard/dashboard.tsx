@@ -87,16 +87,19 @@ export default function Dashboard() {
   };
 
   const getGraph1 = async () => {
-    const response = await fetch(
-      "http://127.0.0.1:5000/dashboard/graph1?" + parseParamsQuery(filterGet),
-      { method: "GET", headers: headers }
-    );
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/dashboard/graph1?" + parseParamsQuery(filterGet),
+        { method: "GET", headers: headers }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      setGraph1(data);
+      if (response.ok) {
+        const data = await response.json();
+        setGraph1(data);
+      }
+    } catch (error) {
+      console.error("Error in get graph 1:", error);
     }
-
     // Mock data for graph1
     // Testing
     // const mockGraph1Data = [
@@ -107,16 +110,19 @@ export default function Dashboard() {
     // setGraph1(mockGraph1Data);
   };
   const getGraph2 = async () => {
-    const response = await fetch(
-      "http://127.0.0.1:5000/dashboard/graph2?" + parseParamsQuery(filterGet),
-      { method: "GET", headers: headers }
-    );
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/dashboard/graph2?" + parseParamsQuery(filterGet),
+        { method: "GET", headers: headers }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      setGraph2(data);
+      if (response.ok) {
+        const data = await response.json();
+        setGraph2(data);
+      }
+    } catch (error) {
+      console.error("Error in get graph 2:", error);
     }
-
     //Test
     // Mock data for graph2
     // const mockGraph2Data = [
@@ -129,16 +135,19 @@ export default function Dashboard() {
     // setGraph2(mockGraph2Data);
   };
   const getErros = async () => {
-    const response = await fetch(
-      "http://127.0.0.1:5000/dashboard/erros?" + parseParamsQuery(filterGet),
-      { method: "GET", headers: headers }
-    );
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/dashboard/erros?" + parseParamsQuery(filterGet),
+        { method: "GET", headers: headers }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      setErrors(data);
+      if (response.ok) {
+        const data = await response.json();
+        setErrors(data);
+      }
+    } catch (error) {
+      console.error("Errors in getting errors:", error);
     }
-
     // const mockErrors = [
     //   { erro: "Error 1: Something went wrong" },
     //   { erro: "Error 2: Another issue occurred" },
@@ -148,26 +157,34 @@ export default function Dashboard() {
     // setErrors(mockErrors);
   };
   const getKPIs = async () => {
-    const response = await fetch(
-      "http://127.0.0.1:5000/dashboard/kpis?" + parseParamsQuery(filterGet),
-      { method: "GET", headers: headers }
-    );
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/dashboard/kpis?" + parseParamsQuery(filterGet),
+        { method: "GET", headers: headers }
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      setKpis(data);
+      if (response.ok) {
+        const data = await response.json();
+        setKpis(data);
+      }
+    } catch (error) {
+      console.error("Errors in getting kpis:", error);
     }
   };
 
   const getCostumers = async () => {
-    const response = await fetch("http://127.0.0.1:5000/costumer", {
-      method: "GET",
-      headers: headers,
-    });
+    try {
+      const response = await fetch("http://127.0.0.1:5000/costumer", {
+        method: "GET",
+        headers: headers,
+      });
 
-    if (response.ok) {
-      const users = await response.json();
-      setIdsCostumers(users);
+      if (response.ok) {
+        const users = await response.json();
+        setIdsCostumers(users);
+      }
+    } catch (error) {
+      console.error("Errors in getting kpis:", error);
     }
   };
   const att = () => {
