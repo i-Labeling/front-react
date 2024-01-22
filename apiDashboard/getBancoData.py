@@ -17,9 +17,9 @@ import xmltodict
 
 
 dotenv.load_dotenv()
-sys.path.append("C:/Users/svcman.d20155/Documents/develope/front-react/apiDashboard/")
+sys.path.append(os.environ["API_DASHBOARD"])
 global url
-url = "C:/Users/svcman.d20155/Documents/develope/front-react/apiDashboard/" #os.environ["API_DASHBOARD"]
+url = os.environ["API_DASHBOARD"]
  
 
 app = Flask(__name__)
@@ -155,32 +155,6 @@ def consumir_api():
         # Se ocorrer uma exceção, retornar um erro
         return jsonify({'error': str(e)}), 500
 
-# @app.route('/costumer', methods=['GET'])
-# def get_costumer():
-#     data = [{
-#             "name": "IBM",
-#             },
-#             {
-#             "name": "DELL INC.",
-#             },
-#             {
-#             "name": "SUPERA",
-#             },
-#             {
-#              "name":"AMD"
-#             },
-#              {
-#              "name":"FLEXTRONICS"
-#             },
-#              {
-#              "name":"WINTRONIC"
-#             }
-#             ]
-#     return data 
-    
-
-
-
 @app.route('/sse/statusDevice', methods=['GET'])
 def status_device():
     def event_stream():
@@ -227,11 +201,11 @@ def log():
 
 @app.route('/dashboard/graph1', methods=['GET'])
 def dash_hourxunits():
-    costumer = request.args.getlist('costumer')
+    customer = request.args.getlist('customer')
     date = request.args.get('date')
     typeM = request.args.getlist('typeM')
     dictSelect = {
-        'costumer': costumer,
+        'customer': customer,
         'date': date,
         'typeM': typeM,
     }
@@ -246,7 +220,7 @@ def dash_hourxunits():
         cursor = connection.cursor(cursor_factory=extras.DictCursor)
 
         cursor.execute("SELECT SUM(CAST(quant_memory AS INTEGER)) AS quantity, CAST(EXTRACT(HOUR FROM data_insercao) AS VARCHAR) AS hour, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'sodimm') AS sodimm, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'udimm') AS udimm FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) AND type_memory = ANY(%s) GROUP BY EXTRACT(HOUR FROM data_insercao),customer",
-                       (dictSelect['date'], dictSelect['costumer'], dictSelect['typeM'],))
+                       (dictSelect['date'], dictSelect['customer'], dictSelect['typeM'],))
         result = cursor.fetchall()
 
         column_names = [desc[0] for desc in cursor.description]
@@ -353,6 +327,56 @@ def error_states():
         return jsonify({'error': str(e)})
     # cur.close()
     # connection.close()
+
+######
+    
+def get_all_data_from_info_arq():
+    try:
+        # Conecta-se ao banco de dados PostgreSQL
+        cur = connection.cursor()
+
+        # Executa a consulta SQL para selecionar todos os dados da tabela "info_arq"
+        cur.execute("SELECT * FROM info_arq")
+        resultados = cur.fetchall()
+
+        # Fecha a conexão com o banco de dados
+        cur.close()
+
+        # Lista para armazenar todos os objetos resultantes
+        data_list = []
+
+        for resultado in resultados:
+            # Crie um dicionário com as chaves correspondentes às colunas e atribua os valores
+            data_dict = {
+                "id": str(resultado[0]),
+                "customer": str(resultado[1]),
+                "tray": str(resultado[2]),
+                "totalCycleTime": float(str(resultado[3]).replace("Decimal('')", "")),
+                "minutesPerTray": str(resultado[4]),
+                "timePerMemory": float(str(resultado[5]).replace("Decimal('')", "")),
+                "creamBelowA": int(resultado[6]),
+                "indexMemoryError": str(resultado[7]).replace("[", " ").replace("]", " "),
+                "inspectionErrors": str(resultado[8]).replace("[", " ").replace("]", " "),
+                "cameraError": int(resultado[9]),
+                "positionAndError": str(resultado[10]).replace("[", " ").replace("]", " "),
+                "order": str(resultado[11]),
+                "typeMemory": str(resultado[12]),
+                "quantMemory":int(resultado[13]),
+
+                # Formato ISO da data
+            }
+            data_list.append(data_dict)
+
+        return data_list
+
+    except Exception as e:
+        return {"erro": str(e)}
+
+@app.route('/get_all_data_info_arq', methods=['GET'])
+def test():
+    # Obtém todos os dados da tabela "info_arq" do PostgreSQL em forma de lista de dicionários
+    data = get_all_data_from_info_arq()
+    return jsonify(data)  # Retorna os dados como um JSON
 
 
 if __name__ == '__main__':
