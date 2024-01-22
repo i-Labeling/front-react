@@ -118,11 +118,13 @@ def post_example():
 
 @app.route('/costumer', methods=['GET'])
 def consumir_api():
-    api_url = 'http://127.0.0.1:5001/WebServices/get_list_of_customers'  
+    api_url = 'http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers'  
 
     try:
         # Enviar uma solicitação POST para a API
-        response = requests.post(api_url)
+        response = requests.post(api_url, headers={'Content-Type': 'text/xml'})
+
+        print('Response',response)
 
         # Verificar se a solicitação foi bem-sucedida (código de status 200)
         if response.status_code == 200:
