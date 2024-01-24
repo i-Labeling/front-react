@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./style.css";
 import CheckIcon from "@mui/icons-material/Check";
-import axiosInstance from "../../services/instanceAxios";
 import axios from "axios";
 
 interface InfConf {
@@ -93,67 +92,67 @@ export default function BoxSetup(props: InfConf) {
     }
   };
 
-  const getTestCostumers = async () => {
-    try {
-      await axios
-      .post("http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers", 
-        `<?xml version="1.0" encoding="utf-8"?>
-        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-          <soap:Body>
-            <GetListOfCustomers xmlns="http://tempuri.org/" />
-          </soap:Body>
-        </soap:Envelope>`, 
-        {headers:{
-          'Content-Type': 'text/xml',
-        }}
-      )
-      .then(async (res: any) => {
-        const xmlString = await res.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+  // const getTestCostumers = async () => {
+  //   try {
+  //     await axios
+  //     .post("http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/", 
+  //       `<?xml version="1.0" encoding="utf.-8"?>
+  //       <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  //         <soap:Body>
+  //           <GetListOfCustomers xmlns="http://tempuri.org/" />
+  //         </soap:Body>
+  //       </soap:Envelope>`, 
+  //       {headers:{
+  //         'Content-Type': 'text/xml',
+  //       }}
+  //     )
+  //     .then(async (res: any) => {
+  //       const xmlString = await res.text();
+  //       const parser = new DOMParser();
+  //       const xmlDoc = parser.parseFromString(xmlString, "text/xml");
 
-        const setupElements = xmlDoc.getElementsByTagName("SetupiLabelling");
-        const setupList = [];
+  //       const setupElements = xmlDoc.getElementsByTagName("SetupiLabelling");
+  //       const setupList = [];
 
-        for (let i = 0; i < setupElements.length; i++) {
-          const setupData = {
-            Cliente:
-              setupElements[i].getElementsByTagName("Cliente")[0].textContent,
-            PN_Smart:
-              setupElements[i].getElementsByTagName("PN_Smart")[0].textContent,
-            PN_Cliente:
-              setupElements[i].getElementsByTagName("PN_Cliente")[0]
-                .textContent,
-          };
-          setupList.push(setupData);
-        }
-        const filteredSetupList = setupList.filter(
-          (customer) => customer.Cliente !== null
-        );
-        const customerNames = filteredSetupList.map((customer) => ({
-          name: customer.Cliente as string,
-        }));
-        setInfs(customerNames);
-        if (customerNames.length > 0 && selectedCustomer === "") {
-          setSelectedCustomer(customerNames[0].name);
-          props.setSetupInf((e: any) => ({
-            ...props.setupInf,
-            customer: customerNames[0].name,
-          }));
-        }
-      })
-      .catch((res: string) =>
-        console.log("Error on getting costumers: " + res)
-      );
-    } catch (error) {
-      console.error("Axios error:", error);
-    }
-  };
+  //       for (let i = 0; i < setupElements.length; i++) {
+  //         const setupData = {
+  //           Cliente:
+  //             setupElements[i].getElementsByTagName("Cliente")[0].textContent,
+  //           PN_Smart:
+  //             setupElements[i].getElementsByTagName("PN_Smart")[0].textContent,
+  //           PN_Cliente:
+  //             setupElements[i].getElementsByTagName("PN_Cliente")[0]
+  //               .textContent,
+  //         };
+  //         setupList.push(setupData);
+  //       }
+  //       const filteredSetupList = setupList.filter(
+  //         (customer) => customer.Cliente !== null
+  //       );
+  //       const customerNames = filteredSetupList.map((customer) => ({
+  //         name: customer.Cliente as string,
+  //       }));
+  //       setInfs(customerNames);
+  //       if (customerNames.length > 0 && selectedCustomer === "") {
+  //         setSelectedCustomer(customerNames[0].name);
+  //         props.setSetupInf((e: any) => ({
+  //           ...props.setupInf,
+  //           customer: customerNames[0].name,
+  //         }));
+  //       }
+  //     })
+  //     .catch((res: string) =>
+  //       console.log("Error on getting costumers: " + res)
+  //     );
+  //   } catch (error) {
+  //     console.error("Axios error:", error);
+  //   }
+  // };
 
 
   useEffect(() => {
-    //getCostumers();
-    getTestCostumers();
+    getCostumers();
+    //getCostumersTest();
   }, []);
 
   const handleItemClick = (name: string) => {
