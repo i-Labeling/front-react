@@ -118,11 +118,11 @@ def post_example():
 
 @app.route('/costumer', methods=['GET'])
 def consumir_api():
-    api_url = 'http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers'  
+    api_url = 'http://127.0.0.1:5001/WebServices/get_list_of_customers'  
 
     try:
         # Enviar uma solicitação POST para a API
-        response = requests.post(api_url, headers={'Content-Type': 'text/xml'})
+        response = requests.post(api_url)
 
         print('Response',response)
 
@@ -232,35 +232,113 @@ def dash_hourxunits():
         return jsonify({'error': str(e)})
 
 
-# Rota do grafico unidade x day
+# # Rota do grafico unidade x day
+# @app.route('/dashboard/graph2', methods=['GET'])
+# def dash_dayxunits():
+#     costumer = request.args.getlist('costumer')
+#     date = request.args.get('date')
+#     typeM = request.args.getlist('typeM')
+#     dictSelect = {
+#         'costumer': costumer,
+#         'date': date,
+#         'typeM': typeM,
+#     }
+#     try:
+#         cursor = connection.cursor(cursor_factory=extras.DictCursor)
+
+#         # EXTRACT(EPOCH FROM coluna_timestamp) = seu_valor_inteiro
+#         # cursor.execute("SELECT CAST(EXTRACT(HOUR FROM data_insercao) AS VARCHAR)  AS hr, COUNT(DISTINCT CASE WHEN type_memory = 'sodimm' THEN quant_memory END) AS count_distinct_SODIMM, COUNT(DISTINCT CASE WHEN type_memory = 'udimm' THEN quant_memory END) AS count_distinct_UDIMM FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) and type_memory = ANY(%s) GROUP BY EXTRACT(HOUR FROM data_insercao)",(dictSelect['date'],dictSelect['costumer'],dictSelect['typeM'],))
+#         #
+#         cursor.execute("SELECT SUM(CAST(quant_memory AS INTEGER)) AS quantity, TO_CHAR(DATE_TRUNC('day', data_insercao), 'DD-MM-YYYY') AS day, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'sodimm') AS sodimm, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'udimm') AS udimm FROM info_arq WHERE data_insercao::DATE >= (DATE_TRUNC('day', %s::DATE) - INTERVAL '6 days') AND data_insercao::DATE <= %s AND customer =  ANY(%s) AND type_memory = ANY(%s) GROUP BY DATE_TRUNC('day', data_insercao)",
+#                        (dictSelect['date'], dictSelect['date'], dictSelect['costumer'], dictSelect['typeM'],))
+#         result = cursor.fetchall()
+#         column_names = [desc[0] for desc in cursor.description]
+
+#         # Construa uma lista de dicionários
+#         result_dicts = [dict(zip(column_names, row)) for row in result]
+#         # Retorne os resultados como um objeto JSON
+#         return jsonify(result_dicts)
+
+#     except Exception as e:
+#         return jsonify({'error': str(e)})
+
+
+#vou rodar um novo teste de rotas para graph2
+    
+# @app.route('/dashboard/graph2', methods=['GET'])
+# def dash_dayxunits():
+#     try:
+#         cursor = connection.cursor(cursor_factory=extras.DictCursor)
+
+#         # Obtém parâmetros da solicitação
+#         costumer = request.args.getlist('costumer', default=['all'])
+#         typeM = request.args.getlist('typeM', default=['all'])
+#         date = request.args.get('date', default=None)
+
+#         # Constrói a consulta SQL dinamicamente com base nos filtros
+#         sql_query = "SELECT customer, data_insercao, type_memory, quant_memory FROM info_arq ia WHERE TRUE"
+
+#         if costumer != ['all']:
+#             sql_query += " AND customer = ANY(%s)"
+#         if typeM != ['all']:
+#             sql_query += " AND type_memory = ANY(%s)"
+#         if date:
+#             sql_query += " AND data_insercao::DATE = %s"
+
+#         # Executa a consulta SQL
+#         cursor.execute(sql_query, (costumer, typeM, date))
+#         result = cursor.fetchall()
+#         column_names = [desc[0] for desc in cursor.description]
+
+#         # Construa uma lista de dicionários
+#         result_dicts = [dict(zip(column_names, row)) for row in result]
+
+#         # Retorne os resultados como um objeto JSON
+#         return jsonify(result_dicts)
+
+#     except Exception as e:
+#         return jsonify({'error': str(e)})
+
+
+
+#-- teste 2 
 @app.route('/dashboard/graph2', methods=['GET'])
 def dash_dayxunits():
-    costumer = request.args.getlist('costumer')
-    date = request.args.get('date')
-    typeM = request.args.getlist('typeM')
-    dictSelect = {
-        'costumer': costumer,
-        'date': date,
-        'typeM': typeM,
-    }
     try:
         cursor = connection.cursor(cursor_factory=extras.DictCursor)
 
-        # EXTRACT(EPOCH FROM coluna_timestamp) = seu_valor_inteiro
-        # cursor.execute("SELECT CAST(EXTRACT(HOUR FROM data_insercao) AS VARCHAR)  AS hr, COUNT(DISTINCT CASE WHEN type_memory = 'sodimm' THEN quant_memory END) AS count_distinct_SODIMM, COUNT(DISTINCT CASE WHEN type_memory = 'udimm' THEN quant_memory END) AS count_distinct_UDIMM FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) and type_memory = ANY(%s) GROUP BY EXTRACT(HOUR FROM data_insercao)",(dictSelect['date'],dictSelect['costumer'],dictSelect['typeM'],))
-        #
-        cursor.execute("SELECT SUM(CAST(quant_memory AS INTEGER)) AS quantity, TO_CHAR(DATE_TRUNC('day', data_insercao), 'DD-MM-YYYY') AS day, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'sodimm') AS sodimm, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'udimm') AS udimm FROM info_arq WHERE data_insercao::DATE >= (DATE_TRUNC('day', %s::DATE) - INTERVAL '6 days') AND data_insercao::DATE <= %s AND customer =  ANY(%s) AND type_memory = ANY(%s) GROUP BY DATE_TRUNC('day', data_insercao)",
-                       (dictSelect['date'], dictSelect['date'], dictSelect['costumer'], dictSelect['typeM'],))
+        # Obtém parâmetros da solicitação
+        costumer = request.args.getlist('costumer', default=['all'])
+        typeM = request.args.getlist('typeM', default=['all'])
+        date = request.args.get('date', default=None)
+
+        # Constrói a consulta SQL dinamicamente com base nos filtros
+        sql_query = """
+            SELECT customer, data_insercao, type_memory, quant_memory
+            FROM info_arq ia
+            WHERE data_insercao::DATE = %s
+        """
+
+        if costumer != ['all']:
+            sql_query += " AND customer = ANY(%s)"
+        if typeM != ['all']:
+            sql_query += " AND type_memory = ANY(%s)"
+
+        # Executa a consulta SQL
+        cursor.execute(sql_query, (date, costumer, typeM))
         result = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
 
         # Construa uma lista de dicionários
         result_dicts = [dict(zip(column_names, row)) for row in result]
+
         # Retorne os resultados como um objeto JSON
         return jsonify(result_dicts)
 
     except Exception as e:
         return jsonify({'error': str(e)})
+
+
 
 
 # Rota dos cartões/labels de processo
