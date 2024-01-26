@@ -42,6 +42,76 @@ export default function BoxSetup(props: InfConf) {
     }
   }, [props]);
 
+  // const getTestCostumers = async () => {
+  //   try {
+  //     var myHeaders = new Headers();
+  //     myHeaders.append("Content-Type", "text/xml");
+
+  //     var raw =
+  //       '<?xml version="1.0" encoding="utf-8"?>\r\n' +
+  //       '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\r\n' +
+  //       "  <soap:Body>\r\n" +
+  //       '    <GetListOfCustomers xmlns="http://tempuri.org/" />\r\n' +
+  //       "  </soap:Body>\r\n" +
+  //       "</soap:Envelope>";
+
+  //     var requestOptions = {
+  //       method: "POST",
+  //       headers: myHeaders,
+  //       body: raw,
+  //       redirect: "follow" as RequestRedirect,
+  //     };
+
+  //     const response = await fetch(
+  //       "http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers",
+  //       requestOptions
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     const xmlString = await response.text();
+  //     const parser = new DOMParser();
+  //     const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+  //     const setupElements = xmlDoc.getElementsByTagName("SetupiLabelling");
+  //     const setupList = [];
+
+  //     for (let i = 0; i < setupElements.length; i++) {
+  //       const setupData = {
+  //         Cliente:
+  //           setupElements[i].getElementsByTagName("Cliente")[0].textContent,
+  //         PN_Smart:
+  //           setupElements[i].getElementsByTagName("PN_Smart")[0].textContent,
+  //         PN_Cliente:
+  //           setupElements[i].getElementsByTagName("PN_Cliente")[0].textContent,
+  //       };
+  //       setupList.push(setupData);
+  //     }
+
+  //     const filteredSetupList = setupList.filter(
+  //       (customer) => customer.Cliente !== null
+  //     );
+
+  //     const customerNames = filteredSetupList.map((customer) => ({
+  //       name: customer.Cliente as string,
+  //     }));
+
+  //     setInfs(customerNames);
+
+  //     if (customerNames.length > 0 && selectedCustomer === "") {
+  //       setSelectedCustomer(customerNames[0].name);
+  //       props.setSetupInf((e: any) => ({
+  //         ...props.setupInf,
+  //         customer: customerNames[0].name,
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error("Fetch error:", error);
+  //   }
+  // };
+
   const getCostumers = async () => {
     try {
       const response = await fetch(
