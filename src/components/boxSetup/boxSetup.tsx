@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./style.css";
 import CheckIcon from "@mui/icons-material/Check";
-import axios from "axios";
+//import axios from "axios";
 
 interface InfConf {
   setupInf: {};
@@ -56,7 +56,7 @@ export default function BoxSetup(props: InfConf) {
   //       "  </soap:Body>\r\n" +
   //       "</soap:Envelope>";
 
-  //     var requestOptions = {
+  //     var requestOptions: RequestInit = {
   //       method: "POST",
   //       headers: myHeaders,
   //       body: raw,
@@ -113,54 +113,54 @@ export default function BoxSetup(props: InfConf) {
   //   }
   // };
 
-  const getCostumers = async () => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:5001/WebServices/get_list_of_customers",
-        {
-          method: "POST",
-        }
-      );
+  // const getCostumers = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "http://127.0.0.1:5000/costumer",
+  //       {
+  //         method: "POST",
+  //       }
+  //     );
 
-      if (response.ok) {
-        const xmlString = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+  //     if (response.ok) {
+  //       const xmlString = await response.text();
+  //       const parser = new DOMParser();
+  //       const xmlDoc = parser.parseFromString(xmlString, "text/xml");
 
-        const setupElements = xmlDoc.getElementsByTagName("SetupiLabelling");
-        const setupList = [];
+  //       const setupElements = xmlDoc.getElementsByTagName("SetupiLabelling");
+  //       const setupList = [];
 
-        for (let i = 0; i < setupElements.length; i++) {
-          const setupData = {
-            Cliente:
-              setupElements[i].getElementsByTagName("Cliente")[0].textContent,
-            PN_Smart:
-              setupElements[i].getElementsByTagName("PN_Smart")[0].textContent,
-            PN_Cliente:
-              setupElements[i].getElementsByTagName("PN_Cliente")[0]
-                .textContent,
-          };
-          setupList.push(setupData);
-        }
-        const filteredSetupList = setupList.filter(
-          (customer) => customer.Cliente !== null
-        );
-        const customerNames = filteredSetupList.map((customer) => ({
-          name: customer.Cliente as string,
-        }));
-        setInfs(customerNames);
-        if (customerNames.length > 0 && selectedCustomer === "") {
-          setSelectedCustomer(customerNames[0].name);
-          props.setSetupInf((e: any) => ({
-            ...props.setupInf,
-            customer: customerNames[0].name,
-          }));
-        }
-      }
-    } catch (error) {
-      console.error("Axios error:", error);
-    }
-  };
+  //       for (let i = 0; i < setupElements.length; i++) {
+  //         const setupData = {
+  //           Cliente:
+  //             setupElements[i].getElementsByTagName("Cliente")[0].textContent,
+  //           PN_Smart:
+  //             setupElements[i].getElementsByTagName("PN_Smart")[0].textContent,
+  //           PN_Cliente:
+  //             setupElements[i].getElementsByTagName("PN_Cliente")[0]
+  //               .textContent,
+  //         };
+  //         setupList.push(setupData);
+  //       }
+  //       const filteredSetupList = setupList.filter(
+  //         (customer) => customer.Cliente !== null
+  //       );
+  //       const customerNames = filteredSetupList.map((customer) => ({
+  //         name: customer.Cliente as string,
+  //       }));
+  //       setInfs(customerNames);
+  //       if (customerNames.length > 0 && selectedCustomer === "") {
+  //         setSelectedCustomer(customerNames[0].name);
+  //         props.setSetupInf((e: any) => ({
+  //           ...props.setupInf,
+  //           customer: customerNames[0].name,
+  //         }));
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Axios error:", error);
+  //   }
+  // };
 
   // const getTestCostumers = async () => {
   //   try {
@@ -219,10 +219,38 @@ export default function BoxSetup(props: InfConf) {
   //   }
   // };
 
+  const userToken = localStorage.getItem("jwtToken");
+  const headers = {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${userToken}`,
+  };
+
+  const getCostumers = async () => {
+    try {
+    const response = await fetch("http://127.0.0.1:5000/costumer", {
+    method: "GET",
+    headers: headers,
+    });
+    if (response.ok) {
+      const usersNames = await response.json();
+      setInfs(usersNames);
+      if (usersNames.length > 0 && selectedCustomer === "") {
+                setSelectedCustomer(usersNames[0].name);
+                props.setSetupInf((e: any) => ({
+                  ...props.setupInf,
+                  customer: usersNames[0].name,
+                }));
+              }
+      }
+      } catch (error) {
+      console.error("Errors in getting kpis:", error);
+      }
+      };
+
 
   useEffect(() => {
     getCostumers();
-    //getCostumersTest();
+    //getTestCostumers();
   }, []);
 
   const handleItemClick = (name: string) => {

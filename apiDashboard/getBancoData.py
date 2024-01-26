@@ -31,6 +31,7 @@ connection = psycopg2.connect(
     host="localhost",
     port="5432"
 )
+
 # Função para buscar os dados mais recentes da tabela info_arq
 
 
@@ -118,11 +119,18 @@ def post_example():
 
 @app.route('/costumer', methods=['GET'])
 def consumir_api():
-    api_url = 'http://127.0.0.1:5001/WebServices/get_list_of_customers'  
-
+    #api_url = 'http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/'  
+    api_url = "http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/"
+    payload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <soap:Body>\r\n    <GetListOfCustomers xmlns=\"http://tempuri.org/\" />\r\n  </soap:Body>\r\n</soap:Envelope>"
+    headers = {
+        'Content-Type': 'text/xml'
+    }
     try:
+
         # Enviar uma solicitação POST para a API
-        response = requests.post(api_url)
+        #response = requests.request("POST", api_url, headers=headers, data=payload)
+        response = requests.post(api_url, headers=headers, data=payload)
+        print('teste',response)
 
         print('Response',response)
 
@@ -143,9 +151,11 @@ def consumir_api():
                     #'PN_Cliente': cliente_info['PN_Cliente']
                 }
                 clientes_list.append(cliente_data)
+                print('manaus2',clientes_list)
 
-            # Converter a lista de clientes para JSON
+            # Converter a lista de clientes para JSON   
             data = json.dumps(clientes_list, indent=2)
+            print('manaus',data)
 
             # Retornar os dados JSON
             return Response(response=data, status=200, mimetype="application/json")
