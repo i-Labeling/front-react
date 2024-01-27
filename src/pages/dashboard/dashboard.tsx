@@ -21,6 +21,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import { toast } from "react-toastify";
 
 interface KPIs {
   labelled: string;
@@ -32,14 +33,14 @@ interface Erros {
 }
 interface Graph1 {
   hour: string;
-  sodinn: number;
-  udinn: number;
+  sodimm: number;
+  udimm: number;
   quantity: number;
 }
 interface Graph2 {
   day: string;
-  sodinn: number;
-  udinn: number;
+  sodimm: number;
+  udimm: number;
   quantity: number;
 }
 interface Costumer {
@@ -49,13 +50,19 @@ interface Costumer {
 export default function Dashboard() {
   const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
   const userToken = localStorage.getItem("jwtToken");
+  const [toastShown, setToastShown] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [filterGet, setFilterGet] = useState({
     costumer: idsCostumers,
-    date: new Date().toISOString().split("T")[0],
-    typeM: ["udimm", "sodimm"],
+    dateInit: new Date().toISOString().split("T")[0],
+    dateTerminate: new Date().toISOString().split("T")[0],
+    typeM: ["All"],
   });
 
-  const [value, setValue] = useState<any>(dayjs(filterGet.date));
+  const [value, setValue] = useState<any>(dayjs(filterGet.dateInit));
+  const [valueTerminate, setValueTerminate] = useState<any>(
+    dayjs(filterGet.dateTerminate)
+  );
 
   const [graph1, setGraph1] = useState<Graph1[]>([]);
   const [graph2, setGraph2] = useState<Graph2[]>([]);
@@ -71,6 +78,128 @@ export default function Dashboard() {
     reworks: "",
     trays: "",
   });
+
+  const validateDateInterval = () => {
+    if (filterGet.dateInit > filterGet.dateTerminate) {
+      if (!toastShown) {
+        toast.error("Invalid date interval, try another interval!");
+        setToastShown(true);
+      }
+
+      setKpis({
+        labelled: "0",
+        reworks: "0",
+        trays: "0",
+      });
+
+      setErrors([]);
+
+      return false;
+    }
+    return true;
+  };
+
+  //De acordo com a OSs
+  const formatGraph1Data = (data: any) => {
+    return data.map((item: any) => {
+      return {
+        hour: format(new Date(item.order), "HH:mm"),
+        sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
+        udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
+        quantity: item.quantMemory,
+      };
+    });
+  };
+
+  //Agrupamento de dados por dia (tirar o hr)
+  // const formatGraph1Data = (data: any) => {
+  //   const accumulatedData: { [key: string]: any } = {};
+  //   data.forEach((item: any) => {
+  //     const typeMemory = item.typeMemory;
+
+  //     if (accumulatedData[typeMemory]) {
+  //       accumulatedData[typeMemory].sodimm +=
+  //         item.typeMemory === "sodimm" ? item.quantMemory : 0;
+  //       accumulatedData[typeMemory].udimm +=
+  //         item.typeMemory === "udimm" ? item.quantMemory : 0;
+  //       accumulatedData[typeMemory].quantity += item.quantMemory;
+  //     } else {
+  //       accumulatedData[typeMemory] = {
+  //         typeMemory,
+  //         sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
+  //         udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
+  //         quantity: item.quantMemory,
+  //       };
+  //     }
+  //   });
+  //   const result = Object.values(accumulatedData);
+  //   return result;
+  // };
+
+  // const formatGraph1Data = (data: any, intervalHours: number) => {
+  //   const accumulatedData: { [key: string]: any } = {};
+
+  //   data.forEach((item: any) => {
+  //     const date = new Date(item.order);
+  //     const startHour =
+  //       Math.floor(date.getHours() / intervalHours) * intervalHours;
+  //     const endHour = startHour + intervalHours;
+
+  //     const hourInterval = `${startHour.toString().padStart(2, "0")}-${endHour
+  //       .toString()
+  //       .padStart(2, "0")}`;
+
+  //     if (accumulatedData[hourInterval]) {
+  //       accumulatedData[hourInterval].sodimm +=
+  //         item.typeMemory === "sodimm" ? item.quantMemory : 0;
+  //       accumulatedData[hourInterval].udimm +=
+  //         item.typeMemory === "udimm" ? item.quantMemory : 0;
+  //       accumulatedData[hourInterval].quantity += item.quantMemory;
+  //     } else {
+  //       accumulatedData[hourInterval] = {
+  //         hour: hourInterval,
+  //         sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
+  //         udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
+  //         quantity: item.quantMemory,
+  //       };
+  //     }
+  //   });
+
+  //   const result = Object.values(accumulatedData);
+  //   return result;
+  // };
+
+  const formatGraph2Data = (data: any) => {
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const groupedData: { [key: string]: any } = {};
+
+    {
+      data.length > 0 &&
+        weekdays.forEach((day) => {
+          groupedData[day] = {
+            day,
+            sodimm: null,
+            udimm: null,
+            quantity: null,
+          };
+        });
+    }
+
+    data.forEach((item: any) => {
+      const day = format(new Date(item.order), "EEE");
+
+      groupedData[day].sodimm +=
+        item.typeMemory === "sodimm" ? item.quantMemory : 0;
+      groupedData[day].udimm +=
+        item.typeMemory === "udimm" ? item.quantMemory : 0;
+      groupedData[day].quantity += item.quantMemory;
+    });
+    const result = Object.values(groupedData);
+
+    return result;
+  };
+
   const verificationSodimmKey = "sodimm";
   const allValuesNullSodimm = graph1.every((dictI: any) => {
     return dictI[verificationSodimmKey] === null;
@@ -80,65 +209,49 @@ export default function Dashboard() {
     return dictI[verificationUdimmKey] === null;
   });
 
-  const parseParamsQuery = (params: any) => {
-    const queryParams = new URLSearchParams(params).toString();
-    return queryParams;
-  };
-
   const getGraph1 = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/dashboard/graph1?" + parseParamsQuery(filterGet),
-        { method: "GET", headers: headers }
-      );
+      const response = await fetch("http://127.0.0.1:5000/dashboard/graph1", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(filterGet),
+      });
 
       if (response.ok) {
         const data = await response.json();
-        setGraph1(data);
+        // const formattedData = formatGraph1Data(data, 1);
+        const formattedData = formatGraph1Data(data);
+        setGraph1(formattedData);
       }
     } catch (error) {
       console.error("Error in get graph 1:", error);
     }
-    // Mock data for graph1
-    // Testing
-    // const mockGraph1Data = [
-    //   { hour: "00:00", sodinn: 10, udinn: 15, quantity: 25 },
-    //   { hour: "01:00", sodinn: 12, udinn: 18, quantity: 30 },
-    // ];
-
-    // setGraph1(mockGraph1Data);
   };
+
   const getGraph2 = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/dashboard/graph2?" + parseParamsQuery(filterGet),
-        { method: "GET", headers: headers }
-      );
+      const response = await fetch("http://127.0.0.1:5000/dashboard/graph2", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(filterGet),
+      });
 
       if (response.ok) {
         const data = await response.json();
-        setGraph2(data);
+        const formattedData = formatGraph2Data(data);
+        setGraph2(formattedData);
       }
     } catch (error) {
       console.error("Error in get graph 2:", error);
     }
-    //Test
-    // Mock data for graph2
-    // const mockGraph2Data = [
-    //   { day: "Mon", sodinn: 50, udinn: 30, quantity: 80 },
-    //   { day: "Tue", sodinn: 45, udinn: 35, quantity: 80 },
-    //   { day: "Wed", sodinn: 35, udinn: 25, quantity: 80 },
-    //   { day: "Thu", sodinn: 45, udinn: 35, quantity: 80 },
-    // ];
-
-    // setGraph2(mockGraph2Data);
   };
   const getErros = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/dashboard/erros?" + parseParamsQuery(filterGet),
-        { method: "GET", headers: headers }
-      );
+      const response = await fetch("http://127.0.0.1:5000/dashboard/erros", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(filterGet),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -147,20 +260,14 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Errors in getting errors:", error);
     }
-    // const mockErrors = [
-    //   { erro: "Error 1: Something went wrong" },
-    //   { erro: "Error 2: Another issue occurred" },
-    //   { erro: "Error 3: An error message here" },
-    // ];
-
-    // setErrors(mockErrors);
   };
   const getKPIs = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/dashboard/kpis?" + parseParamsQuery(filterGet),
-        { method: "GET", headers: headers }
-      );
+      const response = await fetch("http://127.0.0.1:5000/dashboard/kpis", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(filterGet),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -181,29 +288,35 @@ export default function Dashboard() {
       if (response.ok) {
         const users = await response.json();
         setIdsCostumers(users);
+        setDataLoaded(true);
       }
     } catch (error) {
       console.error("Errors in getting kpis:", error);
     }
   };
   const att = () => {
+    getCostumers();
     getGraph1();
     getGraph2();
     getErros();
     getKPIs();
-    getCostumers();
   };
   useEffect(() => {
+    getCostumers();
     getGraph1();
     getGraph2();
     getErros();
     getKPIs();
-    getCostumers();
   }, []);
   useEffect(() => {
+    if (!validateDateInterval()) {
+      return;
+    }
     att();
     console.log(filterGet);
-  }, [filterGet]);
+  }, [filterGet, dataLoaded]);
+
+  const dateToday = new Date().toISOString().split("T")[0];
 
   return (
     <>
@@ -211,12 +324,14 @@ export default function Dashboard() {
       <main className="container_page_dashboard">
         <div className="container_menu_header_dashboard">
           <div className="container_menu_dashboard">
-            <SelectDashboard
-              vals={idsCostumers}
-              filterGet={filterGet}
-              setFilterGet={setFilterGet}
-              filterField="costumer"
-            />
+            {dataLoaded && (
+              <SelectDashboard
+                vals={idsCostumers}
+                filterGet={filterGet}
+                setFilterGet={setFilterGet}
+                filterField="costumer"
+              />
+            )}
             <SelectDashboard
               vals={[{ name: "udimm" }, { name: "sodimm" }]}
               filterGet={filterGet}
@@ -225,6 +340,7 @@ export default function Dashboard() {
             />
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt">
               <DatePicker
+                label="Start Date"
                 className="container_input_date_dashboard"
                 format="DD/MM/YYYY"
                 value={value}
@@ -233,13 +349,36 @@ export default function Dashboard() {
                     const formattedDate = date.toISOString().split("T")[0];
                     setFilterGet((prevFilter) => ({
                       ...prevFilter,
-                      date: formattedDate,
+                      dateInit: formattedDate,
                     }));
                     setValue(formattedDate);
                   }
                 }}
               />
             </LocalizationProvider>
+            <div style={{ paddingLeft: 20 }}>
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="pt"
+              >
+                <DatePicker
+                  label="End Date"
+                  className="container_input_date_dashboard"
+                  format="DD/MM/YYYY"
+                  value={valueTerminate}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      const formattedDate = date.toISOString().split("T")[0];
+                      setFilterGet((prevFilter) => ({
+                        ...prevFilter,
+                        dateTerminate: formattedDate,
+                      }));
+                      setValueTerminate(formattedDate);
+                    }
+                  }}
+                />
+              </LocalizationProvider>
+            </div>
           </div>
           <div
             style={{
@@ -259,15 +398,12 @@ export default function Dashboard() {
                 }}
                 className="text_calendar"
               >
-                {format(
-                  utcToZonedTime(filterGet.date, "America/Sao_Paulo"),
-                  "dd"
-                )}
+                {format(utcToZonedTime(dateToday, "America/Sao_Paulo"), "dd")}
               </span>
               <br />
               <span className="text_calendar">
                 {format(
-                  utcToZonedTime(filterGet.date, "America/Sao_Paulo"),
+                  utcToZonedTime(dateToday, "America/Sao_Paulo"),
                   "MMM yyyy"
                 )}
               </span>
@@ -345,7 +481,7 @@ export default function Dashboard() {
         </div>
         <div className="container_graph">
           <div className="content_graph">
-            <h1 className="title_graph">LABELING BY DAY</h1>
+            <h1 className="title_graph">LABELING BY DAY (OSs)</h1>
             <BarChart
               width={500}
               height={240}
@@ -364,12 +500,12 @@ export default function Dashboard() {
               {allValuesNullSodimm ? (
                 <></>
               ) : (
-                <Bar dataKey="sodinn" fill="rgb(64, 64, 216)" unit="hr" />
+                <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
               )}
               {allValuesNullUdimm ? (
                 <></>
               ) : (
-                <Bar dataKey="udinn" fill="#82ca9d" />
+                <Bar dataKey="udimm" fill="#82ca9d" />
               )}
             </BarChart>
           </div>
@@ -395,14 +531,14 @@ export default function Dashboard() {
               ) : (
                 <Line
                   type="monotone"
-                  dataKey="sodinn"
+                  dataKey="sodimm"
                   stroke="rgb(64, 64, 216)"
                 />
               )}
               {allValuesNullUdimm ? (
                 <></>
               ) : (
-                <Line type="monotone" dataKey="udinn" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="udimm" stroke="#82ca9d" />
               )}
             </LineChart>
           </div>

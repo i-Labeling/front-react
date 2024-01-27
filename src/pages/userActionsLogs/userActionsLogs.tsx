@@ -11,10 +11,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
 import { useStyles } from "./styles";
 import UserActionItem from "../../components/userActionItem/userActionItem";
+import BackButton from "../../components/backButton/backButton";
 
 type UserData = {
   login: string;
@@ -82,7 +82,14 @@ const UserActionsLogs: React.FC = () => {
     <>
       <CustomMenu />
       <CardGeneral>
-        <Title title="View User Actions by day" className={classes.title} />
+        <div className={classes.header}>
+          <div className={classes.backButtonContainer}>
+            <BackButton />
+          </div>
+          <div className={classes.titleContainer}>
+            <Title title="View User Actions by day" className={classes.title} />
+          </div>
+        </div>
         <TableContainer component={Paper} className={classes.tableContainer}>
           <Table>
             <TableHead className={classes.tableHead}>

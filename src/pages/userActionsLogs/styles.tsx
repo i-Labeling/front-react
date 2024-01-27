@@ -35,9 +35,17 @@ export const useStyles = makeStyles({
   button: {
     width: "100%",
   },
-  buttonContainer: {
+  backButtonContainer: {
+    marginRight: "20px",
+  },
+  header: {
     display: "flex",
-    justifyContent: "center",
-    paddingBottom: 40,
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "10px",
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
   },
 });

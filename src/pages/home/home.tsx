@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../../components/loading/loading";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import { Card } from "@mui/material";
-import axiosInstance from "../../services/instanceAxios";
 
 interface StatusDevice {
   connection: boolean;
@@ -18,29 +17,13 @@ interface StatusProcessI {
   idProcess: string;
 }
 
-interface UserAuthIHM {
-  token: any;
-  profile: any;
-}
-
-interface User {
-  token: any;
-  profile: any;
-}
-
 export default function Home() {
   const navigate = useNavigate();
-  const userToken = localStorage.getItem("jwtToken");
   const [statusDevice, setStatusDevice] = useState<Array<StatusDevice>>([]);
   const [statusProcess, setStatusProcess] = useState<StatusProcessI>({
     log: "",
     idProcess: "waiting",
   });
-
-  // Implement state variable to user auth IHM
-  const [userAuthIHM, setUserAuthIHM] = useState<UserAuthIHM>();
-  const [user, setUser] = useState<User>();
-
   // Mock SSE event to simulate status updates
   // const mockStatusUpdate = (processStatus: StatusProcessI) => {
   //   setStatusProcess(processStatus);
@@ -96,33 +79,6 @@ export default function Home() {
       eventSource.close();
     };
   }, []);
-
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${userToken}`,
-  };
-
-  const getUserIdByToken = async (token: any) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5002/user/userTokenIHM", {
-        headers: headers,
-        method: "POST",
-        body: JSON.stringify({ token: token }),
-      });
-
-      let user = { token: token, profile: "-1" };
-
-      if (response.ok) {
-        user = await response.json();
-        setUser(user);
-      }
-
-      return user;
-    } catch (e) {
-      console.error("Failed to getting user", e);
-      return { token: token, profile: "-1" };
-    }
-  };
 
   const toNavigate = () => {
     navigate("/conf");

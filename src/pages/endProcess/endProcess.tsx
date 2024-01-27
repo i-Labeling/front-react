@@ -94,7 +94,7 @@ export default function EndProcess() {
           />
           <CardLog
             title="Scrap Position and Error Type"
-            val={infProccess.positionAndError}
+            val={infProccess.positionAndError ?? "0"}
             style={styleCard}
             show={false}
             className="cardLog"
@@ -102,14 +102,14 @@ export default function EndProcess() {
           />
           <CardLog
             title="Inspection Error Counter"
-            val={infProccess.inspectionErrors}
+            val={infProccess.inspectionErrors ?? "0"}
             show={true}
             className="cardLog"
             titleBackgroundColor={"#E8405E"}
           />
           <CardLog
             title="Camera Error Counter"
-            val={infProccess.cameraError}
+            val={infProccess.cameraError ?? 0}
             show={true}
             className="cardLog"
             titleBackgroundColor={"#E8405E"}

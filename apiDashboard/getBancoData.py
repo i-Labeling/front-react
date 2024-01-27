@@ -9,7 +9,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 import dotenv
-import xmltodict 
+import xmltodict
 
 
 # PROGRAMA PRINCIPAL
@@ -119,7 +119,8 @@ def post_example():
 
 @app.route('/costumer', methods=['GET'])
 def consumir_api():
-    #api_url = 'http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/'  
+    #api_url = 'http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/'
+    # api_url = "http://127.0.0.1:5001/WebServices/get_list_of_customers"
     api_url = "http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/"
     payload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <soap:Body>\r\n    <GetListOfCustomers xmlns=\"http://tempuri.org/\" />\r\n  </soap:Body>\r\n</soap:Envelope>"
     headers = {
@@ -130,9 +131,7 @@ def consumir_api():
         # Enviar uma solicitação POST para a API
         #response = requests.request("POST", api_url, headers=headers, data=payload)
         response = requests.post(api_url, headers=headers, data=payload)
-        print('teste',response)
-
-        print('Response',response)
+        # response = requests.post(api_url)
 
         # Verificar se a solicitação foi bem-sucedida (código de status 200)
         if response.status_code == 200:
@@ -151,11 +150,9 @@ def consumir_api():
                     #'PN_Cliente': cliente_info['PN_Cliente']
                 }
                 clientes_list.append(cliente_data)
-                print('manaus2',clientes_list)
 
             # Converter a lista de clientes para JSON   
             data = json.dumps(clientes_list, indent=2)
-            print('manaus',data)
 
             # Retornar os dados JSON
             return Response(response=data, status=200, mimetype="application/json")
@@ -211,214 +208,175 @@ def log():
     return Response(event_stream(), content_type='text/event-stream')
 
 
-@app.route('/dashboard/graph1', methods=['GET'])
-def dash_hourxunits():
-    customer = request.args.getlist('customer')
-    date = request.args.get('date')
-    typeM = request.args.getlist('typeM')
-    dictSelect = {
-        'customer': customer,
-        'date': date,
-        'typeM': typeM,
-    }
+@app.route('/dashboard/graph1', methods=['POST'])
+def dash_graph1():
     try:
-        connection = psycopg2.connect(
-            dbname="postgres",
-            user="postgres",
-            password="2023",
-            host="localhost",
-            port="5432"
-        )
-        cursor = connection.cursor(cursor_factory=extras.DictCursor)
+        datas = request.json
+        cur = connection.cursor()
 
-        cursor.execute("SELECT SUM(CAST(quant_memory AS INTEGER)) AS quantity, CAST(EXTRACT(HOUR FROM data_insercao) AS VARCHAR) AS hour, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'sodimm') AS sodimm, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'udimm') AS udimm FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) AND type_memory = ANY(%s) GROUP BY EXTRACT(HOUR FROM data_insercao),customer",
-                       (dictSelect['date'], dictSelect['customer'], dictSelect['typeM'],))
-        result = cursor.fetchall()
+        costumer = datas['costumer']
+        dateInit = datas['dateInit']
+        dateTerminate = datas['dateTerminate']
+        typeM = datas['typeM']
 
-        column_names = [desc[0] for desc in cursor.description]
-        result_dicts = [dict(zip(column_names, row)) for row in result]
-        return jsonify(result_dicts)
+        query = "SELECT * FROM info_arq WHERE 1=1"
+
+        if costumer and costumer[0] != 'All':
+            query += f" AND customer = '{costumer[0]}'"
+
+        if typeM and  typeM[0] != 'All':
+            query += f" AND type_memory = '{typeM[0]}'"
+
+        if dateInit and dateTerminate:
+            # Utiliza o formato correto para a comparação de datas
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+
+        cur.execute(query)
+        resultados = cur.fetchall()
+
+        cur.close()
+
+        data_list = []
+
+        for resultado in resultados:
+            data_dict = {
+                "customer": str(resultado[1]),
+                "order": str(resultado[11]),
+                "typeMemory": str(resultado[12]),
+                "quantMemory": int(resultado[13]),
+            }
+            data_list.append(data_dict)
+            
+        return jsonify(data_list)
+
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return {"erro": str(e)}
 
 
-# # Rota do grafico unidade x day
-# @app.route('/dashboard/graph2', methods=['GET'])
-# def dash_dayxunits():
-#     costumer = request.args.getlist('costumer')
-#     date = request.args.get('date')
-#     typeM = request.args.getlist('typeM')
-#     dictSelect = {
-#         'costumer': costumer,
-#         'date': date,
-#         'typeM': typeM,
-#     }
-#     try:
-#         cursor = connection.cursor(cursor_factory=extras.DictCursor)
+@app.route('/dashboard/graph2', methods=['POST'])
+def dash_graph2():
+    try:
+        datas = request.json
+        cur = connection.cursor()
 
-#         # EXTRACT(EPOCH FROM coluna_timestamp) = seu_valor_inteiro
-#         # cursor.execute("SELECT CAST(EXTRACT(HOUR FROM data_insercao) AS VARCHAR)  AS hr, COUNT(DISTINCT CASE WHEN type_memory = 'sodimm' THEN quant_memory END) AS count_distinct_SODIMM, COUNT(DISTINCT CASE WHEN type_memory = 'udimm' THEN quant_memory END) AS count_distinct_UDIMM FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) and type_memory = ANY(%s) GROUP BY EXTRACT(HOUR FROM data_insercao)",(dictSelect['date'],dictSelect['costumer'],dictSelect['typeM'],))
-#         #
-#         cursor.execute("SELECT SUM(CAST(quant_memory AS INTEGER)) AS quantity, TO_CHAR(DATE_TRUNC('day', data_insercao), 'DD-MM-YYYY') AS day, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'sodimm') AS sodimm, SUM(CAST(quant_memory AS INTEGER)) FILTER (WHERE type_memory = 'udimm') AS udimm FROM info_arq WHERE data_insercao::DATE >= (DATE_TRUNC('day', %s::DATE) - INTERVAL '6 days') AND data_insercao::DATE <= %s AND customer =  ANY(%s) AND type_memory = ANY(%s) GROUP BY DATE_TRUNC('day', data_insercao)",
-#                        (dictSelect['date'], dictSelect['date'], dictSelect['costumer'], dictSelect['typeM'],))
-#         result = cursor.fetchall()
-#         column_names = [desc[0] for desc in cursor.description]
+        costumer = datas['costumer']
+        dateInit = datas['dateInit']
+        dateTerminate = datas['dateTerminate']
+        typeM = datas['typeM']
 
-#         # Construa uma lista de dicionários
-#         result_dicts = [dict(zip(column_names, row)) for row in result]
-#         # Retorne os resultados como um objeto JSON
-#         return jsonify(result_dicts)
+        query = "SELECT * FROM info_arq WHERE 1=1"
 
-#     except Exception as e:
-#         return jsonify({'error': str(e)})
+        if costumer and costumer[0] != 'All':
+            query += f" AND customer = '{costumer[0]}'"
 
+        if typeM and  typeM[0] != 'All':
+            query += f" AND type_memory = '{typeM[0]}'"
 
-#vou rodar um novo teste de rotas para graph2
+        if dateInit and dateTerminate:
+            # Utiliza o formato correto para a comparação de datas
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+
+        cur.execute(query)
+        resultados = cur.fetchall()
+
+        cur.close()
+
+        data_list = []
+
+        for resultado in resultados:
+            data_dict = {
+                "customer": str(resultado[1]),
+                "order": str(resultado[11]),
+                "typeMemory": str(resultado[12]),
+                "quantMemory": int(resultado[13]),
+            }
+            data_list.append(data_dict)
+            
+        return jsonify(data_list)
+
+    except Exception as e:
+        return {"erro": str(e)}
     
-# @app.route('/dashboard/graph2', methods=['GET'])
-# def dash_dayxunits():
-#     try:
-#         cursor = connection.cursor(cursor_factory=extras.DictCursor)
-
-#         # Obtém parâmetros da solicitação
-#         costumer = request.args.getlist('costumer', default=['all'])
-#         typeM = request.args.getlist('typeM', default=['all'])
-#         date = request.args.get('date', default=None)
-
-#         # Constrói a consulta SQL dinamicamente com base nos filtros
-#         sql_query = "SELECT customer, data_insercao, type_memory, quant_memory FROM info_arq ia WHERE TRUE"
-
-#         if costumer != ['all']:
-#             sql_query += " AND customer = ANY(%s)"
-#         if typeM != ['all']:
-#             sql_query += " AND type_memory = ANY(%s)"
-#         if date:
-#             sql_query += " AND data_insercao::DATE = %s"
-
-#         # Executa a consulta SQL
-#         cursor.execute(sql_query, (costumer, typeM, date))
-#         result = cursor.fetchall()
-#         column_names = [desc[0] for desc in cursor.description]
-
-#         # Construa uma lista de dicionários
-#         result_dicts = [dict(zip(column_names, row)) for row in result]
-
-#         # Retorne os resultados como um objeto JSON
-#         return jsonify(result_dicts)
-
-#     except Exception as e:
-#         return jsonify({'error': str(e)})
-
-
-
-#-- teste 2 
-@app.route('/dashboard/graph2', methods=['GET'])
-def dash_dayxunits():
+@app.route('/dashboard/kpis', methods=['POST'])
+def dash_kpis():
     try:
-        cursor = connection.cursor(cursor_factory=extras.DictCursor)
+        datas = request.json
+        cur = connection.cursor()
 
-        # Obtém parâmetros da solicitação
-        costumer = request.args.getlist('costumer', default=['all'])
-        typeM = request.args.getlist('typeM', default=['all'])
-        date = request.args.get('date', default=None)
+        costumer = datas['costumer']
+        dateInit = datas['dateInit']
+        dateTerminate = datas['dateTerminate']
+        typeM = datas['typeM']
 
-        # Constrói a consulta SQL dinamicamente com base nos filtros
-        sql_query = """
-            SELECT customer, data_insercao, type_memory, quant_memory
-            FROM info_arq ia
-            WHERE data_insercao::DATE = %s
-        """
+        query = "SELECT SUM(CAST(quant_memory AS INTEGER)) - (SUM(CAST(cam_erro AS INTEGER)) + SUM(CAST(mem_fail AS INTEGER))) AS labelled, SUM(CAST(bandeja AS integer)) AS trays, SUM(mem_fail) as reworks FROM info_arq WHERE 1=1"
 
-        if costumer != ['all']:
-            sql_query += " AND customer = ANY(%s)"
-        if typeM != ['all']:
-            sql_query += " AND type_memory = ANY(%s)"
+        if costumer and costumer[0] != 'All':
+            query += f" AND customer = '{costumer[0]}'"
 
-        # Executa a consulta SQL
-        cursor.execute(sql_query, (date, costumer, typeM))
-        result = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
+        if typeM and typeM[0] != 'All':
+            query += f" AND type_memory = '{typeM[0]}'"
 
-        # Construa uma lista de dicionários
-        result_dicts = [dict(zip(column_names, row)) for row in result]
+        if dateInit and dateTerminate:
+            # Utiliza o formato correto para a comparação de datas
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
 
-        # Retorne os resultados como um objeto JSON
-        return jsonify(result_dicts)
+        cur.execute(query)
+        result = cur.fetchall()
 
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-
-
-
-# Rota dos cartões/labels de processo
-@app.route('/dashboard/kpis', methods=['GET'])
-def cards_dash():
-    costumer = request.args.getlist('costumer')
-    date = request.args.get('date')
-    typeM = request.args.getlist('typeM')
-    dictSelect = {
-        'costumer': costumer,
-        'date': date,
-        'typeM': typeM,
-    }
-
-    try:
-
-        cursor = connection.cursor(cursor_factory=extras.DictCursor)
-        # EXTRACT(EPOCH FROM coluna_timestamp) = seu_valor_inteiro
-        cursor.execute("SELECT SUM(CAST(quant_memory AS INTEGER)) - (SUM(CAST(cam_erro AS INTEGER)) + SUM(CAST(mem_fail AS INTEGER))) AS labelled, SUM(CAST(bandeja AS integer)) AS trays, SUM(mem_fail) as reworks FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) and type_memory = ANY(%s)",
-                       (dictSelect['date'], dictSelect['costumer'], dictSelect['typeM'],))
-
-        result = cursor.fetchall()
-
-        column_names = [desc[0] for desc in cursor.description]
-
+        column_names = [desc[0] for desc in cur.description]
         result_dicts = [dict(zip(column_names, row)) for row in result]
         result = result_dicts[0]
 
-        cursor.close()
+        cur.close()
+        
         return jsonify(result)
 
     except Exception as e:
         return jsonify({'error': str(e)})
 
-# Rota ficha de erros
 
-
-@app.route('/dashboard/erros', methods=['GET'])
-def error_states():
-    typeM = []
-    costumer = request.args.getlist('costumer')
-    date = request.args.get('date')
-    typeM = request.args.getlist('typeM')
-    dictSelect = {
-        'costumer': costumer,
-        'date': date,
-        'typeM': typeM,
-    }
+@app.route('/dashboard/erros', methods=['POST'])
+def dash_error_states():
     try:
+        datas = request.json
+        cur = connection.cursor()
 
-        cursor = connection.cursor(cursor_factory=extras.DictCursor)
-        cursor.execute("SELECT SUM(CAST(cam_erro AS INTEGER)) AS cam_erro,  SUM(CAST(mem_fail AS INTEGER)) AS mem_fail FROM info_arq WHERE data_insercao::DATE = %s AND customer =  ANY(%s) and type_memory = ANY(%s)",
-                       (dictSelect['date'], dictSelect['costumer'], dictSelect['typeM'],))
-        result = cursor.fetchall()
+        costumer = datas['costumer']
+        dateInit = datas['dateInit']
+        dateTerminate = datas['dateTerminate']
+        typeM = datas['typeM']
 
-        column_names = [desc[0] for desc in cursor.description]
+        query = "SELECT SUM(CAST(cam_erro AS INTEGER)) AS cam_erro, SUM(CAST(mem_fail AS INTEGER)) AS mem_fail FROM info_arq WHERE 1=1"
+
+        if costumer and costumer[0] != 'All':
+            query += f" AND customer = '{costumer[0]}'"
+
+        if typeM and typeM[0] != 'All':
+            query += f" AND type_memory = '{typeM[0]}'"
+
+        if dateInit and dateTerminate:
+            # Utiliza o formato correto para a comparação de datas
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+
+        cur.execute(query)
+        result = cur.fetchall()
+
+        column_names = [desc[0] for desc in cur.description]
         result_dicts = [dict(zip(column_names, row)) for row in result]
         result = result_dicts[0]
+        
         list_err = []
         for key in result:
             formatted_error = {}
             formatted_error['erro'] = f"{key} {result[key]}"
             list_err.append(formatted_error)
+
+        cur.close()
+        
         return jsonify(list_err)
+
     except Exception as e:
         return jsonify({'error': str(e)})
-    # cur.close()
-    # connection.close()
-
-######
     
 def get_all_data_from_info_arq():
     try:
@@ -464,9 +422,27 @@ def get_all_data_from_info_arq():
 
 @app.route('/get_all_data_info_arq', methods=['GET'])
 def test():
-    # Obtém todos os dados da tabela "info_arq" do PostgreSQL em forma de lista de dicionários
     data = get_all_data_from_info_arq()
-    return jsonify(data)  # Retorna os dados como um JSON
+    return jsonify(data) 
+
+@app.route('/usersIHM', methods=['POST'])
+def getUsersIhm():
+    if request.method == 'POST':
+        datas = request.json
+        if not os.path.exists('dataIHMUsers.json'):
+            # Se não existir, crie um arquivo vazio
+            with open(url+'dataIHMUsers.json', 'w') as arquivo_json:
+                json.dump({}, arquivo_json)
+
+        with open(url+'dataIHMUsers.json', 'r') as arquivo_json:
+            dados_existentes = json.load(arquivo_json)
+        with open(url+'dataIHMUsers.json', 'w') as arquivo_json:
+            json.dump(datas, arquivo_json)
+            print(datas)
+        resultado = {"mensagem": "Dados recebidos com sucesso", "dados": datas}
+        return resultado, 200  # 200 indica sucesso
+    else:
+        return "Método não permitido", 405
 
 
 if __name__ == '__main__':
