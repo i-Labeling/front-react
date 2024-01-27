@@ -66,6 +66,7 @@ export default function Dashboard() {
 
   const [graph1, setGraph1] = useState<Graph1[]>([]);
   const [graph2, setGraph2] = useState<Graph2[]>([]);
+  const [graph3, setGraph3] = useState<Graph2[]>([]);
   const [errors, setErrors] = useState<Erros[]>([]);
 
   const headers = {
@@ -136,38 +137,38 @@ export default function Dashboard() {
   //   return result;
   // };
 
-  // const formatGraph1Data = (data: any, intervalHours: number) => {
-  //   const accumulatedData: { [key: string]: any } = {};
+  const formatGraph3Data = (data: any, intervalHours: number) => {
+    const accumulatedData: { [key: string]: any } = {};
 
-  //   data.forEach((item: any) => {
-  //     const date = new Date(item.order);
-  //     const startHour =
-  //       Math.floor(date.getHours() / intervalHours) * intervalHours;
-  //     const endHour = startHour + intervalHours;
+    data.forEach((item: any) => {
+      const date = new Date(item.order);
+      const startHour =
+        Math.floor(date.getHours() / intervalHours) * intervalHours;
+      const endHour = startHour + intervalHours;
 
-  //     const hourInterval = `${startHour.toString().padStart(2, "0")}-${endHour
-  //       .toString()
-  //       .padStart(2, "0")}`;
+      const hourInterval = `${startHour.toString().padStart(2, "0")}-${endHour
+        .toString()
+        .padStart(2, "0")}`;
 
-  //     if (accumulatedData[hourInterval]) {
-  //       accumulatedData[hourInterval].sodimm +=
-  //         item.typeMemory === "sodimm" ? item.quantMemory : 0;
-  //       accumulatedData[hourInterval].udimm +=
-  //         item.typeMemory === "udimm" ? item.quantMemory : 0;
-  //       accumulatedData[hourInterval].quantity += item.quantMemory;
-  //     } else {
-  //       accumulatedData[hourInterval] = {
-  //         hour: hourInterval,
-  //         sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
-  //         udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
-  //         quantity: item.quantMemory,
-  //       };
-  //     }
-  //   });
+      if (accumulatedData[hourInterval]) {
+        accumulatedData[hourInterval].sodimm +=
+          item.typeMemory === "sodimm" ? item.quantMemory : 0;
+        accumulatedData[hourInterval].udimm +=
+          item.typeMemory === "udimm" ? item.quantMemory : 0;
+        accumulatedData[hourInterval].quantity += item.quantMemory;
+      } else {
+        accumulatedData[hourInterval] = {
+          hour: hourInterval,
+          sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
+          udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
+          quantity: item.quantMemory,
+        };
+      }
+    });
 
-  //   const result = Object.values(accumulatedData);
-  //   return result;
-  // };
+    const result = Object.values(accumulatedData);
+    return result;
+  };
 
   const formatGraph2Data = (data: any) => {
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -245,6 +246,25 @@ export default function Dashboard() {
       console.error("Error in get graph 2:", error);
     }
   };
+
+  const getGraph3 = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/dashboard/graph1", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(filterGet),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const formattedData = formatGraph3Data(data, 1);
+        setGraph3(formattedData);
+      }
+    } catch (error) {
+      console.error("Error in get graph 1:", error);
+    }
+  };
+
   const getErros = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/dashboard/erros", {
@@ -298,6 +318,7 @@ export default function Dashboard() {
     getCostumers();
     getGraph1();
     getGraph2();
+    getGraph3();
     getErros();
     getKPIs();
   };
@@ -305,6 +326,7 @@ export default function Dashboard() {
     getCostumers();
     getGraph1();
     getGraph2();
+    getGraph3();
     getErros();
     getKPIs();
   }, []);
@@ -479,70 +501,109 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-        <div className="container_graph">
-          <div className="content_graph">
-            <h1 className="title_graph">LABELING BY DAY (OSs)</h1>
-            <BarChart
-              width={500}
-              height={240}
-              data={graph1}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <XAxis dataKey="hour" unit="hr" />
-              <YAxis />
-              <Tooltip />
-              <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
-              {allValuesNullSodimm ? (
-                <></>
-              ) : (
-                <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
+        {!(filterGet.dateInit > filterGet.dateTerminate) && (
+          <>
+            <div className="container_graph">
+              <div className="content_graph">
+                {graph1.length > 0 && (
+                  <h1 className="title_graph">LABELING BY DAY (OSs)</h1>
+                )}
+                <BarChart
+                  width={500}
+                  height={240}
+                  data={graph1}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <XAxis dataKey="hour" unit="hr" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
+                  {allValuesNullSodimm ? (
+                    <></>
+                  ) : (
+                    <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
+                  )}
+                  {allValuesNullUdimm ? (
+                    <></>
+                  ) : (
+                    <Bar dataKey="udimm" fill="#82ca9d" />
+                  )}
+                </BarChart>
+              </div>
+              <div className="content_graph">
+                {graph2.length > 0 && (
+                  <h1 className="title_graph">LABELING BY WEEK</h1>
+                )}
+                <LineChart
+                  width={500}
+                  height={240}
+                  data={graph2}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
+                  {allValuesNullSodimm ? (
+                    <></>
+                  ) : (
+                    <Line
+                      type="monotone"
+                      dataKey="sodimm"
+                      stroke="rgb(64, 64, 216)"
+                    />
+                  )}
+                  {allValuesNullUdimm ? (
+                    <></>
+                  ) : (
+                    <Line type="monotone" dataKey="udimm" stroke="#82ca9d" />
+                  )}
+                </LineChart>
+              </div>
+            </div>
+            <div className="content_graph">
+              {graph3.length > 0 && (
+                <h1 className="title_graph">LABELING BY DAY (total type)</h1>
               )}
-              {allValuesNullUdimm ? (
-                <></>
-              ) : (
-                <Bar dataKey="udimm" fill="#82ca9d" />
-              )}
-            </BarChart>
-          </div>
-          <div className="content_graph">
-            <h1 className="title_graph">LABELING BY WEEK</h1>
-            <LineChart
-              width={500}
-              height={240}
-              data={graph2}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
-              {allValuesNullSodimm ? (
-                <></>
-              ) : (
-                <Line
-                  type="monotone"
-                  dataKey="sodimm"
-                  stroke="rgb(64, 64, 216)"
-                />
-              )}
-              {allValuesNullUdimm ? (
-                <></>
-              ) : (
-                <Line type="monotone" dataKey="udimm" stroke="#82ca9d" />
-              )}
-            </LineChart>
-          </div>
-        </div>
+              <BarChart
+                width={500}
+                height={240}
+                data={graph3}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <XAxis dataKey="hour" unit="hr" />
+                <YAxis />
+                <Tooltip />
+                <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
+                {allValuesNullSodimm ? (
+                  <></>
+                ) : (
+                  <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
+                )}
+                {allValuesNullUdimm ? (
+                  <></>
+                ) : (
+                  <Bar dataKey="udimm" fill="#82ca9d" />
+                )}
+              </BarChart>
+            </div>
+          </>
+        )}
       </main>
     </>
   );
