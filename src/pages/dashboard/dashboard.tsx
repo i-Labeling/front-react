@@ -176,7 +176,9 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setDataGraph2(data);
+        console.log('data result', data);
         const formattedData = formatGraph2Data(data, filterGet.date);
+        console.log("formatted data", formattedData);
         setGraph2(formattedData);
       }
     } catch (error) {
@@ -446,10 +448,11 @@ export default function Dashboard() {
                       const { payload } = props;
                       if (payload && payload.length > 0) {
                         const { date, sodimm, udimm } = payload[0].payload;
+                        const convertDate = new Date(date);
 
                         return (
                           <div className="custom-tooltip">
-                            <p>Date: {date}</p>
+                            <p>Date: {convertDate.toLocaleDateString('pt-br')}</p>
                             <p style={{ color: "rgb(64, 64, 216)" }}>
                               sodimm: {sodimm}
                             </p>
