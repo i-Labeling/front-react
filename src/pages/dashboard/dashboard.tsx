@@ -21,7 +21,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { toast } from "react-toastify";
 
 interface KPIs {
   labelled: string;
@@ -38,10 +37,11 @@ interface Graph1 {
   quantity: number;
 }
 interface Graph2 {
-  day: string;
+  date: string;
   sodimm: number;
   udimm: number;
   quantity: number;
+  dayOfWeek: string;
 }
 interface Costumer {
   name: string;
@@ -50,23 +50,18 @@ interface Costumer {
 export default function Dashboard() {
   const [idsCostumers, setIdsCostumers] = useState<Costumer[]>([]);
   const userToken = localStorage.getItem("jwtToken");
-  const [toastShown, setToastShown] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [filterGet, setFilterGet] = useState({
     costumer: idsCostumers,
-    dateInit: new Date().toISOString().split("T")[0],
-    dateTerminate: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0],
     typeM: ["All"],
   });
 
-  const [value, setValue] = useState<any>(dayjs(filterGet.dateInit));
-  const [valueTerminate, setValueTerminate] = useState<any>(
-    dayjs(filterGet.dateTerminate)
-  );
+  const [value, setValue] = useState<any>(dayjs(filterGet.date));
 
   const [graph1, setGraph1] = useState<Graph1[]>([]);
   const [graph2, setGraph2] = useState<Graph2[]>([]);
-  const [graph3, setGraph3] = useState<Graph2[]>([]);
+  const [dataGraph2, setDataGraph2] = useState<any[]>([]);
   const [errors, setErrors] = useState<Erros[]>([]);
 
   const headers = {
@@ -80,26 +75,6 @@ export default function Dashboard() {
     trays: "",
   });
 
-  const validateDateInterval = () => {
-    if (filterGet.dateInit > filterGet.dateTerminate) {
-      if (!toastShown) {
-        toast.error("Invalid date interval, try another interval!");
-        setToastShown(true);
-      }
-
-      setKpis({
-        labelled: "0",
-        reworks: "0",
-        trays: "0",
-      });
-
-      setErrors([]);
-
-      return false;
-    }
-    return true;
-  };
-
   //De acordo com a OSs
   const formatGraph1Data = (data: any) => {
     return data.map((item: any) => {
@@ -112,83 +87,37 @@ export default function Dashboard() {
     });
   };
 
-  //Agrupamento de dados por dia (tirar o hr)
-  // const formatGraph1Data = (data: any) => {
-  //   const accumulatedData: { [key: string]: any } = {};
-  //   data.forEach((item: any) => {
-  //     const typeMemory = item.typeMemory;
-
-  //     if (accumulatedData[typeMemory]) {
-  //       accumulatedData[typeMemory].sodimm +=
-  //         item.typeMemory === "sodimm" ? item.quantMemory : 0;
-  //       accumulatedData[typeMemory].udimm +=
-  //         item.typeMemory === "udimm" ? item.quantMemory : 0;
-  //       accumulatedData[typeMemory].quantity += item.quantMemory;
-  //     } else {
-  //       accumulatedData[typeMemory] = {
-  //         typeMemory,
-  //         sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
-  //         udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
-  //         quantity: item.quantMemory,
-  //       };
-  //     }
-  //   });
-  //   const result = Object.values(accumulatedData);
-  //   return result;
-  // };
-
-  const formatGraph3Data = (data: any, intervalHours: number) => {
-    const accumulatedData: { [key: string]: any } = {};
-
-    data.forEach((item: any) => {
-      const date = new Date(item.order);
-      const startHour =
-        Math.floor(date.getHours() / intervalHours) * intervalHours;
-      const endHour = startHour + intervalHours;
-
-      const hourInterval = `${startHour.toString().padStart(2, "0")}-${endHour
-        .toString()
-        .padStart(2, "0")}`;
-
-      if (accumulatedData[hourInterval]) {
-        accumulatedData[hourInterval].sodimm +=
-          item.typeMemory === "sodimm" ? item.quantMemory : 0;
-        accumulatedData[hourInterval].udimm +=
-          item.typeMemory === "udimm" ? item.quantMemory : 0;
-        accumulatedData[hourInterval].quantity += item.quantMemory;
-      } else {
-        accumulatedData[hourInterval] = {
-          hour: hourInterval,
-          sodimm: item.typeMemory === "sodimm" ? item.quantMemory : 0,
-          udimm: item.typeMemory === "udimm" ? item.quantMemory : 0,
-          quantity: item.quantMemory,
-        };
-      }
-    });
-
-    const result = Object.values(accumulatedData);
-    return result;
-  };
-
-  const formatGraph2Data = (data: any) => {
-    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+  const formatGraph2Data = (data: any, selectedDate: string) => {
     const groupedData: { [key: string]: any } = {};
+    const uniqueDates = Array.from(
+      new Set(
+        data.map((item: any) => format(new Date(item.order), "MM/dd/yyyy"))
+      )
+    );
+    const startDate = new Date(selectedDate);
+    for (let i = 1; i <= 6; i++) {
+      const previousDate = new Date(startDate);
+      previousDate.setDate(startDate.getDate() - i);
+      const formattedDate = format(previousDate, "MM/dd/yyyy");
 
-    {
-      data.length > 0 &&
-        weekdays.forEach((day) => {
-          groupedData[day] = {
-            day,
-            sodimm: null,
-            udimm: null,
-            quantity: null,
-          };
-        });
+      if (!uniqueDates.includes(formattedDate)) {
+        uniqueDates.push(formattedDate);
+      }
     }
 
+    uniqueDates.forEach((date: any) => {
+      const dayOfWeek = format(new Date(date), "EEE");
+      groupedData[date] = {
+        sodimm: 0,
+        udimm: 0,
+        quantity: 0,
+        dayOfWeek,
+      };
+    });
+
     data.forEach((item: any) => {
-      const day = format(new Date(item.order), "EEE");
+      const orderDate = new Date(item.order);
+      const day = format(orderDate, "MM/dd/yyyy");
 
       groupedData[day].sodimm +=
         item.typeMemory === "sodimm" ? item.quantMemory : 0;
@@ -196,9 +125,17 @@ export default function Dashboard() {
         item.typeMemory === "udimm" ? item.quantMemory : 0;
       groupedData[day].quantity += item.quantMemory;
     });
-    const result = Object.values(groupedData);
 
-    return result;
+    const resultArray = Object.entries(groupedData).map(([key, value]) => ({
+      date: key,
+      ...value,
+    }));
+
+    const sortedResult = resultArray.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    return sortedResult;
   };
 
   const verificationSodimmKey = "sodimm";
@@ -220,7 +157,6 @@ export default function Dashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        // const formattedData = formatGraph1Data(data, 1);
         const formattedData = formatGraph1Data(data);
         setGraph1(formattedData);
       }
@@ -239,29 +175,12 @@ export default function Dashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        const formattedData = formatGraph2Data(data);
+        setDataGraph2(data);
+        const formattedData = formatGraph2Data(data, filterGet.date);
         setGraph2(formattedData);
       }
     } catch (error) {
       console.error("Error in get graph 2:", error);
-    }
-  };
-
-  const getGraph3 = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/dashboard/graph1", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(filterGet),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const formattedData = formatGraph3Data(data, 1);
-        setGraph3(formattedData);
-      }
-    } catch (error) {
-      console.error("Error in get graph 1:", error);
     }
   };
 
@@ -318,7 +237,6 @@ export default function Dashboard() {
     getCostumers();
     getGraph1();
     getGraph2();
-    getGraph3();
     getErros();
     getKPIs();
   };
@@ -326,14 +244,10 @@ export default function Dashboard() {
     getCostumers();
     getGraph1();
     getGraph2();
-    getGraph3();
     getErros();
     getKPIs();
   }, []);
   useEffect(() => {
-    if (!validateDateInterval()) {
-      return;
-    }
     att();
     console.log(filterGet);
   }, [filterGet, dataLoaded]);
@@ -362,7 +276,7 @@ export default function Dashboard() {
             />
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt">
               <DatePicker
-                label="Start Date"
+                label="Date"
                 className="container_input_date_dashboard"
                 format="DD/MM/YYYY"
                 value={value}
@@ -371,36 +285,13 @@ export default function Dashboard() {
                     const formattedDate = date.toISOString().split("T")[0];
                     setFilterGet((prevFilter) => ({
                       ...prevFilter,
-                      dateInit: formattedDate,
+                      date: formattedDate,
                     }));
                     setValue(formattedDate);
                   }
                 }}
               />
             </LocalizationProvider>
-            <div style={{ paddingLeft: 20 }}>
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="pt"
-              >
-                <DatePicker
-                  label="End Date"
-                  className="container_input_date_dashboard"
-                  format="DD/MM/YYYY"
-                  value={valueTerminate}
-                  onChange={(date: Date | null) => {
-                    if (date) {
-                      const formattedDate = date.toISOString().split("T")[0];
-                      setFilterGet((prevFilter) => ({
-                        ...prevFilter,
-                        dateTerminate: formattedDate,
-                      }));
-                      setValueTerminate(formattedDate);
-                    }
-                  }}
-                />
-              </LocalizationProvider>
-            </div>
           </div>
           <div
             style={{
@@ -501,84 +392,16 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-        {!(filterGet.dateInit > filterGet.dateTerminate) && (
-          <>
-            <div className="container_graph">
-              <div className="content_graph">
-                {graph1.length > 0 && (
-                  <h1 className="title_graph">LABELING BY DAY (OSs)</h1>
-                )}
-                <BarChart
-                  width={500}
-                  height={240}
-                  data={graph1}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <XAxis dataKey="hour" unit="hr" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
-                  {allValuesNullSodimm ? (
-                    <></>
-                  ) : (
-                    <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
-                  )}
-                  {allValuesNullUdimm ? (
-                    <></>
-                  ) : (
-                    <Bar dataKey="udimm" fill="#82ca9d" />
-                  )}
-                </BarChart>
-              </div>
-              <div className="content_graph">
-                {graph2.length > 0 && (
-                  <h1 className="title_graph">LABELING BY WEEK</h1>
-                )}
-                <LineChart
-                  width={500}
-                  height={240}
-                  data={graph2}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
-                  {allValuesNullSodimm ? (
-                    <></>
-                  ) : (
-                    <Line
-                      type="monotone"
-                      dataKey="sodimm"
-                      stroke="rgb(64, 64, 216)"
-                    />
-                  )}
-                  {allValuesNullUdimm ? (
-                    <></>
-                  ) : (
-                    <Line type="monotone" dataKey="udimm" stroke="#82ca9d" />
-                  )}
-                </LineChart>
-              </div>
-            </div>
+        <>
+          <div className="container_graph">
             <div className="content_graph">
-              {graph3.length > 0 && (
-                <h1 className="title_graph">LABELING BY DAY (total type)</h1>
+              {graph1.length > 0 && (
+                <h1 className="title_graph">LABELING BY DAY (OSs)</h1>
               )}
               <BarChart
                 width={500}
                 height={240}
-                data={graph3}
+                data={graph1}
                 margin={{
                   top: 5,
                   right: 30,
@@ -602,8 +425,61 @@ export default function Dashboard() {
                 )}
               </BarChart>
             </div>
-          </>
-        )}
+            {dataGraph2.length > 0 && (
+              <div className="content_graph">
+                <h1 className="title_graph">LABELING BY WEEK</h1>
+                <LineChart
+                  width={500}
+                  height={240}
+                  data={graph2}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <XAxis dataKey="dayOfWeek" />
+                  <YAxis />
+                  <Tooltip
+                    content={(props) => {
+                      const { payload } = props;
+                      if (payload && payload.length > 0) {
+                        const { date, sodimm, udimm } = payload[0].payload;
+
+                        return (
+                          <div className="custom-tooltip">
+                            <p>Date: {date}</p>
+                            <p style={{ color: "rgb(64, 64, 216)" }}>
+                              sodimm: {sodimm}
+                            </p>
+                            <p style={{ color: "#82ca9d" }}>udimm: {udimm}</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
+                  {allValuesNullSodimm ? (
+                    <></>
+                  ) : (
+                    <Line
+                      type="monotone"
+                      dataKey="sodimm"
+                      stroke="rgb(64, 64, 216)"
+                    />
+                  )}
+                  {allValuesNullUdimm ? (
+                    <></>
+                  ) : (
+                    <Line type="monotone" dataKey="udimm" stroke="#82ca9d" />
+                  )}
+                </LineChart>
+              </div>
+            )}
+          </div>
+        </>
       </main>
     </>
   );

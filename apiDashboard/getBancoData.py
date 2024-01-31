@@ -10,6 +10,7 @@ import sys
 import xml.etree.ElementTree as ET
 import dotenv
 import xmltodict
+from datetime import datetime, timedelta
 
 
 # PROGRAMA PRINCIPAL
@@ -120,9 +121,9 @@ def post_example():
 @app.route('/costumer', methods=['GET'])
 def consumir_api():
     #api_url = 'http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/'
-    # api_url = "http://127.0.0.1:5001/WebServices/get_list_of_customers"
-    api_url = "http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/"
-    payload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <soap:Body>\r\n    <GetListOfCustomers xmlns=\"http://tempuri.org/\" />\r\n  </soap:Body>\r\n</soap:Envelope>"
+    api_url = "http://127.0.0.1:5001/WebServices/get_list_of_customers"
+    # api_url = "http://brzwiptrackws-qa.smartm.internal/WebServices/iLabelling.asmx?op=GetListOfCustomers/"
+    # payload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <soap:Body>\r\n    <GetListOfCustomers xmlns=\"http://tempuri.org/\" />\r\n  </soap:Body>\r\n</soap:Envelope>"
     headers = {
         'Content-Type': 'text/xml'
     }
@@ -130,8 +131,8 @@ def consumir_api():
 
         # Enviar uma solicitação POST para a API
         #response = requests.request("POST", api_url, headers=headers, data=payload)
-        response = requests.post(api_url, headers=headers, data=payload)
-        # response = requests.post(api_url)
+        # response = requests.post(api_url, headers=headers, data=payload)
+        response = requests.post(api_url)
 
         # Verificar se a solicitação foi bem-sucedida (código de status 200)
         if response.status_code == 200:
@@ -215,8 +216,7 @@ def dash_graph1():
         cur = connection.cursor()
 
         costumer = datas['costumer']
-        dateInit = datas['dateInit']
-        dateTerminate = datas['dateTerminate']
+        date = datas['date']
         typeM = datas['typeM']
 
         query = "SELECT * FROM info_arq WHERE 1=1"
@@ -227,9 +227,9 @@ def dash_graph1():
         if typeM and  typeM[0] != 'All':
             query += f" AND type_memory = '{typeM[0]}'"
 
-        if dateInit and dateTerminate:
+        if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+            query += f" AND data_insercao::DATE = '{date}'::DATE "
 
         cur.execute(query)
         resultados = cur.fetchall()
@@ -260,8 +260,7 @@ def dash_graph2():
         cur = connection.cursor()
 
         costumer = datas['costumer']
-        dateInit = datas['dateInit']
-        dateTerminate = datas['dateTerminate']
+        date = datas['date']
         typeM = datas['typeM']
 
         query = "SELECT * FROM info_arq WHERE 1=1"
@@ -272,9 +271,10 @@ def dash_graph2():
         if typeM and  typeM[0] != 'All':
             query += f" AND type_memory = '{typeM[0]}'"
 
-        if dateInit and dateTerminate:
+        if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
+            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
 
         cur.execute(query)
         resultados = cur.fetchall()
@@ -304,8 +304,7 @@ def dash_kpis():
         cur = connection.cursor()
 
         costumer = datas['costumer']
-        dateInit = datas['dateInit']
-        dateTerminate = datas['dateTerminate']
+        date = datas['date']
         typeM = datas['typeM']
 
         query = "SELECT SUM(CAST(quant_memory AS INTEGER)) - (SUM(CAST(cam_erro AS INTEGER)) + SUM(CAST(mem_fail AS INTEGER))) AS labelled, SUM(CAST(bandeja AS integer)) AS trays, SUM(mem_fail) as reworks FROM info_arq WHERE 1=1"
@@ -316,9 +315,9 @@ def dash_kpis():
         if typeM and typeM[0] != 'All':
             query += f" AND type_memory = '{typeM[0]}'"
 
-        if dateInit and dateTerminate:
+        if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+            query += f" AND data_insercao::DATE = '{date}'::DATE "
 
         cur.execute(query)
         result = cur.fetchall()
@@ -342,8 +341,7 @@ def dash_error_states():
         cur = connection.cursor()
 
         costumer = datas['costumer']
-        dateInit = datas['dateInit']
-        dateTerminate = datas['dateTerminate']
+        date = datas['date']
         typeM = datas['typeM']
 
         query = "SELECT SUM(CAST(cam_erro AS INTEGER)) AS cam_erro, SUM(CAST(mem_fail AS INTEGER)) AS mem_fail FROM info_arq WHERE 1=1"
@@ -354,9 +352,10 @@ def dash_error_states():
         if typeM and typeM[0] != 'All':
             query += f" AND type_memory = '{typeM[0]}'"
 
-        if dateInit and dateTerminate:
+        if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{dateTerminate}'::DATE"
+            query += f" AND data_insercao::DATE = '{date}'::DATE "
+
 
         cur.execute(query)
         result = cur.fetchall()
