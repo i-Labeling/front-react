@@ -147,8 +147,8 @@ def consumir_api():
             for cliente_info in clientes_info:
                 cliente_data = {
                     'name': cliente_info['Cliente'],
-                    #'PN_Smart': cliente_info['PN_Smart'],
-                    #'PN_Cliente': cliente_info['PN_Cliente']
+                    'PN_Smart': cliente_info['PN_Smart'],
+                    'PN_Cliente': cliente_info['PN_Cliente']
                 }
                 clientes_list.append(cliente_data)
 
