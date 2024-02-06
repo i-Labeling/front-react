@@ -443,6 +443,66 @@ def getUsersIhm():
     else:
         return "Método não permitido", 405
 
+@app.route('/report', methods=['GET'])
+def report():
+    try:
+        # Conecta-se ao banco de dados PostgreSQL
+        cur = connection.cursor()
+
+        # Parâmetros da solicitação GET
+        type_memory = request.args.get('type_memory')
+        customer = request.args.get('customer')
+        data = request.args.get('data')
+        order = request.args.get('order')  # Adicionado filtro para a ordem de serviço
+
+        # Consulta SQL base
+        sql_query = "SELECT * FROM info_arq WHERE 1=1"
+
+        # Adiciona condições à consulta com base nos parâmetros
+        if type_memory:
+            sql_query += f" AND type_memory = '{type_memory}'"
+        if customer:
+            sql_query += f" AND customer = '{customer}'"
+        if data:
+            sql_query += f" AND data = '{data}'"
+        if order:
+            sql_query += f" AND order = '{order}'"
+
+        # Executa a consulta SQL
+        cur.execute(sql_query)
+        resultados = cur.fetchall()
+
+        # Fecha a conexão com o banco de dados
+        cur.close()
+
+        # Lista para armazenar todos os objetos resultantes
+        dados_info_arq = []
+        for resultado in resultados:
+            # Converta cada linha para um dicionário para facilitar a serialização JSON
+            dado_dict = {
+                "id": str(resultado[0]),
+                "customer": str(resultado[1]),
+                "tray": str(resultado[2]),
+                "totalCycleTime": float(resultado[3]),
+                "minutesPerTray": str(resultado[4]),
+                "timePerMemory": float(resultado[5]),
+                "creamBelowA": int(resultado[6]),
+                "indexMemoryError": str(resultado[7]),
+                "inspectionErrors": str(resultado[8]),
+                "cameraError": int(resultado[9]),
+                "positionAndError": str(resultado[10]),
+                "order": str(resultado[11]),
+                "typeMemory": str(resultado[12]),
+                "quantMemory": int(resultado[13]),
+            }
+            dados_info_arq.append(dado_dict)
+
+        return jsonify({'dados_info_arq': dados_info_arq})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
