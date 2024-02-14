@@ -229,12 +229,15 @@ def dash_graph1():
 
         if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE = '{date}'::DATE "
+            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
+            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
 
         cur.execute(query)
         resultados = cur.fetchall()
 
         cur.close()
+
+        print("result", resultados)
 
         data_list = []
 
@@ -443,66 +446,257 @@ def getUsersIhm():
     else:
         return "Método não permitido", 405
 
-@app.route('/report', methods=['GET'])
-def report():
+@app.route('/report-kpis', methods=['POST']) 
+def report_kpis():
     try:
-        # Conecta-se ao banco de dados PostgreSQL
+        datas = request.json
         cur = connection.cursor()
 
-        # Parâmetros da solicitação GET
-        type_memory = request.args.get('type_memory')
-        customer = request.args.get('customer')
-        data = request.args.get('data')
-        order = request.args.get('order')  # Adicionado filtro para a ordem de serviço
+        customer = datas['costumer']
+        typeM = datas['typeM']
+        dateInit =  datas['startDate']
+        endDate =  datas['endDate']
+        order = datas['OSnumber']
 
-        # Consulta SQL base
-        sql_query = "SELECT * FROM info_arq WHERE 1=1"
 
-        # Adiciona condições à consulta com base nos parâmetros
-        if type_memory:
-            sql_query += f" AND type_memory = '{type_memory}'"
-        if customer:
-            sql_query += f" AND customer = '{customer}'"
-        if data:
-            sql_query += f" AND data = '{data}'"
-        if order:
-            sql_query += f" AND order = '{order}'"
+        query = "SELECT SUM(CAST(quant_memory AS INTEGER)) - (SUM(CAST(cam_erro AS INTEGER)) + SUM(CAST(mem_fail AS INTEGER))) AS labelled, SUM(CAST(bandeja AS integer)) AS trays, SUM(mem_fail) as reworks FROM info_arq WHERE 1=1"
 
-        # Executa a consulta SQL
-        cur.execute(sql_query)
-        resultados = cur.fetchall()
+        if customer and customer[0] != 'All':
+           query +=f" AND customer = '{customer[0]}'"
+        if typeM and  typeM[0] != 'All':
+           query += f" AND type_memory = '{typeM[0]}'"
+        if dateInit and endDate:
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{endDate}'::DATE"
+        if order  and order[0] != 'All':
+            query += f" AND  service_order = '{order[0]}'"
 
-        # Fecha a conexão com o banco de dados
+        cur.execute(query)
+        result = cur.fetchall()
+
+        column_names = [desc[0] for desc in cur.description]
+        result_dicts = [dict(zip(column_names, row)) for row in result]
+        result = result_dicts[0]
+
         cur.close()
-
-        # Lista para armazenar todos os objetos resultantes
-        dados_info_arq = []
-        for resultado in resultados:
-            # Converta cada linha para um dicionário para facilitar a serialização JSON
-            dado_dict = {
-                "id": str(resultado[0]),
-                "customer": str(resultado[1]),
-                "tray": str(resultado[2]),
-                "totalCycleTime": float(resultado[3]),
-                "minutesPerTray": str(resultado[4]),
-                "timePerMemory": float(resultado[5]),
-                "creamBelowA": int(resultado[6]),
-                "indexMemoryError": str(resultado[7]),
-                "inspectionErrors": str(resultado[8]),
-                "cameraError": int(resultado[9]),
-                "positionAndError": str(resultado[10]),
-                "order": str(resultado[11]),
-                "typeMemory": str(resultado[12]),
-                "quantMemory": int(resultado[13]),
-            }
-            dados_info_arq.append(dado_dict)
-
-        return jsonify({'dados_info_arq': dados_info_arq})
+        
+        return jsonify(result)
 
     except Exception as e:
         return jsonify({'error': str(e)})
 
 
+@app.route('/report', methods=['POST'])
+def report_info():
+    try:
+        datas = request.json
+        cur = connection.cursor()
+
+        dateInit =  datas['startDate']
+        endDate =  datas['endDate']
+        order = datas['OSnumber']
+
+        query="SELECT * FROM info_arq WHERE 1=1"
+
+        if dateInit and endDate:
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{endDate}'::DATE"
+        if order  and order[0] != 'All':
+            query += f" AND  service_order = '{order[0]}'"
+
+
+        cur.execute(query)
+        resultados = cur.fetchall()
+
+        cur.close()
+
+        data_list = []
+
+        for resultado in resultados:
+            data_dict = {
+                "id": str(resultado[0]),
+                "customer": str(resultado[1]),
+                "tray": str(resultado[2]),
+                "totalCycleTime": float(str(resultado[3]).replace("Decimal('')", "")),
+                "minutesPerTray": str(resultado[4]),
+                "timePerMemory": float(str(resultado[5]).replace("Decimal('')", "")),
+                "creamBelowA": int(resultado[6]),
+                "indexMemoryError": str(resultado[7]).replace("[", " ").replace("]", " "),
+                "inspectionErrors": str(resultado[8]).replace("[", " ").replace("]", " "),
+                "cameraError": int(resultado[9]),
+                "positionAndError": str(resultado[10]).replace("[", " ").replace("]", " "),
+                "order": str(resultado[11]),
+                "typeMemory": str(resultado[12]),
+                "quantMemory":int(resultado[13]),
+                "serviceOrder": str(resultado[14]),
+            }
+            data_list.append(data_dict)
+
+        return jsonify(data_list)
+
+    except Exception as e:
+        return {"erro": str(e)}
+    
+@app.route('/report-os', methods=['GET'])
+def report_os():
+    try:
+        cur = connection.cursor()
+
+        query="SELECT service_order FROM info_arq WHERE 1=1"
+
+        cur.execute(query)
+        resultados = cur.fetchall()
+
+        cur.close()
+
+        data_list = []
+
+        for resultado in resultados:
+            data_dict = {
+                "serviceOrder": str(resultado[0]),
+            }
+            data_list.append(data_dict)
+
+        return jsonify(data_list)
+
+    except Exception as e:
+        return {"erro": str(e)}
+
+@app.route('/report-end-of-process', methods=['POST']) 
+def report_endOfProcess():
+    data = request.json
+    customer = data['costumer']
+    typeM = data['typeM']
+    dateInit =  data['startDate']
+    endDate =  data['endDate']
+    order = data['OSnumber']
+   
+    cur = connection.cursor()
+    query = "SELECT * FROM info_arq WHERE 1=1"
+
+    if customer and customer[0] != 'All':
+        query += f" AND customer = '{customer[0]}'"
+    if typeM and  typeM[0] != 'All':
+        query += f" AND type_memory = '{typeM[0]}'"
+    if dateInit and endDate:
+        query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{endDate}'::DATE ORDER BY data_insercao DESC"
+    if order  and order[0] != 'All':
+        query += f" AND  service_order = '{order[0]}'"
+    
+    cur.execute(query)
+    resultados = cur.fetchall()
+
+    total_cycle_time_sum = 0
+    total_trays_sum = 0
+    minutes_per_tray_sum = 0
+    time_per_memory_sum = 0
+    mem_fail_sum = 0
+    camera_error_sum = 0
+    total_quant_memory = 0
+    index_memory_error_count= 0
+    inspection_errors_count = 0
+    position_and_error_count = 0
+
+
+    if resultados:
+        num_rows = len(resultados)
+        
+        for resultado in resultados:
+            total_trays_sum += int(resultado[2])
+            total_cycle_time_sum += float(resultado[3])
+            minutes_per_tray_sum += float(resultado[4])
+            time_per_memory_sum += float(resultado[5])
+            mem_fail_sum += int(resultado[6])
+            camera_error_sum += int(resultado[9])
+            total_quant_memory += int(resultado[13])
+            index_memory_error_str = str(resultado[7])
+            if index_memory_error_str.strip("[]"):
+                index_memory_error_list = index_memory_error_str.strip("[]").split(", ")
+                index_memory_error_count += len(index_memory_error_list)
+            inspection_errors_str = str(resultado[8])
+            if inspection_errors_str.strip("[]"):
+                inspection_errors_list = inspection_errors_str.strip("[]").split(", ")
+                inspection_errors_count += len(inspection_errors_list)
+            position_and_error_str = str(resultado[10])
+            if position_and_error_str.strip("[]"):
+                position_and_error_list = position_and_error_str.strip("[]").split(", ")
+                position_and_error_count += len(position_and_error_list)
+
+        total_trays = total_trays_sum
+        total_cycle_time_avg = round(total_cycle_time_sum / num_rows, 2)
+        minutes_per_tray_avg = round(minutes_per_tray_sum / num_rows, 2)
+        time_per_memory_avg = round(time_per_memory_sum / num_rows, 2)
+        cream_below_a_avg = mem_fail_sum 
+        camera_error_avg = camera_error_sum
+        total_quant_memory_res = total_quant_memory
+        total_inspection_errors = inspection_errors_count
+        total_index_memory_errors = index_memory_error_count 
+        total_scrap_position_errors = position_and_error_count
+
+    else:
+        total_trays = 0
+        total_cycle_time_avg = 0
+        minutes_per_tray_avg = 0
+        time_per_memory_avg = 0
+        cream_below_a_avg = 0
+        camera_error_avg = 0
+        total_quant_memory_res= 0
+        total_inspection_errors = 0
+        total_index_memory_errors = 0
+        total_scrap_position_errors = 0
+
+    data_dict = {
+        "totalTrays": total_trays,
+        "totalCycleTimeAverage": total_cycle_time_avg,
+        "minutesPerTrayAverage": minutes_per_tray_avg,
+        "timePerMemoryAverage": time_per_memory_avg,
+        "memFailAverage": cream_below_a_avg,
+        "totalCameraErrors": camera_error_avg,
+        "totalMemories": total_quant_memory_res,
+        "totalInspectionErrors": total_inspection_errors,
+        "totalIndexMemoryErrors": total_index_memory_errors,
+        "totalScrapPositionErrors": total_scrap_position_errors 
+    }
+
+    return jsonify(data_dict)
+    
+@app.route('/report-erros', methods=['POST'])
+def report_error():
+    try:
+        datas = request.json
+        cur = connection.cursor()
+
+        costumer = datas['costumer']
+        typeM = datas['typeM']
+        dateInit =  datas['startDate']
+        endDate =  datas['endDate']
+        order = datas['OSnumber']
+
+        query = "SELECT SUM(CAST(cam_erro AS INTEGER)) AS cam_erro, SUM(CAST(mem_fail AS INTEGER)) AS mem_fail FROM info_arq WHERE 1=1"
+
+        if costumer and costumer[0] != 'All':
+            query += f" AND customer = '{costumer[0]}'"
+
+        if typeM and typeM[0] != 'All':
+            query += f" AND type_memory = '{typeM[0]}'"
+
+        if dateInit and endDate:
+            query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{endDate}'::DATE"
+        
+        if order  and order[0] != 'All':
+            query += f" AND  service_order = '{order[0]}'"
+
+        cur.execute(query)
+        result = cur.fetchall()
+
+        column_names = [desc[0] for desc in cur.description]
+        result_dicts = [dict(zip(column_names, row)) for row in result]
+        result = result_dicts[0]
+
+        cur.close()
+        
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)
