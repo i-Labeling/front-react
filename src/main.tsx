@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import {
@@ -23,6 +23,9 @@ import { UserProvider } from "./contexts/userStateContext.tsx";
 import { ToastContainer, toast } from "react-toastify";
 import PrivateRoutes from "./components/privateRoutes/privateRoutes.tsx";
 import UserActionsLogs from "./pages/userActionsLogs/userActionsLogs.tsx";
+import ReportsPage from "./pages/reports/reports.tsx";
+import FilteredReport from "./pages/reports/FilteredReport.tsx";
+import GeneralOSReport from "./pages/reports/GeneralReport.tsx";
 
 type Profile = "ADMIN" | "OPERATOR" | "IT";
 
@@ -81,6 +84,16 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/reports"
+              element={
+                <PrivateRoute profileRequired="IT">
+                  <ReportsPage />{" "}
+                </PrivateRoute>
+              }
+            />
+            <Route path="/filtered-report" element={<FilteredReport />} />
+            <Route path="/general-os-report" element={<GeneralOSReport />} />
           </Route>
           <Route element={<Login />} path="/" />
         </Routes>

@@ -1,11 +1,13 @@
-import { MenuItem, Select } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import "./style.css";
 import { useEffect, useState } from "react";
 interface InfConf {
+  label?: string;
   vals: any[];
   filterGet: any;
   setFilterGet: any;
   filterField: any;
+  className?: string;
 }
 export default function SelectDashboard(props: InfConf) {
   const [selectedValue, setSelectedValue] = useState("All");
@@ -20,9 +22,12 @@ export default function SelectDashboard(props: InfConf) {
   }, []);
 
   return (
-    <>
+    <FormControl>
+      <InputLabel htmlFor="itens" className="label_select_dashboard">
+        {props.label}
+      </InputLabel>
       <Select
-        className="input_select_dashboard"
+        className={`${props.className} input_select_dashboard`}
         id="itens"
         name="itens"
         value={selectedValue}
@@ -44,6 +49,6 @@ export default function SelectDashboard(props: InfConf) {
           </MenuItem>
         ))}
       </Select>
-    </>
+    </FormControl>
   );
 }

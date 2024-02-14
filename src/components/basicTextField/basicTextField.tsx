@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import ColorConstants from "../../colors";
 
 interface BasicTextFieldProps {
-  label: string;
+  label?: string;
   placeholder: string;
   className?: any;
   value?: string;

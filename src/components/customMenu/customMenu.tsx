@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import "./style.css";
 import { useEffect, useState } from "react";
 import LogoutButton from "../logout/logout";
+import FadeMenu from "../fadeMenu/fadeMenu";
 export default function CustomMenu() {
   const [activeItem, setActiveItem] = useState("");
   const userProfile = sessionStorage.getItem("profile");
@@ -45,6 +46,17 @@ export default function CustomMenu() {
                 Access Control
               </Link>
             )}
+            {userProfile == "IT" && (
+              <Link
+                to={"/reports"}
+                className={`nav-item ${
+                  activeItem === "reports" ? "active" : ""
+                }`}
+              >
+                Reports
+              </Link>
+            )}
+            {/* <FadeMenu /> */}
             <LogoutButton />
           </>
         )}

@@ -21,6 +21,7 @@
     "date-fns-tz": "^2.0.0",
     "dayjs": "^1.11.10",
     "framer-motion": "^10.16.4",
+    "jspdf": "^2.5.1",
     "reacharts": "^0.4.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

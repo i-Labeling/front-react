@@ -53,7 +53,7 @@ export default function Dashboard() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [filterGet, setFilterGet] = useState({
     costumer: idsCostumers,
-    date: new Date().toISOString().split("T")[0],
+    date: format(new Date(), "yyyy-MM-dd"),
     typeM: ["All"],
   });
 
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   const [graph1, setGraph1] = useState<Graph1[]>([]);
   const [graph2, setGraph2] = useState<Graph2[]>([]);
-  const [dataGraph2, setDataGraph2] = useState<any[]>([]);
+  const [dataGraph2, setDataGraph2] = useState<any>(true);
   const [errors, setErrors] = useState<Erros[]>([]);
 
   const headers = {
@@ -147,6 +147,11 @@ export default function Dashboard() {
     return dictI[verificationUdimmKey] === null;
   });
 
+  const verificationKey = "quantity";
+  const allValuesZeroForQuantity = (array: any[], key: string): boolean => {
+    return array.every((obj: any) => obj[key] === 0);
+  };
+
   const getGraph1 = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/dashboard/graph1", {
@@ -175,11 +180,13 @@ export default function Dashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        setDataGraph2(data);
-        console.log('data result', data);
         const formattedData = formatGraph2Data(data, filterGet.date);
-        console.log("formatted data", formattedData);
         setGraph2(formattedData);
+        const shouldDisplay = allValuesZeroForQuantity(
+          formattedData,
+          verificationKey
+        );
+        setDataGraph2(shouldDisplay);
       }
     } catch (error) {
       console.error("Error in get graph 2:", error);
@@ -251,10 +258,9 @@ export default function Dashboard() {
   }, []);
   useEffect(() => {
     att();
-    console.log(filterGet);
   }, [filterGet, dataLoaded]);
 
-  const dateToday = new Date().toISOString().split("T")[0];
+  const dateToday = format(new Date(), "yyyy-MM-dd");
 
   return (
     <>
@@ -270,12 +276,14 @@ export default function Dashboard() {
                 filterField="costumer"
               />
             )}
+            <div style={{ marginRight: "50px" }}></div>
             <SelectDashboard
               vals={[{ name: "udimm" }, { name: "sodimm" }]}
               filterGet={filterGet}
               setFilterGet={setFilterGet}
               filterField="typeM"
             />
+            <div style={{ marginRight: "50px" }}></div>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt">
               <DatePicker
                 label="Date"
@@ -427,7 +435,7 @@ export default function Dashboard() {
                 )}
               </BarChart>
             </div>
-            {dataGraph2.length > 0 && (
+            {!dataGraph2 && (
               <div className="content_graph">
                 <h1 className="title_graph">LABELING BY WEEK</h1>
                 <LineChart
@@ -452,7 +460,9 @@ export default function Dashboard() {
 
                         return (
                           <div className="custom-tooltip">
-                            <p>Date: {convertDate.toLocaleDateString('pt-br')}</p>
+                            <p>
+                              Date: {convertDate.toLocaleDateString("pt-br")}
+                            </p>
                             <p style={{ color: "rgb(64, 64, 216)" }}>
                               sodimm: {sodimm}
                             </p>
