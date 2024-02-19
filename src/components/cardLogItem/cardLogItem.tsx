@@ -9,7 +9,6 @@ interface CardLogItemProps {
 }
 
 const CardLogItem: React.FC<CardLogItemProps> = ({ log, index, onClick }) => {
-  console.log("LOG INFO", log);
   return (
     <>
       <Card style={{ backgroundColor: "#F3F3FF" }}>

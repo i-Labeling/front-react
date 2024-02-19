@@ -36,38 +36,9 @@ const ModalMemory: React.FC<ModalMemoryProps> = (props: ModalMemoryProps) => {
     onClose,
   } = props;
 
-  const parseList = (listString: string) => {
-    try {
-      const cleanedString = listString.replace(/'/g, '"');
-
-      const quotedString = cleanedString.replace(
-        /([^,\[\]]+\s[^,\[\]]+)/g,
-        '"$1"'
-      );
-
-      const parsedList: any[] = JSON.parse(quotedString);
-
-      const transformedList: any[] = parsedList.map((memory: any[]) => {
-        if (memory.length >= 3) {
-          const modifiedMemory = [...memory];
-          modifiedMemory[2] = String(modifiedMemory[2]);
-          return modifiedMemory;
-        } else {
-          return [];
-        }
-      });
-
-      return transformedList;
-    } catch (error) {
-      console.error("Error parsing list:", error);
-      return [];
-    }
-  };
-
-  const mockList = `[[1, 35, Inspection Error], [2, 25, Camera Error], [5, 10, Connection Issue], [6, 5, Server Timeout]]`;
-
-  const parsedList = parseList(mockList || "0");
-  //const parsedList = parseList(list || "");
+  console.log('list', list);
+  
+  
 
   return (
     <Modal
@@ -101,7 +72,7 @@ const ModalMemory: React.FC<ModalMemoryProps> = (props: ModalMemoryProps) => {
               marginRight: "20px",
             }}
           >
-            {parsedList.map((sublist: any[], index: number) => (
+            {/* {parsedList.map((sublist: any[], index: number) => (
               <li
                 key={index}
                 style={{
@@ -122,7 +93,7 @@ const ModalMemory: React.FC<ModalMemoryProps> = (props: ModalMemoryProps) => {
                 </div>
                 {index !== parsedList.length - 1 && <Divider />}
               </li>
-            ))}
+            ))} */}
           </ul>
         </div>
       </div>

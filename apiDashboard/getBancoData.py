@@ -49,6 +49,18 @@ def get_latest_data_from_postgres():
 
     if resultado:
         # Crie um dicionário com as chaves correspondentes às colunas e atribua os valores
+        inspectionErrors = str(resultado[8])
+        positionErrors = str(resultado[10])
+        if(inspectionErrors != '[]'):
+            inspectionResult = inspectionErrors.split(',')
+        else: 
+            inspectionResult = '0'
+
+        if(positionErrors != '[]'):
+            positionAndErrorResult = positionErrors.split(',')
+        else: 
+            positionAndErrorResult = '0'
+        
         data_dict = {
             "id": str(resultado[0]),
             "customer": str(resultado[1]),
@@ -58,9 +70,9 @@ def get_latest_data_from_postgres():
             "timePerMemory": float(str(resultado[5]).replace("Decimal('')", "")),
             "creamBelowA": int(resultado[6]),
             "indexMemoryError": str(resultado[7]).replace("[", " ").replace("]", " "),
-            "inspectionErrors": str(resultado[8]).replace("[", " ").replace("]", " "),
+            "inspectionErrors": inspectionResult,
             "cameraError": int(resultado[9]),
-            "positionAndError": str(resultado[10]).replace("[", " ").replace("]", " "),
+            "positionAndError": positionAndErrorResult,
             "order": str(resultado[11])
             # Formato ISO da data
 
@@ -320,7 +332,8 @@ def dash_kpis():
 
         if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE = '{date}'::DATE "
+            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
+            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
 
         cur.execute(query)
         result = cur.fetchall()

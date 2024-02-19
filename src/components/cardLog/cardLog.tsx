@@ -5,7 +5,7 @@ import { Modal } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import ModalMemory from "../modalMemory/modalMemory";
 interface ConfInf {
-  title: string;
+  title: any;
   val: string;
   show: boolean;
   style?: object;
@@ -30,17 +30,23 @@ export default function CardLog(props: ConfInf) {
     SetInfOpen(false);
   };
 
+  const content =
+  props.title !== "Scrap Position and Error Type" &&
+  (props.title !== "Inspection Error Counter" )
+    ? props.val
+    : props.val != '0'? String(props.val.length) : String(props.val.length-1);
+
   return (
     <>
       <OSCard
         title={props.title}
-        content={props.val}
+        content={content}
         onClick={() => SetInfOpen(!infOpen)}
         className={props.className}
         titleBackgroundColor={props.titleBackgroundColor}
         contentBackgroundColor={props.contentBackgroundColor}
       />
-      {infOpen && props.title !== "Scrap Position and Error Type" ? (
+      {infOpen && props.title !== "Scrap Position and Error Type"   ? (
         <Modal
           open={infOpen}
           onClose={handleClose}
