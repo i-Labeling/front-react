@@ -6,7 +6,7 @@ import ColorConstants from "../../colors";
 interface ModalMemoryProps {
   open?: boolean;
   title?: string;
-  list?: string;
+  list?: any;
   titleBackgroundColor?: any;
   contentBackgroundColor?: any;
   onClose?: () => void;
@@ -36,10 +36,6 @@ const ModalMemory: React.FC<ModalMemoryProps> = (props: ModalMemoryProps) => {
     onClose,
   } = props;
 
-  console.log('list', list);
-  
-  
-
   return (
     <Modal
       open={open ?? false}
@@ -63,38 +59,70 @@ const ModalMemory: React.FC<ModalMemoryProps> = (props: ModalMemoryProps) => {
             overflowY: "auto",
           }}
         >
-          <ul
-            style={{
-              listStyleType: "none",
-              padding: "10px",
-              margin: "4px 10px",
-              marginLeft: "20px",
-              marginRight: "20px",
-            }}
-          >
-            {/* {parsedList.map((sublist: any[], index: number) => (
-              <li
-                key={index}
-                style={{
-                  marginBottom:
-                    index === parsedList.length - 1 ? "10px !important" : 0,
-                }}
-              >
-                <div>
-                  <p className={classes.textItemError}>
-                    Memory n° {sublist[0]}
-                  </p>
-                  <p className={classes.textItemError}>
-                    Position: {sublist[1]}
-                  </p>
-                  <p className={classes.textItemError}>
-                    Error Type: {sublist[2]}
-                  </p>
-                </div>
-                {index !== parsedList.length - 1 && <Divider />}
-              </li>
-            ))} */}
-          </ul>
+          {props.list != "0" ? (
+            <ul
+              style={{
+                listStyleType: "none",
+                padding: "10px",
+                margin: "4px 10px",
+                marginLeft: "20px",
+                marginRight: "20px",
+              }}
+            >
+              {title === "Scrap Position and Error Type"
+                ? list.map((error: any, index: any) => (
+                    <li
+                      key={index}
+                      style={{
+                        marginBottom:
+                          index === list.length - 1 ? "10px !important" : 0,
+                      }}
+                    >
+                      <div>
+                        <p className={classes.textItemError}>
+                          Memory n° {error.memoria}
+                        </p>
+                        <p className={classes.textItemError}>
+                          Coluna: {error.coluna}
+                        </p>
+                        <p className={classes.textItemError}>
+                          Position: {error.position}
+                        </p>
+                        <p className={classes.textItemError}>
+                          Grade: {error.grade}
+                        </p>
+                      </div>
+                      {index !== list.length - 1 && <Divider />}
+                    </li>
+                  ))
+                : list.map((inspection: any, index: any) => (
+                    <li
+                      key={index}
+                      style={{
+                        marginBottom:
+                          index === list.length - 1 ? "10px !important" : 0,
+                      }}
+                    >
+                      <div>
+                        <p className={classes.textItemError}>
+                          Memory n° {inspection.memoria}
+                        </p>
+                        <p className={classes.textItemError}>
+                          Error Type: {inspection.errorType}
+                        </p>
+                      </div>
+                      {index !== list.length - 1 && <Divider />}
+                    </li>
+                  ))}
+            </ul>
+          ) : (
+            <div
+              className="container_val_box_card_inf_log"
+              style={{ backgroundColor: props.contentBackgroundColor }}
+            >
+              <p className="val_box_card_inf_log">{props.list}</p>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

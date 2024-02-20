@@ -49,6 +49,7 @@ def get_latest_data_from_postgres():
 
     if resultado:
         # Crie um dicionário com as chaves correspondentes às colunas e atribua os valores
+        memoIndexErrors = str(resultado[7])
         inspectionErrors = str(resultado[8])
         positionErrors = str(resultado[10])
         if(inspectionErrors != '[]'):
@@ -60,6 +61,11 @@ def get_latest_data_from_postgres():
             positionAndErrorResult = positionErrors.split(',')
         else: 
             positionAndErrorResult = '0'
+
+        if(memoIndexErrors != '[]'):
+            memoIndexErrorResult = memoIndexErrors.split(',')
+        else: 
+            memoIndexErrorResult = '0'
         
         data_dict = {
             "id": str(resultado[0]),
@@ -69,32 +75,16 @@ def get_latest_data_from_postgres():
             "minutesPerTray": str(resultado[4]),
             "timePerMemory": float(str(resultado[5]).replace("Decimal('')", "")),
             "creamBelowA": int(resultado[6]),
-            "indexMemoryError": str(resultado[7]).replace("[", " ").replace("]", " "),
+            "indexMemoryError": memoIndexErrorResult,
             "inspectionErrors": inspectionResult,
             "cameraError": int(resultado[9]),
             "positionAndError": positionAndErrorResult,
             "order": str(resultado[11])
-            # Formato ISO da data
-
-            # 'tray':"0",
-            # 'totalCycleTime': "0",
-            # 'minutesPerTray': "0",
-            # 'timePerMemory': "0",
-            # 'creamBelowA':"0",
-            # 'inspectionErrors': "0",
-            # 'cameraError': "0",
-            # 'indexMemoryError': "0",
-            # 'positionAndError': "0",
-            # 'order': "primeira ordem"
         }
         return data_dict
     else:
 
         return {}
-
-    # except Exception as e:
-     #   return {"erro": str(e)}
-
 
 @app.route('/', methods=['GET'])
 def index():
@@ -112,15 +102,12 @@ def post_example():
             # Se não existir, crie um arquivo vazio
             with open(url+'dados.json', 'w') as arquivo_json:
                 json.dump({}, arquivo_json)  # Cria um objeto JSON vazio
-        # print("to aqui")
         # Abra o arquivo JSON existente
         with open(url+'dados.json', 'r') as arquivo_json:
             dados_existentes = json.load(arquivo_json)
-            # print(dados_existentes)
 
         # Escreva os dados atualizados de volta para o arquivo JSON
         with open(url+'dados.json', 'w') as arquivo_json:
-            # print("to aqui 2")
             json.dump(datas, arquivo_json)
             print(datas)
        # att(datas)
@@ -143,7 +130,6 @@ def consumir_api():
 
         # Enviar uma solicitação POST para a API
         #response = requests.request("POST", api_url, headers=headers, data=payload)
-        # response = requests.post(api_url, headers=headers, data=payload)
         response = requests.post(api_url)
 
         # Verificar se a solicitação foi bem-sucedida (código de status 200)
@@ -248,8 +234,6 @@ def dash_graph1():
         resultados = cur.fetchall()
 
         cur.close()
-
-        print("result", resultados)
 
         data_list = []
 

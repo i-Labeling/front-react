@@ -1,0 +1,53 @@
+.container_card_log:hover {
+  scale: 1.1;
+}
+.container_card_inf_log {
+  width: 100vw;
+  height: 110vh;
+  background-color: rgba(0, 0, 0, 0.578);
+  position: fixed;
+  margin-top: -250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container_box_cord_inf_log {
+  font-family: "Motiva Sans", "Twemoji", "Noto Sans", Helvetica, sans-serif;
+  width: 30%;
+  height: 40%;
+  background-color: white;
+  border-radius: 12px;
+}
+.container_title_box_card_inf_log {
+  width: 100%;
+  height: 30%;
+  background-color: rgb(64, 64, 216);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  border-radius: 10px;
+}
+.title_box_card_inf_log {
+  margin: 0;
+  text-align: center;
+}
+.container_val_box_card_inf_log {
+  position: relative;
+  height: 70%;
+  width: 100%;
+  display: flex;
+  overflow-x: scroll;
+  overflow-wrap: break-word;
+  font-size: 43px;
+}
+.val_box_card_inf_log {
+  margin: auto;
+  width: auto;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  color: rgb(64, 64, 216);
+  font-weight: 700;
+}

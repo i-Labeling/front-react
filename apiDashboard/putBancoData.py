@@ -16,22 +16,6 @@ def read_data_js(nome_arq: str):
     except Exception:
         return "No data"
 
-# Dados do dicionário info_arq
-# info_arq = {
-#     'cliente': "samsung - ELETRONICS",
-#     'bandeja': '11',
-#     'temp_total': '850.9',
-#     'min_bdj': '10min 4s',
-#     'temp_memoria': '8.5',
-#     'mem_fail': '4',
-#     'memo_index': [2, 4, 8, 9, 15, 16, 67, 68, 69],
-#     'inspec_fail': ['memoria 78', 'memoria 45', 'memoria 33'],
-#     'cam_erro': '9',
-#     "pos_rfg": ['pos 5 - fail', 'pos 9 - fail', 'pos 1 - nada', 'pos 44 - vazio'],
-#     'data_insercao': " "
-# }
-
-
 def send_bd(info_arq: dict):
     try:
         info_arq = read_data_js(url+"endProcess.json")

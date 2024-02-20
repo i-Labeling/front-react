@@ -7,6 +7,7 @@ import OSCard from "../../components/OSCard/OSCard";
 import Title from "../../components/textTitle/textTitle";
 import BackButton from "../../components/backButton/backButton";
 import { useNavigate } from "react-router-dom";
+import CardLogList from "../../components/cardLogList/cardLogList";
 
 interface infProcess {
   tray: string;
@@ -44,7 +45,7 @@ export default function EndProcess() {
     await axiosInstance
       .get("/")
       .then((res) => {
-        console.log("att aqui");
+        console.log("att aqui", res.data);
         setInfProccess(res.data);
       })
       .catch((res) => console.log(res));
@@ -52,6 +53,23 @@ export default function EndProcess() {
   useEffect(() => {
     getVal();
   }, []);
+
+  const mockedListScrapError = [
+    "['memoria: 21 | coluna 2-pos: 1(grade: VAZIO)'",
+    " 'memoria: 22 | coluna 2-pos: 2(grade: VAZIO)'",
+    " 'memoria: 25 | coluna 2-pos: 3(grade: VAZIO)'",
+    " 'memoria: 26 | coluna 2-pos: 4(grade: VAZIO)'",
+    " 'memoria: 64 | coluna 2-pos: 5(grade: VAZIO)']",
+  ];
+
+  const mockedListInspectionError = [
+    "['memoria: 21 VAZIO'",
+    " 'memoria: 22 VAZIO'",
+    " 'memoria: 25 VAZIO'",
+    " 'memoria: 26 VAZIO'",
+    " 'memoria: 64 VAZIO']",
+  ];
+
   return (
     <>
       <Menu />
@@ -92,17 +110,17 @@ export default function EndProcess() {
             className="cardLog"
             titleBackgroundColor={"#4443CE"}
           />
-          <CardLog
+          <CardLogList
             title="Scrap Position and Error Type"
-            val={infProccess.positionAndError ?? "0"}
+            list={mockedListScrapError ?? 0}
             style={styleCard}
             show={false}
             className="cardLog"
             titleBackgroundColor={"#E8405E"}
           />
-          <CardLog
+          <CardLogList
             title="Inspection Error Counter"
-            val={infProccess.inspectionErrors ?? "0"}
+            list={mockedListInspectionError}
             show={true}
             className="cardLog"
             titleBackgroundColor={"#E8405E"}

@@ -1,9 +1,17 @@
-import { useState } from "react";
-import "./style.css";
-import OSCard from "../OSCard/OSCard";
 import { Modal } from "@mui/material";
+import OSCard from "../OSCard/OSCard";
+import { useState } from "react";
 import { makeStyles } from "@mui/styles";
-import ModalMemory from "../modalMemory/modalMemory";
+import "./style.css";
+
+const useStyles = makeStyles(() => ({
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}));
+
 interface ConfInf {
   title: any;
   val: string;
@@ -14,14 +22,6 @@ interface ConfInf {
   contentBackgroundColor?: any;
 }
 
-const useStyles = makeStyles(() => ({
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-}));
-
 export default function CardLog(props: ConfInf) {
   const [infOpen, SetInfOpen] = useState(false);
   const classes = useStyles();
@@ -30,23 +30,17 @@ export default function CardLog(props: ConfInf) {
     SetInfOpen(false);
   };
 
-  const content =
-  props.title !== "Scrap Position and Error Type" &&
-  (props.title !== "Inspection Error Counter" )
-    ? props.val
-    : props.val != '0'? String(props.val.length) : String(props.val.length-1);
-
   return (
     <>
       <OSCard
         title={props.title}
-        content={content}
+        content={props.val}
         onClick={() => SetInfOpen(!infOpen)}
         className={props.className}
         titleBackgroundColor={props.titleBackgroundColor}
         contentBackgroundColor={props.contentBackgroundColor}
       />
-      {infOpen && props.title !== "Scrap Position and Error Type"   ? (
+      {infOpen && (
         <Modal
           open={infOpen}
           onClose={handleClose}
@@ -69,15 +63,6 @@ export default function CardLog(props: ConfInf) {
             </div>
           </div>
         </Modal>
-      ) : (
-        <ModalMemory
-          open={infOpen}
-          title={props.title}
-          list={props.val}
-          titleBackgroundColor={props.titleBackgroundColor}
-          contentBackgroundColor={props.contentBackgroundColor}
-          onClose={handleClose}
-        />
       )}
     </>
   );
