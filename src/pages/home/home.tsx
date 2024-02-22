@@ -170,7 +170,7 @@ export default function Home() {
             <SimpleButton
               title="Init Setup"
               onClick={toNavigate}
-              disabled={statusDevice.length <= 0}
+              disabled={statusDevice.length <= 0 ||  statusProcess.idProcess === "processing"}
               personalisedStyle={"buttonInitSetup"}
             />
           </div>

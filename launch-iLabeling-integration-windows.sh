@@ -48,22 +48,22 @@ launch_frontend() {
 echo "Mock wiptrack"
 launch_mock_wiptrack 
 
-sleep 15
+sleep 1
 
 echo "backend"
 launch_backend
 
-sleep 15
+sleep 1
 
 echo "Get banco data"
 launch_get_banco_data
 
-sleep 15
+sleep 1
 
 echo "Melhorias iLabeling"
 launch_melhorias_iLabeling 
 
-sleep 15
+sleep 1
 
 echo "front-end"
 launch_frontend &

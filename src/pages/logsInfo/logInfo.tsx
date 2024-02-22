@@ -4,6 +4,7 @@ import "./style.css";
 import BackButton from "../../components/backButton/backButton";
 import CardLogItem from "../../components/cardLogItem/cardLogItem";
 import ImageModal from "../../components/imageModal/imageModal";
+import { useNavigate } from "react-router-dom";
 interface Log {
   inspection?: string;
   validateLabel?: string;
@@ -18,6 +19,7 @@ export default function LogsInfo() {
   const [logs, setLog] = useState<Array<Log>>([]);
   const [open, setOpenModal] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
+  const navigate = useNavigate();
 
   // const mockLogs: Log[] = [
   //   { inspection: "Inspection 16" },
@@ -108,12 +110,16 @@ export default function LogsInfo() {
     // }
   }, [logs]);
 
+  const handleClick = () => {
+    navigate("/home");
+  };
+
   return (
     <>
       <Menu />
       <main className="container_page_logs">
         <div className="back_button_container">
-          <BackButton />
+          <BackButton onClick={handleClick}/>
         </div>
         <div className="title_container">
           <h1 className="title_page_logs">Log Information</h1>

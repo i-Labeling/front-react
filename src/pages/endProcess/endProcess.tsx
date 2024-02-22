@@ -54,22 +54,6 @@ export default function EndProcess() {
     getVal();
   }, []);
 
-  const mockedListScrapError = [
-    "['memoria: 21 | coluna 2-pos: 1(grade: VAZIO)'",
-    " 'memoria: 22 | coluna 2-pos: 2(grade: VAZIO)'",
-    " 'memoria: 25 | coluna 2-pos: 3(grade: VAZIO)'",
-    " 'memoria: 26 | coluna 2-pos: 4(grade: VAZIO)'",
-    " 'memoria: 64 | coluna 2-pos: 5(grade: VAZIO)']",
-  ];
-
-  const mockedListInspectionError = [
-    "['memoria: 21 VAZIO'",
-    " 'memoria: 22 VAZIO'",
-    " 'memoria: 25 VAZIO'",
-    " 'memoria: 26 VAZIO'",
-    " 'memoria: 64 VAZIO']",
-  ];
-
   return (
     <>
       <Menu />
@@ -112,7 +96,7 @@ export default function EndProcess() {
           />
           <CardLogList
             title="Scrap Position and Error Type"
-            list={mockedListScrapError ?? 0}
+            list={infProccess.positionAndError}
             style={styleCard}
             show={false}
             className="cardLog"
@@ -120,7 +104,7 @@ export default function EndProcess() {
           />
           <CardLogList
             title="Inspection Error Counter"
-            list={mockedListInspectionError}
+            list={infProccess.inspectionErrors}
             show={true}
             className="cardLog"
             titleBackgroundColor={"#E8405E"}
