@@ -9,8 +9,8 @@ interface InfConf {
 }
 interface Costumer {
   name: string;
-  PN_Smart:string;
-  PN_Cliente:string;
+  PN_Smart: string;
+  PN_Cliente: string;
 }
 export default function BoxSetup(props: InfConf) {
   const [infs, setInfs] = useState<Costumer[]>([]);
@@ -36,32 +36,31 @@ export default function BoxSetup(props: InfConf) {
 
   const userToken = localStorage.getItem("jwtToken");
   const headers = {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${userToken}`,
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
   };
 
   const getCostumers = async () => {
     try {
-    const response = await fetch("http://127.0.0.1:5000/costumer", {
-    method: "GET",
-    headers: headers,
-    });
-    if (response.ok) {
-      const usersNames = await response.json();
-      setInfs(usersNames);
-      if (usersNames.length > 0 && selectedCustomer === "") {
-                setSelectedCustomer(usersNames[0].name);
-                props.setSetupInf((e: any) => ({
-                  ...props.setupInf,
-                  customer: usersNames[0],
-                }));
-              }
+      const response = await fetch("http://127.0.0.1:5000/costumer", {
+        method: "GET",
+        headers: headers,
+      });
+      if (response.ok) {
+        const usersNames = await response.json();
+        setInfs(usersNames);
+        if (usersNames.length > 0 && selectedCustomer === "") {
+          setSelectedCustomer(usersNames[0].name);
+          props.setSetupInf((e: any) => ({
+            ...props.setupInf,
+            customer: usersNames[0],
+          }));
+        }
       }
-      } catch (error) {
+    } catch (error) {
       console.error("Errors in getting kpis:", error);
-      }
-      };
-
+    }
+  };
 
   useEffect(() => {
     getCostumers();
@@ -70,7 +69,7 @@ export default function BoxSetup(props: InfConf) {
 
   const handleItemClick = (name: any) => {
     setSelectedCustomer(name);
-    console.log('name', name);
+    console.log("name", name);
     props.setSetupInf((e: any) => ({
       ...props.setupInf,
       customer: name,
@@ -110,11 +109,13 @@ export default function BoxSetup(props: InfConf) {
                 className={`inf ${
                   selectedCustomer === inf.name ? "selected" : ""
                 }`}
-                onClick={() => handleItemClick(inf)}
-                style={getItemStyle(inf)}
+                onClick={() => handleItemClick(inf.name)}
+                style={getItemStyle(inf.name)}
               >
-                <div style={{ marginLeft: "10px" }}>{`${inf.name}-${inf.PN_Smart}-${inf.PN_Cliente}`}</div>
-                {selectedCustomer === inf && (
+                <div
+                  style={{ marginLeft: "10px" }}
+                >{`${inf.name}-${inf.PN_Smart}-${inf.PN_Cliente}`}</div>
+                {selectedCustomer === inf.name && (
                   <CheckIcon style={checkIconStyle} />
                 )}
               </li>

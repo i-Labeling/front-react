@@ -80,7 +80,7 @@ export default function CardLog(props: ConfInf) {
         titleBackgroundColor={props.titleBackgroundColor}
         contentBackgroundColor={props.contentBackgroundColor}
       />
-      {infOpen && list.length > 0 ? (
+      {infOpen && list.length > 0 && list != "0" ? (
         <ModalMemory
           open={infOpen}
           title={props.title}

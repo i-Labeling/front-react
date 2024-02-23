@@ -10,6 +10,7 @@ import { Card } from "@mui/material";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import CustomSelect from "../../components/select/customSelect";
+import { toast } from "react-toastify";
 
 export default function confSetup() {
   const navigate = useNavigate();
@@ -37,7 +38,11 @@ export default function confSetup() {
 
   useEffect(() => {
     const allFieldsFilled =
-      setupInf.serviceOrder !== "null" && setupInf.amauntMemory !== "null";
+      setupInf.serviceOrder !== "null" &&
+      setupInf.serviceOrder !== "" &&
+      setupInf.amauntMemory !== "null" &&
+      setupInf.amauntMemory !== "" &&
+      setupInf.customer !== "1";
     Object.values(errors).every((error) => error === "");
 
     setButtonDisabled(!allFieldsFilled);
