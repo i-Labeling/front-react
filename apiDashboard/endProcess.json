@@ -1,1 +1,27 @@
-{}
+{
+  "quant_memory": 75,
+  "type_memory": "sodimm",
+  "customer": "WINTRONIC",
+  "bandeja": 1,
+  "temp_total": 701.37,
+  "min_bdj": "10.35",
+  "temp_memoria": "9.35",
+  "mem_fail": 5,
+  "memo_index": [
+    "memoria: 21 VAZIO",
+    "memoria: 22 VAZIO",
+    "memoria: 25 VAZIO",
+    "memoria: 26 VAZIO",
+    "memoria: 64 VAZIO"
+  ],
+  "inspec_fail": [],
+  "cam_erro": 0,
+  "pos_rfg": [
+    "memoria: 21 | coluna 2-pos: 1(grade: VAZIO)",
+    "memoria: 22 | coluna 2-pos: 2(grade: VAZIO)",
+    "memoria: 25 | coluna 2-pos: 3(grade: VAZIO)",
+    "memoria: 26 | coluna 2-pos: 4(grade: VAZIO)",
+    "memoria: 64 | coluna 2-pos: 5(grade: VAZIO)"
+  ],
+  "data_insercao": " "
+}
