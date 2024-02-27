@@ -290,8 +290,25 @@ def dash_graph2():
                 "quantMemory": int(resultado[13]),
             }
             data_list.append(data_dict)
+
+        start_date = datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)
+        end_date = datetime.strptime(date, '%Y-%m-%d')
+        dates_between = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range((end_date - start_date).days + 1)]
+
+        memory_totals = {date: {'sodimm': 0, 'udimm': 0, 'quantity': 0, 'dayOfWeek': ""} for date in dates_between}
+
+        for data in data_list:
+            order_date = datetime.strptime(data['order'][:10], '%Y-%m-%d')
+            memory_totals[order_date.strftime('%Y-%m-%d')]['quantity'] += data['quantMemory']
+            if data['typeMemory'] == 'sodimm':
+                memory_totals[order_date.strftime('%Y-%m-%d')]['sodimm'] += data['quantMemory']
+            elif data['typeMemory'] == 'udimm':
+                memory_totals[order_date.strftime('%Y-%m-%d')]['udimm'] += data['quantMemory']
+
+        # Converte o dicionário para uma lista de objetos
+        result = [{'date': key, 'sodimm': value['sodimm'], 'udimm': value['udimm'], 'quantity': value['quantity']} for key, value in memory_totals.items()]
             
-        return jsonify(data_list)
+        return jsonify(result)
 
     except Exception as e:
         return {"erro": str(e)}
@@ -354,8 +371,8 @@ def dash_error_states():
 
         if date:
             # Utiliza o formato correto para a comparação de datas
-            query += f" AND data_insercao::DATE = '{date}'::DATE "
-
+            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
+            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
 
         cur.execute(query)
         result = cur.fetchall()
