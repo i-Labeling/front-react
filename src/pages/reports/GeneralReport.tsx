@@ -14,6 +14,8 @@ import Menu from "../../components/customMenu/customMenu";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import SelectDashboard from "../../components/selectDashboard/selectDashboard.tsx";
+import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 
 const GeneralOSReport: React.FC = () => {
   const classes = useStyles();
@@ -86,10 +88,14 @@ const GeneralOSReport: React.FC = () => {
       const docWidth = 210;
       const imageWidth = 50;
       const centerX = (docWidth - imageWidth) / 2;
-      const convertStartDate = new Date(
-        filterGet.startDate
-      ).toLocaleDateString();
-      const convertEndDate = new Date(filterGet.endDate).toLocaleDateString();
+      const convertStartDate = format(
+        utcToZonedTime(filterGet.startDate, "America/Sao_Paulo"),
+        "dd/MM/yyyy"
+      );
+      const convertEndDate = format(
+        utcToZonedTime(filterGet.endDate, "America/Sao_Paulo"),
+        "dd/MM/yyyy"
+      );
       const dateInit =
         filterGet.startDate != ""
           ? convertStartDate

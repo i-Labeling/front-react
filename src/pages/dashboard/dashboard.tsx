@@ -87,55 +87,14 @@ export default function Dashboard() {
     });
   };
 
-  const formatGraph2Data = (data: any, selectedDate: string) => {
-    const groupedData: { [key: string]: any } = {};
-    const uniqueDates = Array.from(
-      new Set(
-        data.map((item: any) => format(new Date(item.order), "MM/dd/yyyy"))
-      )
-    );
-    const startDate = new Date(selectedDate);
-    for (let i = 1; i <= 6; i++) {
-      const previousDate = new Date(startDate);
-      previousDate.setDate(startDate.getDate() - i);
-      const formattedDate = format(previousDate, "MM/dd/yyyy");
-
-      if (!uniqueDates.includes(formattedDate)) {
-        uniqueDates.push(formattedDate);
-      }
-    }
-
-    uniqueDates.forEach((date: any) => {
-      const dayOfWeek = format(new Date(date), "EEE");
-      groupedData[date] = {
-        sodimm: 0,
-        udimm: 0,
-        quantity: 0,
-        dayOfWeek,
-      };
+  const formatGraph2Data = (dataList: any) => {
+    return dataList.map((item: any) => {
+      const dayOfWeek = format(
+        utcToZonedTime(item.date, "America/Sao_Paulo"),
+        "EEE"
+      );
+      return { ...item, dayOfWeek };
     });
-
-    data.forEach((item: any) => {
-      const orderDate = new Date(item.order);
-      const day = format(orderDate, "MM/dd/yyyy");
-
-      groupedData[day].sodimm +=
-        item.typeMemory === "sodimm" ? item.quantMemory : 0;
-      groupedData[day].udimm +=
-        item.typeMemory === "udimm" ? item.quantMemory : 0;
-      groupedData[day].quantity += item.quantMemory;
-    });
-
-    const resultArray = Object.entries(groupedData).map(([key, value]) => ({
-      date: key,
-      ...value,
-    }));
-
-    const sortedResult = resultArray.sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    return sortedResult;
   };
 
   const verificationSodimmKey = "sodimm";
@@ -180,7 +139,7 @@ export default function Dashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        const formattedData = formatGraph2Data(data, filterGet.date);
+        const formattedData = formatGraph2Data(data);
         setGraph2(formattedData);
         const shouldDisplay = allValuesZeroForQuantity(
           formattedData,
@@ -456,13 +415,14 @@ export default function Dashboard() {
                       const { payload } = props;
                       if (payload && payload.length > 0) {
                         const { date, sodimm, udimm } = payload[0].payload;
-                        const convertDate = new Date(date);
+                        const convertDate = format(
+                          utcToZonedTime(date, "America/Sao_Paulo"),
+                          "dd/MM/yyyy"
+                        );
 
                         return (
                           <div className="custom-tooltip">
-                            <p>
-                              Date: {convertDate.toLocaleDateString("pt-br")}
-                            </p>
+                            <p>Date: {convertDate}</p>
                             <p style={{ color: "rgb(64, 64, 216)" }}>
                               sodimm: {sodimm}
                             </p>

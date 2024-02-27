@@ -15,6 +15,8 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import Menu from "../../components/customMenu/customMenu";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
+import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 
 interface Costumer {
   name: string;
@@ -151,10 +153,14 @@ const FilteredReport: React.FC = () => {
       const docWidth = 210;
       const imageWidth = 50;
       const centerX = (docWidth - imageWidth) / 2;
-      const convertStartDate = new Date(
-        filterGet.startDate
-      ).toLocaleDateString();
-      const convertEndDate = new Date(filterGet.endDate).toLocaleDateString();
+      const convertStartDate = format(
+        utcToZonedTime(filterGet.startDate, "America/Sao_Paulo"),
+        "dd/MM/yyyy"
+      );
+      const convertEndDate = format(
+        utcToZonedTime(filterGet.endDate, "America/Sao_Paulo"),
+        "dd/MM/yyyy"
+      );
 
       const dateInit =
         filterGet.startDate != ""
