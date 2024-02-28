@@ -10,7 +10,6 @@ import { Card } from "@mui/material";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import CustomSelect from "../../components/select/customSelect";
-import { toast } from "react-toastify";
 
 export default function confSetup() {
   const navigate = useNavigate();
@@ -42,7 +41,10 @@ export default function confSetup() {
       setupInf.serviceOrder !== "" &&
       setupInf.amauntMemory !== "null" &&
       setupInf.amauntMemory !== "" &&
-      setupInf.customer !== "1";
+      setupInf.customer !== "1" &&
+      setupInf.customer !== "" &&
+      setupInf.typeMemory !== "null" &&
+      setupInf.typeMemory !== "";
     Object.values(errors).every((error) => error === "");
 
     setButtonDisabled(!allFieldsFilled);
@@ -183,7 +185,7 @@ export default function confSetup() {
               label="Memory type"
               listItems={typeMemoryList}
               onChange={(value) => handleTextFieldChange(value, "typeMemory")}
-              initialSelection="udimm"
+              required
             />
           </form>
           <RadioButtonGroup

@@ -14,6 +14,7 @@ interface CustomSelectProps {
   value?: any;
   onChange: (value: string) => void;
   initialSelection?: string;
+  required?: boolean;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = (
@@ -48,7 +49,7 @@ const CustomSelect: React.FC<CustomSelectProps> = (
         label="Access Type"
         onChange={handleChange}
         variant="outlined"
-        required
+        required={props.required}
         sx={{
           "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
             {

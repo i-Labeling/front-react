@@ -25,7 +25,7 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({
     customer: "1",
     serviceOrder: "null",
     amauntMemory: "null",
-    typeMemory: "udimm",
+    typeMemory: "",
     inspectionMode: 1,
     gridList: [],
   });

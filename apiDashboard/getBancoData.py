@@ -224,11 +224,10 @@ def dash_graph1():
 
         if typeM and  typeM[0] != 'All':
             query += f" AND type_memory = '{typeM[0]}'"
-
+    
         if date:
             # Utiliza o formato correto para a comparação de datas
-            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
-            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
+            query += f" AND data_insercao::DATE = '{date}'::DATE"
 
         cur.execute(query)
         resultados = cur.fetchall()
@@ -333,8 +332,7 @@ def dash_kpis():
 
         if date:
             # Utiliza o formato correto para a comparação de datas
-            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
-            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
+            query += f" AND data_insercao::DATE = '{date}'::DATE"
 
         cur.execute(query)
         result = cur.fetchall()
@@ -371,8 +369,7 @@ def dash_error_states():
 
         if date:
             # Utiliza o formato correto para a comparação de datas
-            start_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d')
-            query += f" AND data_insercao::DATE BETWEEN '{start_date}'::DATE AND '{date}'::DATE"
+            query += f" AND data_insercao::DATE = '{date}'::DATE"
 
         cur.execute(query)
         result = cur.fetchall()

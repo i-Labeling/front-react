@@ -22,18 +22,6 @@ export default function BoxSetup(props: InfConf) {
     fontSize: "24px",
   };
 
-  //To mock the list of Costumers
-  useEffect(() => {
-    // setInfs(mockCostumers);
-    if (infs.length > 0 && selectedCustomer === "") {
-      setSelectedCustomer(infs[0].name);
-      props.setSetupInf((e: any) => ({
-        ...props.setupInf,
-        customer: infs[0],
-      }));
-    }
-  }, [props]);
-
   const userToken = localStorage.getItem("jwtToken");
   const headers = {
     "Content-Type": "application/json",
@@ -49,13 +37,6 @@ export default function BoxSetup(props: InfConf) {
       if (response.ok) {
         const usersNames = await response.json();
         setInfs(usersNames);
-        if (usersNames.length > 0 && selectedCustomer === "") {
-          setSelectedCustomer(usersNames[0].name);
-          props.setSetupInf((e: any) => ({
-            ...props.setupInf,
-            customer: usersNames[0],
-          }));
-        }
       }
     } catch (error) {
       console.error("Errors in getting kpis:", error);
@@ -106,16 +87,14 @@ export default function BoxSetup(props: InfConf) {
             <div key={index} style={{ margin: 5 }}>
               <li
                 key={index}
-                className={`inf ${
-                  selectedCustomer === inf.name ? "selected" : ""
-                }`}
-                onClick={() => handleItemClick(inf.name)}
-                style={getItemStyle(inf.name)}
+                className={`inf ${selectedCustomer === inf ? "selected" : ""}`}
+                onClick={() => handleItemClick(inf)}
+                style={getItemStyle(inf)}
               >
                 <div
                   style={{ marginLeft: "10px" }}
                 >{`${inf.name}-${inf.PN_Smart}-${inf.PN_Cliente}`}</div>
-                {selectedCustomer === inf.name && (
+                {selectedCustomer === inf && (
                   <CheckIcon style={checkIconStyle} />
                 )}
               </li>

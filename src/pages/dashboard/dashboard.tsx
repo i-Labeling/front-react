@@ -106,6 +106,13 @@ export default function Dashboard() {
     return dictI[verificationUdimmKey] === null;
   });
 
+  const allValuesNullSodimmGraph2 = graph2.every((dictI: any) => {
+    return dictI[verificationSodimmKey] === null;
+  });
+  const allValuesNullUdimmGraph2 = graph2.every((dictI: any) => {
+    return dictI[verificationUdimmKey] === null;
+  });
+
   const verificationKey = "quantity";
   const allValuesZeroForQuantity = (array: any[], key: string): boolean => {
     return array.every((obj: any) => obj[key] === 0);
@@ -163,6 +170,7 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setErrors(data);
+        console.log("erros", data);
       }
     } catch (error) {
       console.error("Errors in getting errors:", error);
@@ -295,19 +303,23 @@ export default function Dashboard() {
         <div className="container_cards_dasboard">
           <OSCard
             title="Labelled"
-            content={kpis.labelled != "" ? kpis.labelled : "0"}
+            content={
+              kpis.labelled != "" && kpis.labelled != null ? kpis.labelled : "0"
+            }
             titleBackgroundColor="#4443CE"
           />
           <div style={{ marginRight: "40px" }}></div>
           <OSCard
             title="Trays Worked"
-            content={kpis.trays != "" ? kpis.trays : "0"}
+            content={kpis.trays != "" && kpis.trays != null ? kpis.trays : "0"}
             titleBackgroundColor="#4443CE"
           />
           <div style={{ marginRight: "40px" }}></div>
           <OSCard
             title="To Rework"
-            content={kpis.reworks != "" ? kpis.reworks : "0"}
+            content={
+              kpis.reworks != "" && kpis.reworks != null ? kpis.reworks : "0"
+            }
             titleBackgroundColor="#DFB54A"
           />
           <div style={{ marginRight: "40px" }}></div>
@@ -363,37 +375,37 @@ export default function Dashboard() {
         </div>
         <>
           <div className="container_graph">
-            <div className="content_graph">
-              {graph1.length > 0 && (
+            {graph1.length > 0 && (
+              <div className="content_graph">
                 <h1 className="title_graph">LABELING BY DAY (OSs)</h1>
-              )}
-              <BarChart
-                width={500}
-                height={240}
-                data={graph1}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <XAxis dataKey="hour" unit="hr" />
-                <YAxis />
-                <Tooltip />
-                <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
-                {allValuesNullSodimm ? (
-                  <></>
-                ) : (
-                  <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
-                )}
-                {allValuesNullUdimm ? (
-                  <></>
-                ) : (
-                  <Bar dataKey="udimm" fill="#82ca9d" />
-                )}
-              </BarChart>
-            </div>
+                <BarChart
+                  width={500}
+                  height={240}
+                  data={graph1}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <XAxis dataKey="hour" unit="hr" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
+                  {allValuesNullSodimm ? (
+                    <></>
+                  ) : (
+                    <Bar dataKey="sodimm" fill="rgb(64, 64, 216)" unit="" />
+                  )}
+                  {allValuesNullUdimm ? (
+                    <></>
+                  ) : (
+                    <Bar dataKey="udimm" fill="#82ca9d" />
+                  )}
+                </BarChart>
+              </div>
+            )}
             {!dataGraph2 && (
               <div className="content_graph">
                 <h1 className="title_graph">LABELING BY WEEK</h1>
@@ -434,7 +446,7 @@ export default function Dashboard() {
                     }}
                   />
                   <Legend width={100} wrapperStyle={{ top: 10, right: -66 }} />
-                  {allValuesNullSodimm ? (
+                  {allValuesNullSodimmGraph2 ? (
                     <></>
                   ) : (
                     <Line
@@ -443,7 +455,7 @@ export default function Dashboard() {
                       stroke="rgb(64, 64, 216)"
                     />
                   )}
-                  {allValuesNullUdimm ? (
+                  {allValuesNullUdimmGraph2 ? (
                     <></>
                   ) : (
                     <Line type="monotone" dataKey="udimm" stroke="#82ca9d" />
