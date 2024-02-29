@@ -170,7 +170,6 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setErrors(data);
-        console.log("erros", data);
       }
     } catch (error) {
       console.error("Errors in getting errors:", error);
@@ -193,6 +192,13 @@ export default function Dashboard() {
     }
   };
 
+  function filtrarUnicosPorChave<T>(lista: T[], chave: keyof T & string): T[] {
+    return lista.filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t[chave] === item[chave])
+    );
+  }
+
   const getCostumers = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/costumer", {
@@ -202,7 +208,8 @@ export default function Dashboard() {
 
       if (response.ok) {
         const users = await response.json();
-        setIdsCostumers(users);
+        const uniqueCostumers = filtrarUnicosPorChave<Costumer>(users, "name");
+        setIdsCostumers(uniqueCostumers);
         setDataLoaded(true);
       }
     } catch (error) {

@@ -68,6 +68,13 @@ const FilteredReport: React.FC = () => {
     Authorization: `Bearer ${userToken}`,
   };
 
+  function filtrarUnicosPorChave<T>(lista: T[], chave: keyof T & string): T[] {
+    return lista.filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t[chave] === item[chave])
+    );
+  }
+
   const getCostumers = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/costumer", {
@@ -77,7 +84,8 @@ const FilteredReport: React.FC = () => {
 
       if (response.ok) {
         const users = await response.json();
-        setIdsCostumers(users);
+        const uniqueCostumers = filtrarUnicosPorChave<Costumer>(users, "name");
+        setIdsCostumers(uniqueCostumers);
         setCostumersFetched(true);
       }
     } catch (error) {
