@@ -549,24 +549,20 @@ def report_info():
 @app.route('/report-os', methods=['GET'])
 def report_os():
     try:
-        cur = connection.cursor()
+        with connection.cursor() as cur:
+            query = "SELECT service_order FROM info_arq WHERE 1=1"
+            cur.execute(query)
+            resultados = cur.fetchall()
 
-        query="SELECT service_order FROM info_arq WHERE 1=1"
+            data_list = []
 
-        cur.execute(query)
-        resultados = cur.fetchall()
+            for resultado in resultados:
+                data_dict = {
+                    "serviceOrder": str(resultado[0]),
+                }
+                data_list.append(data_dict)
 
-        cur.close()
-
-        data_list = []
-
-        for resultado in resultados:
-            data_dict = {
-                "serviceOrder": str(resultado[0]),
-            }
-            data_list.append(data_dict)
-
-        return jsonify(data_list)
+            return jsonify(data_list)
 
     except Exception as e:
         return {"erro": str(e)}
@@ -588,9 +584,10 @@ def report_endOfProcess():
     if typeM and  typeM[0] != 'All':
         query += f" AND type_memory = '{typeM[0]}'"
     if dateInit and endDate:
-        query += f" AND data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{endDate}'::DATE ORDER BY data_insercao DESC"
+        query += f" AND (data_insercao::DATE BETWEEN '{dateInit}'::DATE AND '{endDate}'::DATE)"
     if order  and order[0] != 'All':
         query += f" AND  service_order = '{order[0]}'"
+    query += " ORDER BY data_insercao DESC"
     
     cur.execute(query)
     resultados = cur.fetchall()
