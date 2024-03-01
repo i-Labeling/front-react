@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import CardGeneral from "../../components/cardGeneral/cardGeneral";
 import SimpleButton from "../../components/simpleButton/simpleButton";
-import BasicTextField from "../../components/basicTextField/basicTextField";
 import Title from "../../components/textTitle/textTitle";
 import BackButton from "../../components/backButton/backButton";
 import { useStyles } from "./styles.tsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SelectDashboard from "../../components/selectDashboard/selectDashboard.tsx";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -17,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
+import SelectLongList from "../../components/selectLongList/selectLongList.tsx";
 
 interface Costumer {
   name: string;
@@ -62,6 +61,8 @@ const FilteredReport: React.FC = () => {
 
   const [reportErros, setReportErros] = useState<any>();
   const [reportEndOfProcess, setReportEndOfProcess] = useState<any>();
+  const [dataLoaded, setDataLoaded] = useState<any>(false);
+  const [reportOs, setReportOs] = useState<any[]>([]);
 
   const headers = {
     "Content-Type": "application/json",
@@ -74,6 +75,23 @@ const FilteredReport: React.FC = () => {
         index === self.findIndex((t) => t[chave] === item[chave])
     );
   }
+
+  const getOs = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/report-os", {
+        method: "GET",
+        headers: headers,
+      });
+
+      if (response.ok) {
+        const reportResult = await response.json();
+        setReportOs(reportResult);
+        setDataLoaded(true);
+      }
+    } catch (error) {
+      console.error("Errors in getting report infos:", error);
+    }
+  };
 
   const getCostumers = async () => {
     try {
@@ -155,27 +173,43 @@ const FilteredReport: React.FC = () => {
     navigate("/reports");
   };
 
+  function hasNonNullNonZeroValue(obj: any) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (obj[key] !== null && parseFloat(obj[key]) !== 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  const kpisNonZero = hasNonNullNonZeroValue(reportKpis);
+  const errorsNonZero = hasNonNullNonZeroValue(reportErros);
+  const endOfProcessNonZero = hasNonNullNonZeroValue(reportEndOfProcess);
+  const areAnyValuesNonZero =
+    kpisNonZero || errorsNonZero || endOfProcessNonZero;
+
   const generatePDF = () => {
     try {
       const doc = new jsPDF();
       const docWidth = 210;
       const imageWidth = 50;
       const centerX = (docWidth - imageWidth) / 2;
-      const convertStartDate = format(
-        utcToZonedTime(filterGet.startDate, "America/Sao_Paulo"),
-        "dd/MM/yyyy"
-      );
-      const convertEndDate = format(
-        utcToZonedTime(filterGet.endDate, "America/Sao_Paulo"),
-        "dd/MM/yyyy"
-      );
-
       const dateInit =
         filterGet.startDate != ""
-          ? convertStartDate
+          ? format(
+              utcToZonedTime(filterGet.startDate, "America/Sao_Paulo"),
+              "dd/MM/yyyy"
+            )
           : "----No date selected----";
       const endDate =
-        filterGet.endDate != "" ? convertEndDate : "----No date selected----";
+        filterGet.endDate != ""
+          ? format(
+              utcToZonedTime(filterGet.endDate, "America/Sao_Paulo"),
+              "dd/MM/yyyy"
+            )
+          : "----No date selected----";
 
       const logo = new Image();
       logo.src = "/src/assets/Logo2.png";
@@ -188,11 +222,11 @@ const FilteredReport: React.FC = () => {
       doc.text(`Type Memory: ${filterGet.typeM}`, 10, 80);
       doc.text(`Customer: ${filterGet.costumer}`, 10, 90);
       doc.text("------KPIs------", centerX, 110);
-      doc.text(`Labelled: ${reportKpis.labelled}`, 10, 120);
-      doc.text(`Trays Worked: ${reportKpis.trays}`, 10, 130);
-      doc.text(`To Rework: ${reportKpis.reworks}`, 10, 140);
-      doc.text(`Camera Error: ${reportErros.cam_erro}`, 10, 150);
-      doc.text(`Mem Fail: ${reportErros.mem_fail}`, 10, 160);
+      doc.text(`Labelled: ${reportKpis.labelled ?? "0"}`, 10, 120);
+      doc.text(`Trays Worked: ${reportKpis.trays ?? "0"}`, 10, 130);
+      doc.text(`To Rework: ${reportKpis.reworks ?? "0"}`, 10, 140);
+      doc.text(`Camera Error: ${reportErros.cam_erro ?? "0"}`, 10, 150);
+      doc.text(`Mem Fail: ${reportErros.mem_fail ?? "0"}`, 10, 160);
       doc.text("------End of Process------", centerX, 180);
       doc.text(`Total Trays: ${reportEndOfProcess.totalTrays}`, 10, 190);
       doc.text(
@@ -241,8 +275,14 @@ const FilteredReport: React.FC = () => {
         280
       );
 
-      doc.save(fileName);
-      toast.success("Report PDF successfully downloaded!");
+      if (areAnyValuesNonZero) {
+        doc.save(fileName);
+        toast.success("Report PDF successfully downloaded!");
+      } else {
+        toast.warn(
+          "All report values are 0. Please check an available combination!"
+        );
+      }
     } catch (e) {
       toast.error(
         "Unknown problem while generating PDF. Try another time later!"
@@ -255,6 +295,7 @@ const FilteredReport: React.FC = () => {
     getReportKpis();
     getReportErros();
     getReportEndOfProcess();
+    getOs();
   }, []);
 
   const att = () => {
@@ -262,6 +303,7 @@ const FilteredReport: React.FC = () => {
     getReportKpis();
     getReportErros();
     getReportEndOfProcess();
+    getOs();
   };
 
   useEffect(() => {
@@ -294,34 +336,29 @@ const FilteredReport: React.FC = () => {
             <Title title="Report Settings" className={classes.title} />
           </div>
         </div>
-        <BasicTextField
+        <SelectLongList
+          vals={reportOs.map((os) => ({ name: os.serviceOrder }))}
+          filterGet={filterGet}
+          setFilterGet={setFilterGet}
+          filterField="OSnumber"
           label="OSnumber"
-          placeholder="OSnumber"
-          onChange={(value: any) => {
-            setFilterGet((prevFilter) => ({
-              ...prevFilter,
-              OSnumber: value,
-            }));
-          }}
-          type="OSnumber"
         />
-        {costumersFetched && (
-          <SelectDashboard
-            label="Costumer(s)"
-            className="select"
-            vals={idsCostumers}
-            filterGet={filterGet}
-            setFilterGet={setFilterGet}
-            filterField="costumer"
-          />
-        )}
-        <SelectDashboard
-          label="Memory Type"
+        <SelectLongList
           vals={[{ name: "udimm" }, { name: "sodimm" }]}
           filterGet={filterGet}
           setFilterGet={setFilterGet}
           filterField="typeM"
+          label="Memory Type"
         />
+        {costumersFetched && (
+          <SelectLongList
+            vals={idsCostumers}
+            filterGet={filterGet}
+            setFilterGet={setFilterGet}
+            filterField="costumer"
+            label="Costumer(s)"
+          />
+        )}
         <FormControlLabel
           control={
             <Checkbox

@@ -12,11 +12,10 @@ import dayjs from "dayjs";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import Menu from "../../components/customMenu/customMenu";
 import { useNavigate } from "react-router-dom";
-import { jsPDF } from "jspdf";
-import SelectDashboard from "../../components/selectDashboard/selectDashboard.tsx";
 import { format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-
+import { jsPDF } from "jspdf";
+import SelectLongList from "../../components/selectLongList/selectLongList.tsx";
 const GeneralOSReport: React.FC = () => {
   const classes = useStyles();
   const userToken = localStorage.getItem("jwtToken");
@@ -82,26 +81,35 @@ const GeneralOSReport: React.FC = () => {
     }
   };
 
+  function hasNonZeroValueInArray(arr: any) {
+    for (const val of arr) {
+      if (val !== 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   const generatePDF = (data: any) => {
     try {
       const doc = new jsPDF();
       const docWidth = 210;
       const imageWidth = 50;
       const centerX = (docWidth - imageWidth) / 2;
-      const convertStartDate = format(
-        utcToZonedTime(filterGet.startDate, "America/Sao_Paulo"),
-        "dd/MM/yyyy"
-      );
-      const convertEndDate = format(
-        utcToZonedTime(filterGet.endDate, "America/Sao_Paulo"),
-        "dd/MM/yyyy"
-      );
       const dateInit =
         filterGet.startDate != ""
-          ? convertStartDate
+          ? format(
+              utcToZonedTime(filterGet.startDate, "America/Sao_Paulo"),
+              "dd/MM/yyyy"
+            )
           : "----No date selected----";
       const endDate =
-        filterGet.endDate != "" ? convertEndDate : "----No date selected----";
+        filterGet.endDate != ""
+          ? format(
+              utcToZonedTime(filterGet.endDate, "America/Sao_Paulo"),
+              "dd/MM/yyyy"
+            )
+          : "----No date selected----";
 
       const logo = new Image();
       logo.src = "/src/assets/Logo2.png";
@@ -146,9 +154,16 @@ const GeneralOSReport: React.FC = () => {
         yPos += 10;
         yPos += 10;
       });
+      const hasNonZeroValue = hasNonZeroValueInArray(data);
 
-      doc.save(fileName);
-      toast.success("Report PDF successfully downloaded!");
+      if (hasNonZeroValue) {
+        doc.save(fileName);
+        toast.success("Report PDF successfully downloaded!");
+      } else {
+        toast.warn(
+          "All report values are 0. Please check an available combination!"
+        );
+      }
     } catch (e) {
       toast.error(
         "Unknown problem while generating PDF. Try another time later!"
@@ -205,13 +220,12 @@ const GeneralOSReport: React.FC = () => {
           </div>
         </div>
         {dataLoaded && reportOs.length > 0 && (
-          <SelectDashboard
-            label="OSnumber"
-            className="select"
+          <SelectLongList
             vals={reportOs.map((os) => ({ name: os.serviceOrder }))}
             filterGet={filterGet}
             setFilterGet={setFilterGet}
             filterField="OSnumber"
+            label="OSnumber"
           />
         )}
         <FormControlLabel
