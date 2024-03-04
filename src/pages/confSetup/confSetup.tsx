@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import BoxSetup from "../../components/boxSetup/boxSetup";
 import Menu from "../../components/customMenu/customMenu";
 import "./style.css";
 import { useState, useEffect } from "react";
@@ -10,6 +9,12 @@ import { Card } from "@mui/material";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import CustomSelect from "../../components/select/customSelect";
+import SelectLongList from "../../components/selectLongList/selectLongList";
+interface Costumer {
+  name: string;
+  PN_Smart: string;
+  PN_Cliente: string;
+}
 
 export default function confSetup() {
   const navigate = useNavigate();
@@ -29,11 +34,87 @@ export default function confSetup() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const [inspectionModeNumber, setInspectionModeNumber] = useState<number>(1);
+  const [infs, setInfs] = useState<Costumer[]>([]);
+  const [selectedPN, setSelectedPN] = useState<any>();
+  const [selectedCostumer, setSelectedCostumer] = useState<any>();
+  const [selectCostumerList, setSelectedCostumerList] = useState<any>([]);
+  const [selectedPNClient, setSelectedPNClient] = useState<any>();
+  const [selectPNClientList, setSelectedPNClientList] = useState<any>([]);
 
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${userToken}`,
   };
+
+  const getCostumers = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/costumer", {
+        method: "GET",
+        headers: headers,
+      });
+      if (response.ok) {
+        const usersNames = await response.json();
+        setInfs(usersNames);
+        console.log("lista", usersNames);
+      }
+    } catch (error) {
+      console.error("Errors in getting kpis:", error);
+    }
+  };
+
+  const getCostumersByPNSmart = (lista: any[]) => {
+    if (selectedPN?.PN_Smart) {
+      const selectedPNString = selectedPN.PN_Smart[0]
+        .replace(/[\[\]]/g, "")
+        .trim();
+      const uniqueCostumers = lista.filter(
+        (inf: any) => inf.PN_Smart === selectedPNString
+      );
+      const uniqueSet = new Set(uniqueCostumers.map((inf: any) => inf.name));
+      const uniqueCostumersList = Array.from(uniqueSet).map((name) => ({
+        name,
+      }));
+
+      setSelectedCostumerList(uniqueCostumersList);
+    }
+  };
+
+  const getPNClientByCostumer = (lista: any[]) => {
+    if (selectedPN?.name && selectedPN?.PN_Smart) {
+      const selectedCostumerString = selectedPN.name[0]
+        .replace(/[\[\]]/g, "")
+        .trim();
+      const selectedPNString = selectedPN.PN_Smart[0]
+        .replace(/[\[\]]/g, "")
+        .trim();
+
+      const pn_client_list = lista.filter(
+        (inf: any) =>
+          inf.name === selectedCostumerString &&
+          inf.PN_Smart === selectedPNString
+      );
+
+      setSelectedPNClientList(pn_client_list);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedPN) {
+      getCostumersByPNSmart(infs);
+    }
+    console.log("selected PN", selectedPN);
+  }, [selectedPN]);
+
+  useEffect(() => {
+    if (selectedPN) {
+      getPNClientByCostumer(infs);
+    }
+    console.log("selected PN client", selectedPNClient);
+  }, [selectedCostumer]);
+
+  useEffect(() => {
+    getCostumers();
+  }, []);
 
   useEffect(() => {
     const allFieldsFilled =
@@ -121,7 +202,13 @@ export default function confSetup() {
       [identifier]: value,
     });
     validateField(value, identifier);
+
+    if (identifier === "serviceOrder") {
+      setSelectedPN("");
+    }
   };
+
+  const uniquePNs = Array.from(new Set(infs.map((inf) => inf.PN_Smart)));
 
   useEffect(() => {
     console.log(setupInf);
@@ -157,7 +244,32 @@ export default function confSetup() {
           <div className="container_menu_box_status">
             <h1 style={{ color: "rgb(64, 64, 216)" }}>Setup</h1>
           </div>
-          <BoxSetup setSetupInf={setSetupInf} setupInf={setupInf} />
+          <SelectLongList
+            label="PN Smart"
+            vals={uniquePNs.map((pn) => ({ name: pn }))}
+            filterGet={selectedPN}
+            setFilterGet={setSelectedPN}
+            filterField="PN_Smart"
+          />
+          <div style={{ marginBottom: "20px" }}></div>
+          <SelectLongList
+            label="Costumers"
+            vals={selectCostumerList.map((inf: any) => ({ name: inf.name }))}
+            filterGet={selectedCostumer}
+            setFilterGet={setSelectedCostumer}
+            filterField="name"
+          />
+          <div style={{ marginBottom: "20px" }}></div>
+          <SelectLongList
+            label="PN Client"
+            vals={selectPNClientList.map((inf: any) => ({
+              name: inf.PN_Cliente,
+            }))}
+            filterGet={selectedPNClient}
+            setFilterGet={setSelectedPNClient}
+            filterField="PN_Cliente"
+          />
+          <div style={{ marginBottom: "20px" }}></div>
           <form action="" className="container_form_setup">
             <BasicTextField
               label="Order of Service"
