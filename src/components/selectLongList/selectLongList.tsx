@@ -8,10 +8,11 @@ interface InfConf {
   setFilterGet: any;
   filterField: any;
   className?: string;
+  style?:any;
 }
 
 const CustomPaper = (props: any) => {
-  return <Paper {...props} style={{ maxHeight: "130px" }} />;
+  return <Paper {...props} className={`${props.className}`}/>;
 };
 
 export default function SelectLongList(props: InfConf) {
@@ -32,7 +33,7 @@ export default function SelectLongList(props: InfConf) {
       <Autocomplete
         id="auto-complete"
         PaperComponent={CustomPaper}
-        className={`${props.className}`}
+        style={props.style}
         openOnFocus
         options={["All", ...props.vals.map((val: any) => val.name)]}
         value={selectedValue}

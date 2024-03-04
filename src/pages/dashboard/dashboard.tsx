@@ -21,6 +21,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import SelectLongList from "../../components/selectLongList/selectLongList";
 
 interface KPIs {
   labelled: string;
@@ -232,6 +233,7 @@ export default function Dashboard() {
   }, []);
   useEffect(() => {
     att();
+    console.log('filter', filterGet);
   }, [filterGet, dataLoaded]);
 
   const dateToday = format(new Date(), "yyyy-MM-dd");
@@ -243,12 +245,14 @@ export default function Dashboard() {
         <div className="container_menu_header_dashboard">
           <div className="container_menu_dashboard">
             {dataLoaded && (
-              <SelectDashboard
-                vals={idsCostumers}
-                filterGet={filterGet}
-                setFilterGet={setFilterGet}
-                filterField="costumer"
-              />
+               <SelectLongList
+               vals={idsCostumers}
+               filterGet={filterGet}
+               setFilterGet={setFilterGet}
+               filterField="costumer"
+               label="Costumer(s)"
+               style={{width: '200px'}}
+             />
             )}
             <div style={{ marginRight: "50px" }}></div>
             <SelectDashboard

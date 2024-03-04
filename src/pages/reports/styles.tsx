@@ -48,6 +48,9 @@ export const useStyles = makeStyles({
       color: "white !important",
     },
   },
+  containerSize:{
+    maxHeight: '130px'  
+  },
   icon: {
     fontSize: "200px !important",
     display: "flex",

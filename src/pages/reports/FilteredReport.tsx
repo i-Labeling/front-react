@@ -342,6 +342,7 @@ const FilteredReport: React.FC = () => {
           setFilterGet={setFilterGet}
           filterField="OSnumber"
           label="OSnumber"
+          className={classes.containerSize}
         />
         <SelectLongList
           vals={[{ name: "udimm" }, { name: "sodimm" }]}
@@ -349,6 +350,7 @@ const FilteredReport: React.FC = () => {
           setFilterGet={setFilterGet}
           filterField="typeM"
           label="Memory Type"
+          className={classes.containerSize}
         />
         {costumersFetched && (
           <SelectLongList
@@ -357,6 +359,8 @@ const FilteredReport: React.FC = () => {
             setFilterGet={setFilterGet}
             filterField="costumer"
             label="Costumer(s)"
+            className={classes.containerSize}
+
           />
         )}
         <FormControlLabel
