@@ -9,7 +9,8 @@ import { Card } from "@mui/material";
 import SimpleButton from "../../components/simpleButton/simpleButton";
 import BasicTextField from "../../components/basicTextField/basicTextField";
 import CustomSelect from "../../components/select/customSelect";
-import SelectLongList from "../../components/selectLongList/selectLongList";
+import SelectSetup from "../../components/selectSetup/selectSetup";
+import { toast } from "react-toastify";
 interface Costumer {
   name: string;
   PN_Smart: string;
@@ -31,14 +32,33 @@ export default function confSetup() {
     { value: "sodimm", label: "SODIMM" },
   ];
 
+  useEffect(() => {
+    const clearAllFields = () => {
+      setSelectedPN(null);
+      setSelectedCostumer(null);
+      setSelectedPNClient(null);
+      setSetupInf({
+        customer: "1",
+        serviceOrder: "null",
+        amauntMemory: "null",
+        typeMemory: "",
+        inspectionMode: 1,
+        gridList: [],
+      });
+    };
+    return () => {
+      clearAllFields();
+    };
+  }, []);
+
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const [inspectionModeNumber, setInspectionModeNumber] = useState<number>(1);
   const [infs, setInfs] = useState<Costumer[]>([]);
-  const [selectedPN, setSelectedPN] = useState<any>();
-  const [selectedCostumer, setSelectedCostumer] = useState<any>();
+  const [selectedPN, setSelectedPN] = useState<any>(null);
+  const [selectedCostumer, setSelectedCostumer] = useState<any>(null);
   const [selectCostumerList, setSelectedCostumerList] = useState<any>([]);
-  const [selectedPNClient, setSelectedPNClient] = useState<any>();
+  const [selectedPNClient, setSelectedPNClient] = useState<any>(null);
   const [selectPNClientList, setSelectedPNClientList] = useState<any>([]);
 
   const headers = {
@@ -55,7 +75,6 @@ export default function confSetup() {
       if (response.ok) {
         const usersNames = await response.json();
         setInfs(usersNames);
-        console.log("lista", usersNames);
       }
     } catch (error) {
       console.error("Errors in getting kpis:", error);
@@ -65,52 +84,67 @@ export default function confSetup() {
   const getCostumersByPNSmart = (lista: any[]) => {
     if (selectedPN?.PN_Smart) {
       const selectedPNString = selectedPN.PN_Smart[0]
-        .replace(/[\[\]]/g, "")
+        ?.replace(/[\[\]]/g, "")
         .trim();
-      const uniqueCostumers = lista.filter(
-        (inf: any) => inf.PN_Smart === selectedPNString
-      );
-      const uniqueSet = new Set(uniqueCostumers.map((inf: any) => inf.name));
-      const uniqueCostumersList = Array.from(uniqueSet).map((name) => ({
-        name,
-      }));
-
-      setSelectedCostumerList(uniqueCostumersList);
-    }
-  };
-
-  const getPNClientByCostumer = (lista: any[]) => {
-    if (selectedPN?.name && selectedPN?.PN_Smart) {
-      const selectedCostumerString = selectedPN.name[0]
-        .replace(/[\[\]]/g, "")
-        .trim();
-      const selectedPNString = selectedPN.PN_Smart[0]
-        .replace(/[\[\]]/g, "")
-        .trim();
-
-      const pn_client_list = lista.filter(
-        (inf: any) =>
-          inf.name === selectedCostumerString &&
-          inf.PN_Smart === selectedPNString
-      );
-
-      setSelectedPNClientList(pn_client_list);
+      if (selectedPNString) {
+        const uniqueCostumers = lista.filter(
+          (inf: any) => inf.PN_Smart === selectedPNString
+        );
+        const uniqueSet = new Set(uniqueCostumers.map((inf: any) => inf.name));
+        const uniqueCostumersList = Array.from(uniqueSet).map((name) => ({
+          name,
+        }));
+        setSelectedCostumerList(uniqueCostumersList);
+      } else {
+        setSelectedCostumerList([]);
+      }
     }
   };
 
   useEffect(() => {
-    if (selectedPN) {
+    if (selectedPN?.PN_Smart[0] != null) {
       getCostumersByPNSmart(infs);
     }
-    console.log("selected PN", selectedPN);
-  }, [selectedPN]);
+  }, [selectedPN?.PN_Smart[0]]);
+
+  const getPNClientsByCostumer = (lista: any[]) => {
+    if (
+      selectedCostumer &&
+      selectedCostumer.name[0] &&
+      selectedPN &&
+      selectedPN?.PN_Smart[0]
+    ) {
+      const selectedCostumerName = selectedCostumer.name[0].trim();
+      const selectedPNName = selectedPN.PN_Smart[0].trim();
+      if (selectedCostumerName && selectedPNName) {
+        const filteredPNClients = lista.filter(
+          (inf: any) =>
+            inf.name === selectedCostumerName && inf.PN_Smart === selectedPNName
+        );
+        setSelectedPNClientList(filteredPNClients);
+      } else {
+        setSelectedPNClientList([]);
+      }
+    }
+  };
 
   useEffect(() => {
-    if (selectedPN) {
-      getPNClientByCostumer(infs);
-    }
-    console.log("selected PN client", selectedPNClient);
+    getPNClientsByCostumer(infs);
   }, [selectedCostumer]);
+
+  useEffect(() => {
+    if (selectedPN && selectedCostumer && selectedPNClient) {
+      const customer = {
+        name: selectedCostumer.name[0],
+        PN_Smart: selectedPN.PN_Smart[0],
+        PN_Cliente: selectedPNClient.PN_Cliente[0],
+      };
+      setSetupInf((prevSetupInf: any) => ({
+        ...prevSetupInf,
+        customer: customer,
+      }));
+    }
+  }, [selectedPN, selectedCostumer, selectedPNClient]);
 
   useEffect(() => {
     getCostumers();
@@ -126,9 +160,13 @@ export default function confSetup() {
       setupInf.customer !== "" &&
       setupInf.typeMemory !== "null" &&
       setupInf.typeMemory !== "";
-    Object.values(errors).every((error) => error === "");
 
-    setButtonDisabled(!allFieldsFilled);
+    const { customer } = setupInf;
+    const anyValueNull = Object.values(customer).some((value: any) => {
+      return value === null;
+    });
+    const allErrorsEmpty = Object.values(errors).every((error) => error === "");
+    setButtonDisabled(!(allFieldsFilled && !anyValueNull && allErrorsEmpty));
   }, [setupInf, errors]);
 
   const createSetup = async () => {
@@ -167,21 +205,36 @@ export default function confSetup() {
       );
   };
 
+  const verifyCombination = (customer: any, pn_smart: any, pn_client: any) => {
+    const foundCustomer = infs.find(
+      (inf) =>
+        inf.name === customer.name[0] &&
+        inf.PN_Smart === pn_smart.PN_Smart[0] &&
+        inf.PN_Cliente === pn_client.PN_Cliente[0]
+    );
+
+    if (foundCustomer) {
+      switch (inspectionModeNumber) {
+        case 1:
+        case 3:
+          createSetup();
+          break;
+        case 2:
+          navigate("/gridinspection");
+          break;
+        default:
+          break;
+      }
+    } else {
+      toast.error(
+        "Select the right combination of PN_SMART, Costumer and PN_Client!"
+      );
+    }
+  };
+
   const handleClick = async () => {
     console.log(inspectionModeNumber);
-    switch (inspectionModeNumber) {
-      case 1:
-        createSetup();
-        break;
-      case 2:
-        navigate("/gridinspection");
-        break;
-      case 3:
-        createSetup();
-        break;
-      default:
-        break;
-    }
+    verifyCombination(selectedCostumer, selectedPN, selectedPNClient);
   };
 
   const validateField = (value: string, identifier: string) => {
@@ -202,17 +255,9 @@ export default function confSetup() {
       [identifier]: value,
     });
     validateField(value, identifier);
-
-    if (identifier === "serviceOrder") {
-      setSelectedPN("");
-    }
   };
 
   const uniquePNs = Array.from(new Set(infs.map((inf) => inf.PN_Smart)));
-
-  useEffect(() => {
-    console.log(setupInf);
-  }, [setupInf]);
 
   useEffect(() => {
     setSetupInf((prevSetupInf) => ({
@@ -236,6 +281,14 @@ export default function confSetup() {
     }
   };
 
+  useEffect(() => {
+    if (selectedPN?.PN_Smart[0] != null) {
+      toast.warn(
+        "Make sure to change all the selected values: PN_Smart, Costumer and PN_Client!"
+      );
+    }
+  }, [selectedPN?.PN_Smart[0]]);
+
   return (
     <>
       <Menu />
@@ -244,23 +297,26 @@ export default function confSetup() {
           <div className="container_menu_box_status">
             <h1 style={{ color: "rgb(64, 64, 216)" }}>Setup</h1>
           </div>
-          <SelectLongList
+          <SelectSetup
             label="PN Smart"
             vals={uniquePNs.map((pn) => ({ name: pn }))}
             filterGet={selectedPN}
             setFilterGet={setSelectedPN}
             filterField="PN_Smart"
+            style={{ width: "90%" }}
           />
           <div style={{ marginBottom: "20px" }}></div>
-          <SelectLongList
+          <SelectSetup
             label="Costumers"
             vals={selectCostumerList.map((inf: any) => ({ name: inf.name }))}
             filterGet={selectedCostumer}
             setFilterGet={setSelectedCostumer}
             filterField="name"
+            style={{ width: "90%" }}
+            disabled={!selectedPN}
           />
           <div style={{ marginBottom: "20px" }}></div>
-          <SelectLongList
+          <SelectSetup
             label="PN Client"
             vals={selectPNClientList.map((inf: any) => ({
               name: inf.PN_Cliente,
@@ -268,6 +324,8 @@ export default function confSetup() {
             filterGet={selectedPNClient}
             setFilterGet={setSelectedPNClient}
             filterField="PN_Cliente"
+            style={{ width: "90%" }}
+            disabled={!selectedCostumer}
           />
           <div style={{ marginBottom: "20px" }}></div>
           <form action="" className="container_form_setup">

@@ -1,6 +1,5 @@
 import { Autocomplete, Paper, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
-
+import { useMemo, useState } from "react";
 interface InfConf {
   label?: string;
   vals: any[];
@@ -10,24 +9,21 @@ interface InfConf {
   className?: string;
   style?: any;
   disabled?: boolean;
+  onChange?: any;
 }
 
 const CustomPaper = (props: any) => {
   return <Paper {...props} className={`${props.className}`} />;
 };
 
-export default function SelectLongList(props: InfConf) {
-  const [selectedValue, setSelectedValue] = useState("All");
+export default function SelectSetup(props: InfConf) {
+  const [selectedValue, setSelectedValue] = useState(null);
   const [focused, setFocused] = useState(false);
 
-  useEffect(() => {
-    if (selectedValue === "All") {
-      props.setFilterGet((prevFilter: any) => ({
-        ...prevFilter,
-        [props.filterField]: [selectedValue],
-      }));
-    }
-  }, []);
+  const options = useMemo(
+    () => props.vals.map((val: any) => val.name),
+    [props.vals]
+  );
 
   return (
     <>
@@ -37,7 +33,8 @@ export default function SelectLongList(props: InfConf) {
         PaperComponent={CustomPaper}
         style={props.style}
         openOnFocus
-        options={["All", ...props.vals.map((val: any) => val.name)]}
+        disableClearable
+        options={options}
         value={selectedValue}
         onChange={(e, newValue) => {
           props.setFilterGet(() => ({
